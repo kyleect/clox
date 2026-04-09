@@ -1,5 +1,7 @@
-run: build
-    ./target/clox
+cli := "target/clox"
+
+run *args: build
+    ./{{ cli }} {{ args }}
 
 build: clean
     mkdir -p target
@@ -9,6 +11,8 @@ build: clean
     gcc -c src/debug.c -o target/debug.o
     gcc -c src/value.c -o target/value.o
     gcc -c src/vm.c -o target/vm.o
+    gcc -c src/compiler.c -o target/compiler.o
+    gcc -c src/scanner.c -o target/scanner.o
     gcc \
         target/main.o \
         target/chunk.o \
@@ -16,7 +20,9 @@ build: clean
         target/debug.o \
         target/value.o \
         target/vm.o \
-        -o target/clox
+        target/compiler.o \
+        target/scanner.o \
+        -o {{ cli }}
 
 clean:
     rm -rf target
