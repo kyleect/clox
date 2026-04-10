@@ -13,3 +13,6 @@ build:
 
 clean:
     cd build && make clean
+
+test:
+    ./tests.sh
