@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.23)
+
+set(C_STANDARD 90)
+set(C_STANDARD_REQUIRED ON)
+
+project(clox LANGUAGES C)
+
+file(GLOB SRC_FILES CONFIGURE_DEPENDS src/*.c)
+
+add_executable(clox ${SRC_FILES})
