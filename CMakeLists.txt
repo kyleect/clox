@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.22)
 
 set(C_STANDARD 90)
 set(C_STANDARD_REQUIRED ON)

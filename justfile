@@ -16,3 +16,9 @@ clean:
 
 test:
     ./tests.sh
+
+docker-build:
+    docker build -t clox .
+
+docker-run:
+    docker run -it --init --name clox --rm clox 
