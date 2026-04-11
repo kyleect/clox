@@ -6,7 +6,7 @@ diff="diff -iad"   # Diff command, or what ever
 mkdir -p ./tests/.tmp
 
 # An array, do not have to declare it, but is supposedly faster
-declare -a file_base=("add" "bool_false" "bool_true" "nil" "number" "number_negative" "string" "string_concat")
+declare -a file_base=("add" "bool_false" "bool_true" "nil" "number" "number_negative" "string" "string_concat" "bool_equals" "string_equals" "string_equals_false" "not")
 
 # Loop the array
 for file in "${file_base[@]}"; do

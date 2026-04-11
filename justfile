@@ -14,7 +14,7 @@ build:
 clean:
     cd build && make clean
 
-test:
+test: build
     ./tests.sh
 
 docker-build:
