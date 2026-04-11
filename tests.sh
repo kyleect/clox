@@ -25,7 +25,6 @@ run_test() {
 
     TOTAL=$((TOTAL + 1))
 
-    # Update mode
     if [[ $UPDATE -eq 1 ]]; then
         cp "$actual" "$expected"
         echo "🔄 UPDATED: $label"
@@ -33,14 +32,12 @@ run_test() {
         return
     fi
 
-    # Missing expected → skip
     if [[ ! -f "$expected" ]]; then
         echo "🟨 SKIP $label (missing $(basename "$expected"))"
         SKIP=$((SKIP + 1))
         return
     fi
 
-    # Compare
     if ! $DIFF "$expected" "$actual"; then
         echo "❌ FAIL $label"
         FAIL=$((FAIL + 1))
@@ -57,7 +54,6 @@ run_exit_test() {
 
     TOTAL=$((TOTAL + 1))
 
-    # Update mode
     if [[ $UPDATE -eq 1 ]]; then
         echo "$actual_code" > "$expected"
         echo "🔄 UPDATED: $label"
@@ -65,7 +61,6 @@ run_exit_test() {
         return
     fi
 
-    # Missing expected → skip
     if [[ ! -f "$expected" ]]; then
         echo "🟨 SKIP $label (missing $(basename "$expected"))"
         SKIP=$((SKIP + 1))
@@ -93,13 +88,11 @@ for file_in in ./tests/*.lox; do
     actual_out="$TMP_DIR/$base.lox.out"
     actual_err="$TMP_DIR/$base.lox.err"
 
-    # Run CLI once per input
     set +e
     "$BIN" "$file_in" >"$actual_out" 2>"$actual_err"
     exit_code=$?
     set -e
 
-    # Treat each as independent tests
     run_test      "[out]  $base" "$expected_out" "$actual_out"
     run_test      "[err]  $base" "$expected_err" "$actual_err"
     run_exit_test "[exit] $base" "$expected_exit" "$exit_code"
