@@ -31,6 +31,9 @@ jobs:
         # Build your program with the given configuration
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
+      - name: Test
+        run: ./tests.sh
+
       - uses: actions/upload-artifact@v4
         with:
           # Name of the artifact to upload.
