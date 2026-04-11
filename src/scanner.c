@@ -14,12 +14,89 @@ typedef struct {
   int line;
 } Scanner;
 
+static bool isDigit(char c);
+static bool isAlpha(char c);
+static char peek();
+static char advance();
+static bool isAtEnd();
+static char peekNext();
+static bool match(char expected);
+static Token makeToken(TokenType type);
+static Token errorToken(const char *message);
+static TokenType checkKeyword(int start, int length, const char *rest,
+                              TokenType type);
+static TokenType identifierType();
+static Token identifier();
+static Token number();
+static Token string();
+static void skipWhitespace();
+
 Scanner scanner;
 
+/**
+ * Initialize the scanner's state
+ */
 void initScanner(const char *source) {
   scanner.start = source;
   scanner.current = source;
   scanner.line = 1;
+}
+
+/**
+ * Advance scanner to the next character and return the associated token
+ */
+Token scanToken() {
+  skipWhitespace();
+
+  scanner.start = scanner.current;
+
+  if (isAtEnd())
+    return makeToken(TOKEN_EOF);
+
+  char c = advance();
+
+  if (isAlpha(c))
+    return identifier();
+
+  if (isDigit(c))
+    return number();
+
+  switch (c) {
+  case '(':
+    return makeToken(TOKEN_LEFT_PAREN);
+  case ')':
+    return makeToken(TOKEN_RIGHT_PAREN);
+  case '{':
+    return makeToken(TOKEN_LEFT_BRACE);
+  case '}':
+    return makeToken(TOKEN_RIGHT_BRACE);
+  case ';':
+    return makeToken(TOKEN_SEMICOLON);
+  case ',':
+    return makeToken(TOKEN_COMMA);
+  case '.':
+    return makeToken(TOKEN_DOT);
+  case '-':
+    return makeToken(TOKEN_MINUS);
+  case '+':
+    return makeToken(TOKEN_PLUS);
+  case '/':
+    return makeToken(TOKEN_SLASH);
+  case '*':
+    return makeToken(TOKEN_STAR);
+  case '!':
+    return makeToken(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
+  case '=':
+    return makeToken(match('=') ? TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
+  case '<':
+    return makeToken(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
+  case '>':
+    return makeToken(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
+  case '"':
+    return string();
+  }
+
+  return errorToken("Unexpected character.");
 }
 
 static bool isDigit(char c) { return c >= '0' && c <= '9'; }
@@ -193,58 +270,4 @@ static void skipWhitespace() {
       return;
     }
   }
-}
-
-Token scanToken() {
-  skipWhitespace();
-
-  scanner.start = scanner.current;
-
-  if (isAtEnd())
-    return makeToken(TOKEN_EOF);
-
-  char c = advance();
-
-  if (isAlpha(c))
-    return identifier();
-
-  if (isDigit(c))
-    return number();
-
-  switch (c) {
-  case '(':
-    return makeToken(TOKEN_LEFT_PAREN);
-  case ')':
-    return makeToken(TOKEN_RIGHT_PAREN);
-  case '{':
-    return makeToken(TOKEN_LEFT_BRACE);
-  case '}':
-    return makeToken(TOKEN_RIGHT_BRACE);
-  case ';':
-    return makeToken(TOKEN_SEMICOLON);
-  case ',':
-    return makeToken(TOKEN_COMMA);
-  case '.':
-    return makeToken(TOKEN_DOT);
-  case '-':
-    return makeToken(TOKEN_MINUS);
-  case '+':
-    return makeToken(TOKEN_PLUS);
-  case '/':
-    return makeToken(TOKEN_SLASH);
-  case '*':
-    return makeToken(TOKEN_STAR);
-  case '!':
-    return makeToken(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
-  case '=':
-    return makeToken(match('=') ? TOKEN_EQUAL_EQUAL : TOKEN_EQUAL);
-  case '<':
-    return makeToken(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
-  case '>':
-    return makeToken(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
-  case '"':
-    return string();
-  }
-
-  return errorToken("Unexpected character.");
 }

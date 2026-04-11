@@ -6,7 +6,30 @@
 #include "debug.h"
 #include "vm.h"
 
+static void resetStack();
+static void runtimeError(const char *format, ...);
+static Value peek(int distance);
+static InterpretResult run();
+
 VM vm;
+
+InterpretResult interpret(const char *source) {
+  Chunk chunk;
+  initChunk(&chunk);
+
+  if (!compile(source, &chunk)) {
+    freeChunk(&chunk);
+    return INTERPRET_COMPILE_ERROR;
+  }
+
+  vm.chunk = &chunk;
+  vm.ip = vm.chunk->code;
+
+  InterpretResult result = run();
+
+  freeChunk(&chunk);
+  return result;
+}
 
 static void resetStack() { vm.stackTop = vm.stack; }
 
@@ -113,22 +136,4 @@ static InterpretResult run() {
 #undef READ_BYTE
 #undef READ_CONSTANT
 #undef BINARY_OP
-}
-
-InterpretResult interpret(const char *source) {
-  Chunk chunk;
-  initChunk(&chunk);
-
-  if (!compile(source, &chunk)) {
-    freeChunk(&chunk);
-    return INTERPRET_COMPILE_ERROR;
-  }
-
-  vm.chunk = &chunk;
-  vm.ip = vm.chunk->code;
-
-  InterpretResult result = run();
-
-  freeChunk(&chunk);
-  return result;
 }
