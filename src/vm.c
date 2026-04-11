@@ -107,14 +107,14 @@ static InterpretResult run() {
 
   for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
-    printf("          ");
+    fprintf(stderr, "          ");
     for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
-      printf("[ ");
-      printValue(*slot);
-      printf(" ]");
+      fprintf(stderr, "[ ");
+      printValueToErr(*slot);
+      fprintf(stderr, " ]");
     }
 
-    printf("\n");
+    fprintf(stderr, "\n");
 
     disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
 #endif
@@ -169,7 +169,7 @@ static InterpretResult run() {
       break;
     case OP_RETURN: {
       printValue(pop());
-      printf("\n");
+      fprintf(stderr, "\n");
       return INTERPRET_OK;
     }
     case OP_EQUAL: {

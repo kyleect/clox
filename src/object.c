@@ -70,3 +70,11 @@ void printObject(Value value) {
     break;
   }
 }
+
+void printObjectToErr(Value value) {
+  switch (OBJ_TYPE(value)) {
+  case OBJ_STRING:
+    fprintf(stderr, "%s", AS_CSTRING(value));
+    break;
+  }
+}

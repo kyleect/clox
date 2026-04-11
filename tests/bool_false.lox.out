@@ -1,8 +1,1 @@
-== code ==
-0000    1 OP_FALSE
-0001    | OP_RETURN
-          
-0000    1 OP_FALSE
-          [ false ]
-0001    | OP_RETURN
 false

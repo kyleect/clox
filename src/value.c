@@ -45,6 +45,23 @@ void printValue(Value value) {
   }
 }
 
+void printValueToErr(Value value) {
+  switch (value.type) {
+  case VAL_BOOL:
+    fprintf(stderr, AS_BOOL(value) ? "true" : "false");
+    break;
+  case VAL_NIL:
+    fprintf(stderr, "nil");
+    break;
+  case VAL_NUMBER:
+    fprintf(stderr, "%g", AS_NUMBER(value));
+    break;
+  case VAL_OBJ:
+    printObjectToErr(value);
+    break;
+  }
+}
+
 bool valuesEqual(Value a, Value b) {
   if (a.type != b.type)
     return false;

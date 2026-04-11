@@ -5,7 +5,7 @@
 #include "value.h"
 
 void disassembleChunk(Chunk *chunk, const char *name) {
-  printf("== %s ==\n", name);
+  fprintf(stderr, "== %s ==\n", name);
 
   for (int offset = 0; offset < chunk->count;) {
     offset = disassembleInstruction(chunk, offset);
@@ -13,26 +13,26 @@ void disassembleChunk(Chunk *chunk, const char *name) {
 }
 
 static int simpleInstruction(const char *name, int offset) {
-  printf("%s\n", name);
+  fprintf(stderr, "%s\n", name);
   return offset + 1;
 }
 
 static int constantInstruction(const char *name, Chunk *chunk, int offset) {
   uint8_t constant = chunk->code[offset + 1];
-  printf("%-16s %4d '", name, constant);
-  printValue(chunk->constants.values[constant]);
-  printf("'\n");
+  fprintf(stderr, "%-16s %4d '", name, constant);
+  printValueToErr(chunk->constants.values[constant]);
+  fprintf(stderr, "'\n");
 
   return offset + 2;
 }
 
 int disassembleInstruction(Chunk *chunk, int offset) {
-  printf("%04d ", offset);
+  fprintf(stderr, "%04d ", offset);
 
   if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]) {
-    printf("   | ");
+    fprintf(stderr, "   | ");
   } else {
-    printf("%4d ", chunk->lines[offset]);
+    fprintf(stderr, "%4d ", chunk->lines[offset]);
   }
 
   uint8_t instruction = chunk->code[offset];
@@ -62,7 +62,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   case OP_NOT:
     return simpleInstruction("OP_NOT", offset);
   default:
-    printf("Unknown opcode %d\n", instruction);
+    fprintf(stderr, "Unknown opcode %d\n", instruction);
     return offset + 1;
   }
 }

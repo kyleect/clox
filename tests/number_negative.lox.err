@@ -1,0 +1,11 @@
+== code ==
+0000    1 OP_CONSTANT         0 '12345'
+0002    | OP_NEGATE
+0003    | OP_RETURN
+          
+0000    1 OP_CONSTANT         0 '12345'
+          [ 12345 ]
+0002    | OP_NEGATE
+          [ -12345 ]
+0003    | OP_RETURN
+
