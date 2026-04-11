@@ -1,52 +1,113 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-bin="./build/clox"           # The application (from command arg)
-diff="diff -iad"   # Diff command, or what ever
+set -euo pipefail
 
-mkdir -p ./tests/.tmp
+BIN="${BIN:-./build/clox}"
+DIFF="diff -u"
 
-# An array, do not have to declare it, but is supposedly faster
-declare -a file_base=("add" "bool_false" "bool_true" "nil" "number" "number_negative" "string" "string_concat" "bool_equals" "string_equals" "string_equals_false" "not")
+UPDATE=0
+if [[ "${1:-}" == "--update" ]]; then
+    UPDATE=1
+fi
 
-# Loop the array
-for file in "${file_base[@]}"; do
-    # Padd file_base with suffixes
-    file_in="./tests/$file.in.lox"             # The in file
-    file_out_val="./tests/$file.out.expected"       # The out file to check against
-    file_out_tst="./tests/.tmp/$file.out.actual"   # The outfile from test application
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
 
-    # Validate infile exists (do the same for out validate file)
-    if [ ! -f "$file_in" ]; then
-        printf "In file %s is missing\n" "$file_in"
-        continue;
+PASS=0
+FAIL=0
+SKIP=0
+TOTAL=0
+
+run_test() {
+    local label="$1"
+    local expected="$2"
+    local actual="$3"
+
+    TOTAL=$((TOTAL + 1))
+
+    # Update mode
+    if [[ $UPDATE -eq 1 ]]; then
+        cp "$actual" "$expected"
+        echo "🔄 UPDATED: $label"
+        PASS=$((PASS + 1))
+        return
     fi
-    if [ ! -f "$file_out_val" ]; then
-        printf "Validation file %s is missing\n" "$file_out_val"
-        continue;
+
+    # Missing expected → skip
+    if [[ ! -f "$expected" ]]; then
+        echo "🟨 SKIP $label (missing $(basename "$expected"))"
+        SKIP=$((SKIP + 1))
+        return
     fi
 
-    printf "Test: %s\n" "$file_in"
-
-    # # Run application, redirect in file to app, and output to out file
-    "$bin" "$file_in" > "$file_out_tst"
-
-    # Execute diff
-    $diff "$file_out_tst" "$file_out_val"
-
-
-    # Check exit code from previous command (ie diff)
-    # We need to add this to a variable else we can't print it
-    # as it will be changed by the if [
-    # Iff not 0 then the files differ (at least with diff)
-    e_code=$?
-    if [ $e_code != 0 ]; then
-            printf "TEST FAIL : %d\n" "$e_code"
+    # Compare
+    if ! $DIFF "$expected" "$actual"; then
+        echo "❌ FAIL $label"
+        FAIL=$((FAIL + 1))
     else
-            printf "TEST OK!\n"
+        echo "✅ PASS $label"
+        PASS=$((PASS + 1))
+    fi
+}
+
+run_exit_test() {
+    local label="$1"
+    local expected="$2"
+    local actual_code="$3"
+
+    TOTAL=$((TOTAL + 1))
+
+    # Update mode
+    if [[ $UPDATE -eq 1 ]]; then
+        echo "$actual_code" > "$expected"
+        echo "🔄 UPDATED: $label"
+        PASS=$((PASS + 1))
+        return
     fi
 
-    printf "\n"
+    # Missing expected → skip
+    if [[ ! -f "$expected" ]]; then
+        echo "🟨 SKIP $label (missing $(basename "$expected"))"
+        SKIP=$((SKIP + 1))
+        return
+    fi
+
+    expected_code=$(cat "$expected")
+
+    if [[ "$actual_code" != "$expected_code" ]]; then
+        echo "❌ FAIL $label (got $actual_code, expected $expected_code)"
+        FAIL=$((FAIL + 1))
+    else
+        echo "✅ PASS $label"
+        PASS=$((PASS + 1))
+    fi
+}
+
+for file_in in ./tests/*.lox; do
+    base=$(basename "$file_in" .lox)
+
+    expected_out="./tests/$base.lox.out"
+    expected_err="./tests/$base.lox.err"
+    expected_exit="./tests/$base.lox.exit"
+
+    actual_out="$TMP_DIR/$base.lox.out"
+    actual_err="$TMP_DIR/$base.lox.err"
+
+    # Run CLI once per input
+    set +e
+    "$BIN" "$file_in" >"$actual_out" 2>"$actual_err"
+    exit_code=$?
+    set -e
+
+    # Treat each as independent tests
+    run_test      "[out]  $base" "$expected_out" "$actual_out"
+    run_test      "[err]  $base" "$expected_err" "$actual_err"
+    run_exit_test "[exit] $base" "$expected_exit" "$exit_code"
 done
 
-# Clean exit with status 0
-exit 0
+echo
+echo "Total: $TOTAL | Passed: $PASS | Failed: $FAIL | Skipped: $SKIP"
+
+if [[ $FAIL -ne 0 ]]; then
+    exit 1
+fi
