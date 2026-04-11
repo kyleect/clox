@@ -1,5 +1,8 @@
 cli := "build/clox"
 
+default:
+    just --list
+
 run *args: build
     ./{{ cli }} {{ args }}
 
