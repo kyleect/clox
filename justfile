@@ -14,8 +14,8 @@ build:
 clean:
     cd build && make clean
 
-test: build
-    ./tests.sh
+test *args: build
+    ./tests.sh {{ args }}
 
 docker-build:
     docker build -t clox .

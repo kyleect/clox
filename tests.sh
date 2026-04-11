@@ -6,9 +6,19 @@ BIN="${BIN:-./build/clox}"
 DIFF="diff -u"
 
 UPDATE=0
-if [[ "${1:-}" == "--update" ]]; then
-    UPDATE=1
-fi
+FILTER=""
+
+# Parse args (supports --update and optional filter)
+for arg in "$@"; do
+    case "$arg" in
+        --update)
+            UPDATE=1
+            ;;
+        *)
+            FILTER="$arg"
+            ;;
+    esac
+done
 
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
@@ -17,6 +27,16 @@ PASS=0
 FAIL=0
 SKIP=0
 TOTAL=0
+
+should_run() {
+    local name="$1"
+
+    if [[ -z "$FILTER" ]]; then
+        return 0
+    fi
+
+    [[ "$name" == *"$FILTER"* ]]
+}
 
 run_test() {
     local label="$1"
@@ -80,6 +100,11 @@ run_exit_test() {
 
 for file_in in ./tests/*.lox; do
     base=$(basename "$file_in" .lox)
+
+    # Apply filter
+    if ! should_run "$base"; then
+        continue
+    fi
 
     expected_out="./tests/$base.lox.out"
     expected_err="./tests/$base.lox.err"
