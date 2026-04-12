@@ -26,6 +26,10 @@ clean:
 test *args: build
     ./tests.sh {{ args }}
 
+# Update the test snapshots
+test-update: build
+    ./tests.sh --update
+
 # Build the docker image
 docker-build:
     docker build -t {{ docker_image }} .
