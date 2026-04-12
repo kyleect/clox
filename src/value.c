@@ -28,38 +28,45 @@ void freeValueArray(ValueArray *array) {
   initValueArray(array);
 }
 
-void printValue(Value value) {
+void valueToString(Value value, char *buffer, size_t size) {
   switch (value.type) {
   case VAL_BOOL:
-    printf(AS_BOOL(value) ? "true" : "false");
+    snprintf(buffer, size, "%s", AS_BOOL(value) ? "true" : "false");
     break;
   case VAL_NIL:
-    printf("nil");
+    snprintf(buffer, size, "nil");
     break;
   case VAL_NUMBER:
-    printf("%g", AS_NUMBER(value));
+    snprintf(buffer, size, "%g", AS_NUMBER(value));
     break;
   case VAL_OBJ:
-    printObject(value);
+    objectToString(value, buffer, size); // signal: handled elsewhere
     break;
   }
 }
 
-void printValueToErr(Value value) {
-  switch (value.type) {
-  case VAL_BOOL:
-    fprintf(stderr, AS_BOOL(value) ? "true" : "false");
-    break;
-  case VAL_NIL:
-    fprintf(stderr, "nil");
-    break;
-  case VAL_NUMBER:
-    fprintf(stderr, "%g", AS_NUMBER(value));
-    break;
-  case VAL_OBJ:
-    printObjectToErr(value);
-    break;
+void printValue(Value value) {
+  if (value.type == VAL_OBJ) {
+    printObject(value);
+    return;
   }
+
+  char buffer[VALUE_STRING_MAX];
+  valueToString(value, buffer, sizeof(buffer));
+
+  printf("%s", buffer);
+}
+
+void printValueToErr(Value value) {
+  if (value.type == VAL_OBJ) {
+    printObjectToErr(value);
+    return;
+  }
+
+  char buffer[VALUE_STRING_MAX];
+  valueToString(value, buffer, sizeof(buffer));
+
+  fprintf(stderr, "%s", buffer);
 }
 
 bool valuesEqual(Value a, Value b) {

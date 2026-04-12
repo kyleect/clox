@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+#define VALUE_STRING_MAX 128
+
 typedef struct Obj Obj;
 typedef struct ObjString ObjString;
 
@@ -42,6 +44,7 @@ void initValueArray(ValueArray *array);
 void writeValueArray(ValueArray *array, Value value);
 void freeValueArray(ValueArray *array);
 
+void valueToString(Value value, char *buffer, size_t size);
 void printValue(Value value);
 void printValueToErr(Value value);
 

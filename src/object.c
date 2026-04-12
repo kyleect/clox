@@ -63,6 +63,14 @@ ObjString *copyString(const char *chars, int length) {
   return allocateString(heapChars, length, hash);
 }
 
+void objectToString(Value value, char *buffer, size_t size) {
+  switch (OBJ_TYPE(value)) {
+  case OBJ_STRING:
+    snprintf(buffer, size, "%s", AS_CSTRING(value));
+    break;
+  }
+}
+
 void printObject(Value value) {
   switch (OBJ_TYPE(value)) {
   case OBJ_STRING:
