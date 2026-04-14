@@ -16,6 +16,18 @@ Run `just cmake` to generate make files for the project.
 
 Run `just build` to build to project in to `./build` folder.
 
+#### Definitions
+
+Different build definitions can be updated in [CMakeLists.txt](./CMakeLists.txt) run `just cmake && just build`.
+
+#### DEBUG_PRINT_CODE
+
+Setting `DEBUG_PRINT_CODE` will print disassembled bytecode.
+
+#### DEBUG_TRACE_EXECUTION
+
+Setting `DEBUG_TRACE_EXECUTION` will print execution trace logs.
+
 ### Test
 
 Run `just test` to run the tests in `./test` folder.
