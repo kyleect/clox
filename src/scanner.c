@@ -37,6 +37,8 @@ Scanner scanner;
  * Initialize the scanner's state
  */
 void initScanner(const char *source) {
+  TRACELN("scanner.initScanner()");
+
   scanner.start = source;
   scanner.current = source;
   scanner.line = 1;
@@ -46,12 +48,17 @@ void initScanner(const char *source) {
  * Advance scanner to the next character and return the associated token
  */
 Token scanToken() {
+  TRACELN(ANSI_COLOR_GREEN "scanner.scanToken()" ANSI_COLOR_RESET);
+
   skipWhitespace();
 
   scanner.start = scanner.current;
 
-  if (isAtEnd())
+  if (isAtEnd()) {
+    TRACELN(ANSI_COLOR_GREEN
+            "scanner.scanToken.isAtEnd = true" ANSI_COLOR_RESET);
     return makeToken(TOKEN_EOF);
+  }
 
   char c = advance();
 
@@ -105,9 +112,16 @@ static bool isAlpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
 
-static char peek() { return *scanner.current; }
+static char peek() {
+  char peeked = *scanner.current;
+
+  TRACELN("scanner.peek() -> '%c'", peeked);
+
+  return peeked;
+}
 
 static char advance() {
+  TRACELN("scanner.advance()");
   scanner.current++;
   return scanner.current[-1];
 }
@@ -115,12 +129,15 @@ static char advance() {
 static bool isAtEnd() { return *scanner.current == '\0'; }
 
 static char peekNext() {
+  TRACELN("scanner.peekNext()");
   if (isAtEnd())
     return '\0';
   return scanner.current[1];
 }
 
 static bool match(char expected) {
+  TRACELN("scanner.peak(%s)", &expected);
+
   if (isAtEnd())
     return false;
   if (*scanner.current != expected)
@@ -130,6 +147,9 @@ static bool match(char expected) {
 }
 
 static Token makeToken(TokenType type) {
+  const char *typeString = tokenTypeToString(type);
+  TRACELN("scanner.makeToken() -> %s", typeString);
+
   Token token;
   token.type = type;
   token.start = scanner.start;
@@ -139,6 +159,7 @@ static Token makeToken(TokenType type) {
 }
 
 static Token errorToken(const char *message) {
+  TRACELN("errorToken() -> %s", message);
   Token token;
   token.type = TOKEN_ERROR;
   token.start = message;
@@ -209,12 +230,16 @@ static TokenType identifierType() {
 }
 
 static Token identifier() {
+  TRACELN("scanner.identifier()");
+
   while (isAlpha(peek()) || isDigit(peek()))
     advance();
   return makeToken(identifierType());
 }
 
 static Token number() {
+  TRACELN("scanner.number()");
+
   while (isDigit(peek()))
     advance();
 
@@ -231,6 +256,8 @@ static Token number() {
 }
 
 static Token string() {
+  TRACELN("scanner.string()");
+
   while (peek() != '"' && !isAtEnd()) {
     if (peek() == '\n')
       scanner.line++;
@@ -246,6 +273,8 @@ static Token string() {
 }
 
 static void skipWhitespace() {
+  TRACELN("scanner.skipWhitespace()");
+
   for (;;) {
     char c = peek();
     switch (c) {
@@ -269,5 +298,92 @@ static void skipWhitespace() {
     default:
       return;
     }
+  }
+}
+
+const char *tokenTypeToString(TokenType type) {
+  switch (type) {
+  case TOKEN_LEFT_PAREN:
+    return "TOKEN_LEFT_PAREN";
+  case TOKEN_RIGHT_PAREN:
+    return "TOKEN_RIGHT_PAREN";
+  case TOKEN_LEFT_BRACE:
+    return "TOKEN_LEFT_BRACE";
+  case TOKEN_RIGHT_BRACE:
+    return "TOKEN_RIGHT_BRACE";
+  case TOKEN_COMMA:
+    return "TOKEN_COMMA";
+  case TOKEN_DOT:
+    return "TOKEN_DOT";
+  case TOKEN_MINUS:
+    return "TOKEN_MINUS";
+  case TOKEN_PLUS:
+    return "TOKEN_PLUS";
+  case TOKEN_SEMICOLON:
+    return "TOKEN_SEMICOLON";
+  case TOKEN_SLASH:
+    return "TOKEN_SLASH";
+  case TOKEN_STAR:
+    return "TOKEN_STAR";
+  case TOKEN_BANG:
+    return "TOKEN_BANG";
+  case TOKEN_BANG_EQUAL:
+    return "TOKEN_BANG_EQUAL";
+  case TOKEN_EQUAL:
+    return "TOKEN_EQUAL";
+  case TOKEN_EQUAL_EQUAL:
+    return "TOKEN_EQUAL_EQUAL";
+  case TOKEN_GREATER:
+    return "TOKEN_GREATER";
+  case TOKEN_GREATER_EQUAL:
+    return "TOKEN_GREATER_EQUAL";
+  case TOKEN_LESS:
+    return "TOKEN_LESS";
+  case TOKEN_LESS_EQUAL:
+    return "TOKEN_LESS_EQUAL";
+  case TOKEN_IDENTIFIER:
+    return "TOKEN_IDENTIFIER";
+  case TOKEN_STRING:
+    return "TOKEN_STRING";
+  case TOKEN_NUMBER:
+    return "TOKEN_NUMBER";
+  case TOKEN_AND:
+    return "TOKEN_AND";
+  case TOKEN_CLASS:
+    return "TOKEN_CLASS";
+  case TOKEN_ELSE:
+    return "TOKEN_ELSE";
+  case TOKEN_FALSE:
+    return "TOKEN_FALSE";
+  case TOKEN_FOR:
+    return "TOKEN_FOR";
+  case TOKEN_FUN:
+    return "TOKEN_FUN";
+  case TOKEN_IF:
+    return "TOKEN_IF";
+  case TOKEN_NIL:
+    return "TOKEN_NIL";
+  case TOKEN_OR:
+    return "TOKEN_OR";
+  case TOKEN_PRINT:
+    return "TOKEN_PRINT";
+  case TOKEN_RETURN:
+    return "TOKEN_RETURN";
+  case TOKEN_SUPER:
+    return "TOKEN_SUPER";
+  case TOKEN_THIS:
+    return "TOKEN_THIS";
+  case TOKEN_TRUE:
+    return "TOKEN_TRUE";
+  case TOKEN_VAR:
+    return "TOKEN_VAR";
+  case TOKEN_WHILE:
+    return "TOKEN_WHILE";
+  case TOKEN_ERROR:
+    return "TOKEN_ERROR";
+  case TOKEN_EOF:
+    return "TOKEN_EOF";
+  default:
+    return "UNKNOWN TOKEN";
   }
 }

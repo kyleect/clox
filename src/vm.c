@@ -18,6 +18,8 @@ static void concatenate();
 VM vm;
 
 InterpretResult interpret(const char *source) {
+  TRACELN("vm.interpret()");
+
   Chunk chunk;
   initChunk(&chunk);
 
@@ -32,6 +34,8 @@ InterpretResult interpret(const char *source) {
   InterpretResult result = run();
 
   freeChunk(&chunk);
+
+  TRACELN("vm.interpret() ending");
   return result;
 }
 
@@ -51,12 +55,14 @@ static void runtimeError(const char *format, ...) {
 }
 
 void initVM() {
+  TRACELN("vm.initVM()");
   resetStack();
   vm.objects = NULL;
   initTable(&vm.strings);
 }
 
 void freeVM() {
+  TRACELN("vm.freeVM()");
   freeTable(&vm.strings);
   freeObjects();
 }
@@ -104,6 +110,8 @@ static InterpretResult run() {
     double a = AS_NUMBER(pop());                                               \
     push(valueType(a op b));                                                   \
   } while (false)
+
+  TRACELN("vm.run()");
 
   for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
@@ -169,7 +177,7 @@ static InterpretResult run() {
       break;
     case OP_RETURN: {
       printValue(pop());
-      fprintf(stderr, "\n");
+      TRACELN("");
       return INTERPRET_OK;
     }
     case OP_EQUAL: {

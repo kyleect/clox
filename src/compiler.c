@@ -7,7 +7,6 @@
 #include "common.h"
 #include "object.h"
 #include "scanner.h"
-#include "vm.h"
 
 #ifdef DEBUG_PRINT_CODE
 #include "debug.h"
@@ -26,6 +25,8 @@ Chunk *compilingChunk;
  * Compile source code in to a bytecode chunk for the VM
  */
 bool compile(const char *source, Chunk *chunk) {
+  TRACELN("compiler.compile()");
+
   initScanner(source);
   compilingChunk = chunk;
 
@@ -52,17 +53,18 @@ static void errorAt(Token *token, const char *message) {
 
   parser.hadError = true;
 
-  fprintf(stderr, "[line %d] Error", token->line);
+  TRACE("[line %d] Error", token->line);
 
   if (token->type == TOKEN_EOF) {
-    fprintf(stderr, " at end");
+    TRACE(" at end");
   } else if (token->type == TOKEN_ERROR) {
     // Nothing.
   } else {
-    fprintf(stderr, " at '%.*s'", token->length, token->start);
+    TRACE(" at '%.*s' (%s)", token->length, token->start,
+          tokenTypeToString(token->type));
   }
 
-  fprintf(stderr, ": %s\n", message);
+  TRACELN(": %s", message);
   parser.hadError = true;
 }
 
@@ -73,6 +75,8 @@ static void errorAtCurrent(const char *message) {
 }
 
 static void advance() {
+  TRACELN(ANSI_COLOR_YELLOW "compiler.advance()" ANSI_COLOR_RESET);
+
   parser.previous = parser.current;
 
   for (;;) {
@@ -86,6 +90,8 @@ static void advance() {
 }
 
 static void parsePrecedence(Precedence precedence) {
+  TRACELN("\ncompiler.parsePrecedence()");
+
   advance();
   ParseFn prefixRule = getRule(parser.previous.type)->prefix;
   if (prefixRule == NULL) {
@@ -100,10 +106,15 @@ static void parsePrecedence(Precedence precedence) {
     ParseFn infixRule = getRule(parser.previous.type)->infix;
     infixRule();
   }
+
+  TRACELN("compiler.parsePrecedence() end\n");
 }
 
 static void consume(TokenType type, const char *message) {
+  TRACELN("compiler.consume(%s)\n", tokenTypeToString(type));
+
   if (parser.current.type == type) {
+    TRACELN("compiler.consume matches = true");
     advance();
     return;
   }
@@ -111,7 +122,11 @@ static void consume(TokenType type, const char *message) {
   errorAtCurrent(message);
 }
 
-static void expression() { parsePrecedence(PREC_ASSIGNMENT); }
+static void expression() {
+  TRACELN("compiler.expression()");
+
+  parsePrecedence(PREC_ASSIGNMENT);
+}
 
 static void grouping() {
   expression();
@@ -189,6 +204,8 @@ static void unary() {
 }
 
 static uint8_t makeConstant(Value value) {
+  TRACELN("compiler.makeConstant()");
+
   int constant = addConstantToChunk(currentChunk(), value);
   if (constant > UINT8_MAX) {
     error("Too many constants in one chunk.");
@@ -199,15 +216,21 @@ static uint8_t makeConstant(Value value) {
 }
 
 static void emitConstant(Value value) {
+  TRACELN("compiler.emitConstant()");
+
   emitBytes(OP_CONSTANT, makeConstant(value));
 }
 
 static void number() {
+  TRACELN("compiler.number()");
+
   double value = strtod(parser.previous.start, NULL);
   emitConstant(NUMBER_VAL(value));
 }
 
 static void string() {
+  TRACELN("compiler.string()");
+
   emitConstant(OBJ_VAL(
       copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
@@ -260,6 +283,8 @@ static ParseRule *getRule(TokenType type) { return &rules[type]; }
 static void emitReturn() { emitByte(OP_RETURN); }
 
 static void endCompiler() {
+  TRACELN("compiler.endCompiler()");
+
   emitReturn();
 
 #ifdef DEBUG_PRINT_CODE
