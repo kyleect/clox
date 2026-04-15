@@ -7,8 +7,8 @@ project(clox LANGUAGES C)
 
 file(GLOB SRC_FILES CONFIGURE_DEPENDS src/*.c)
 
-# -DDEBUG_TRACE_EXECUTION for trace logging
-# -DDEBUG_PRINT_CODE for disassembled bytecode
-add_definitions()
-
 add_executable(clox ${SRC_FILES})
+# target_compile_definitions(clox PRIVATE DEBUG_TRACE_EXECUTION)
+
+add_executable(clox-test ${SRC_FILES})
+target_compile_definitions(clox-test PRIVATE DEBUG_PRINT_CODE)

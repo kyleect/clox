@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-BIN="${BIN:-./build/clox}"
+BIN="${BIN:-./build/clox-test}"
 DIFF="diff -u"
 
 UPDATE=0
