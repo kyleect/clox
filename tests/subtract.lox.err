@@ -1,0 +1,6 @@
+== code ==
+0000    1 OP_CONSTANT         0 '0'
+0002    | OP_CONSTANT         1 '10'
+0004    | OP_SUBTRACT
+0005    | OP_PRINT
+0006    | OP_RETURN
