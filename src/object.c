@@ -54,8 +54,12 @@ ObjString *copyString(const char *chars, int length) {
   uint32_t hash = hashString(chars, length);
 
   ObjString *interned = tableFindString(&vm.strings, chars, length, hash);
-  if (interned != NULL)
+  if (interned != NULL) {
+    TRACELN("object.copyString() found interned string");
     return interned;
+  } else {
+    TRACELN("object.copyString() not interned string");
+  }
 
   char *heapChars = ALLOCATE(char, length + 1);
   memcpy(heapChars, chars, length);

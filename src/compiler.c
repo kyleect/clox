@@ -231,8 +231,10 @@ static void number() {
 static void string() {
   TRACELN("compiler.string()");
 
-  emitConstant(OBJ_VAL(
-      copyString(parser.previous.start + 1, parser.previous.length - 2)));
+  const char *chars = parser.previous.start + 1;
+  int length = parser.previous.length - 2;
+
+  emitConstant(OBJ_VAL(copyString(chars, length)));
 }
 
 ParseRule rules[] = {
