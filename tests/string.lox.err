@@ -1,3 +1,4 @@
 == code ==
 0000    1 OP_CONSTANT         0 'Hello World'
-0002    | OP_RETURN
+0002    | OP_PRINT
+0003    | OP_RETURN
