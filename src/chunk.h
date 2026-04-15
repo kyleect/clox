@@ -18,6 +18,7 @@ typedef enum {
   OP_RETURN,
   OP_EQUAL,
   OP_NOT,
+  OP_POP,
 } OpCode;
 
 typedef struct {

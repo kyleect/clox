@@ -189,6 +189,9 @@ static InterpretResult run() {
       push(BOOL_VAL(valuesEqual(a, b)));
       break;
     }
+    case OP_POP:
+      pop();
+      break;
     }
   }
 

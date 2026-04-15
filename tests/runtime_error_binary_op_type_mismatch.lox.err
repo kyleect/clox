@@ -1,0 +1,8 @@
+== code ==
+0000    1 OP_CONSTANT         0 'Hello'
+0002    | OP_CONSTANT         1 '10'
+0004    | OP_ADD
+0005    | OP_POP
+0006    | OP_RETURN
+Operands must be two numbers or two strings.
+[line 1] in script

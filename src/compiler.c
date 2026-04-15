@@ -14,11 +14,13 @@
 
 static void advance();
 static void expression();
+static void expressionStatement();
 static void consume(TokenType type, const char *message);
 static ParseRule *getRule(TokenType type);
 static bool match(TokenType type);
 static void statement();
 static void printStatement();
+static void synchronize();
 static void declaration();
 static void emitByte(uint8_t byte);
 static void endCompiler();
@@ -49,11 +51,18 @@ bool compile(const char *source, Chunk *chunk) {
   return !parser.hadError;
 }
 
-static void declaration() { statement(); }
+static void declaration() {
+  statement();
+
+  if (parser.panicMode)
+    synchronize();
+}
 
 static void statement() {
   if (match(TOKEN_PRINT)) {
     printStatement();
+  } else {
+    expressionStatement();
   }
 }
 
@@ -152,10 +161,42 @@ static void expression() {
   parsePrecedence(PREC_ASSIGNMENT);
 }
 
+static void expressionStatement() {
+  TRACELN("compiler.expressionStatement()");
+
+  expression();
+  consume(TOKEN_SEMICOLON, "Expect ';' after expression.");
+  emitByte(OP_POP);
+}
+
 static void printStatement() {
   expression();
   consume(TOKEN_SEMICOLON, "Expect ';' after value.");
   emitByte(OP_PRINT);
+}
+
+static void synchronize() {
+  parser.panicMode = false;
+
+  while (parser.current.type != TOKEN_EOF) {
+    if (parser.previous.type == TOKEN_SEMICOLON)
+      return;
+    switch (parser.current.type) {
+    case TOKEN_CLASS:
+    case TOKEN_FUN:
+    case TOKEN_VAR:
+    case TOKEN_FOR:
+    case TOKEN_IF:
+    case TOKEN_WHILE:
+    case TOKEN_PRINT:
+    case TOKEN_RETURN:
+      return;
+
+    default:; // Do nothing.
+    }
+
+    advance();
+  }
 }
 
 static void grouping() {
