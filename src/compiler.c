@@ -13,7 +13,11 @@
 #endif
 
 static void advance();
+static uint8_t identifierConstant(Token *name);
+static uint8_t parseVariable(const char *errorMessage);
+static void defineVariable(uint8_t global);
 static void expression();
+static void varDeclaration();
 static void expressionStatement();
 static void consume(TokenType type, const char *message);
 static ParseRule *getRule(TokenType type);
@@ -22,7 +26,9 @@ static void statement();
 static void printStatement();
 static void synchronize();
 static void declaration();
+static uint8_t makeConstant(Value value);
 static void emitByte(uint8_t byte);
+static void emitBytes(uint8_t byte1, uint8_t byte2);
 static void endCompiler();
 
 Parser parser;
@@ -52,7 +58,11 @@ bool compile(const char *source, Chunk *chunk) {
 }
 
 static void declaration() {
-  statement();
+  if (match(TOKEN_VAR)) {
+    varDeclaration();
+  } else {
+    statement();
+  }
 
   if (parser.panicMode)
     synchronize();
@@ -134,6 +144,22 @@ static void parsePrecedence(Precedence precedence) {
   TRACELN("compiler.parsePrecedence() end\n");
 }
 
+static uint8_t identifierConstant(Token *name) {
+  TRACELN("compiler.identifierConstant(%s)", tokenTypeToString(*name));
+  return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
+}
+
+static uint8_t parseVariable(const char *errorMessage) {
+  TRACELN("compiler.parseVariable()");
+
+  consume(TOKEN_IDENTIFIER, errorMessage);
+  return identifierConstant(&parser.previous);
+}
+
+static void defineVariable(uint8_t global) {
+  emitBytes(OP_DEFINE_GLOBAL, global);
+}
+
 static void consume(TokenType type, const char *message) {
   TRACELN("compiler.consume(%s)\n", tokenTypeToString(type));
 
@@ -159,6 +185,19 @@ static void expression() {
   TRACELN("compiler.expression()");
 
   parsePrecedence(PREC_ASSIGNMENT);
+}
+
+static void varDeclaration() {
+  uint8_t global = parseVariable("Expect variable name.");
+
+  if (match(TOKEN_EQUAL)) {
+    expression();
+  } else {
+    emitByte(OP_NIL);
+  }
+  consume(TOKEN_SEMICOLON, "Expect ';' after variable declaration.");
+
+  defineVariable(global);
 }
 
 static void expressionStatement() {
@@ -308,6 +347,16 @@ static void string() {
   emitConstant(OBJ_VAL(copyString(chars, length)));
 }
 
+static void namedVariable(Token name) {
+  uint8_t arg = identifierConstant(&name);
+  emitBytes(OP_GET_GLOBAL, arg);
+}
+
+static void variable() {
+  TRACELN("compiler.variable()");
+  namedVariable(parser.previous);
+}
+
 ParseRule rules[] = {
     [TOKEN_LEFT_PAREN] = {grouping, NULL, PREC_NONE},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
@@ -328,7 +377,7 @@ ParseRule rules[] = {
     [TOKEN_GREATER_EQUAL] = {NULL, NULL, PREC_NONE},
     [TOKEN_LESS] = {NULL, NULL, PREC_NONE},
     [TOKEN_LESS_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_IDENTIFIER] = {NULL, NULL, PREC_NONE},
+    [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
     [TOKEN_STRING] = {string, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
     [TOKEN_AND] = {NULL, NULL, PREC_NONE},
