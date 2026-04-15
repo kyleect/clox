@@ -63,8 +63,6 @@ static void runFile(const char *path) {
   free(source);
 
   if (result == INTERPRET_COMPILE_ERROR) {
-    fprintf(stderr, "Compiler Error"
-                    "\n");
     exit(65);
   }
 

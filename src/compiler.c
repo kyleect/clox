@@ -87,18 +87,18 @@ static void errorAt(Token *token, const char *message) {
 
   parser.hadError = true;
 
-  TRACE("[line %d] Error", token->line);
+  fprintf(stderr, "[line %d] Error", token->line);
 
   if (token->type == TOKEN_EOF) {
-    TRACE(" at end");
+    fprintf(stderr, " at end");
   } else if (token->type == TOKEN_ERROR) {
     // Nothing.
   } else {
-    TRACE(" at '%.*s' (%s)", token->length, token->start,
-          tokenTypeToString(token->type));
+    fprintf(stderr, " at '%.*s' (%s)", token->length, token->start,
+            tokenTypeToString(token->type));
   }
 
-  TRACELN(": %s", message);
+  fprintf(stderr, ": %s\n", message);
   parser.hadError = true;
 }
 
@@ -145,7 +145,6 @@ static void parsePrecedence(Precedence precedence) {
 }
 
 static uint8_t identifierConstant(Token *name) {
-  TRACELN("compiler.identifierConstant(%s)", tokenTypeToString(*name));
   return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
 }
 
