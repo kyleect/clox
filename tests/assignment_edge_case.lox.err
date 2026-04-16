@@ -1,0 +1,2 @@
+[line 6] Error at '=' (TOKEN_EQUAL): Invalid assignment target.
+[line 6] Error at 'c' (TOKEN_IDENTIFIER): Expect ';' after expression.
