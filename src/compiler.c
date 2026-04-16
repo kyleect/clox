@@ -301,10 +301,8 @@ static void literal(bool canAssign) {
 static void unary(bool canAssign) {
   TokenType operatorType = parser.previous.type;
 
-  // Compile the operand.
   parsePrecedence(PREC_UNARY);
 
-  // Emit the operator instruction.
   switch (operatorType) {
   case TOKEN_BANG:
     emitByte(OP_NOT);
@@ -313,7 +311,7 @@ static void unary(bool canAssign) {
     emitByte(OP_NEGATE);
     break;
   default:
-    return; // Unreachable.
+    return;
   }
 }
 
