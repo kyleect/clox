@@ -1,0 +1,7 @@
+== code ==
+0000    1 OP_TRUE
+0001    | OP_JUMP_IF_FALSE    1 -> 6
+0004    | OP_POP
+0005    | OP_FALSE
+0006    | OP_PRINT
+0007    2 OP_RETURN

@@ -1,0 +1,5 @@
+if (true) {
+    print "Hello";
+}
+
+print "World";

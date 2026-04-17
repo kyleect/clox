@@ -1,0 +1,6 @@
+var cond = true;
+
+while (cond) {
+    cond = !cond;
+    print "Hello World";
+}
