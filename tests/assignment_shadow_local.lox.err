@@ -1,8 +1,9 @@
-== code ==
+== <script> ==
 0000    2 OP_CONSTANT         0 '123'
 0002    3 OP_CONSTANT         1 '456'
-0004    5 OP_GET_LOCAL        1
+0004    5 OP_GET_LOCAL        2
 0006    | OP_PRINT
 0007    6 OP_POP
 0008    | OP_POP
-0009    | OP_RETURN
+0009    | OP_NIL
+0010    | OP_RETURN

@@ -1,6 +1,7 @@
-== code ==
+== <script> ==
 0000    1 OP_CONSTANT         0 '10'
 0002    | OP_CONSTANT         1 '2'
 0004    | OP_DIVIDE
 0005    | OP_PRINT
-0006    | OP_RETURN
+0006    | OP_NIL
+0007    | OP_RETURN

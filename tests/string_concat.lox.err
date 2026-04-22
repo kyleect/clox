@@ -1,8 +1,9 @@
-== code ==
+== <script> ==
 0000    1 OP_CONSTANT         0 'Hello'
 0002    | OP_CONSTANT         1 ' '
 0004    | OP_ADD
 0005    | OP_CONSTANT         2 'World'
 0007    | OP_ADD
 0008    | OP_PRINT
-0009    | OP_RETURN
+0009    | OP_NIL
+0010    | OP_RETURN

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "assert.h"
 #include "common.h"
 
 typedef struct {
@@ -59,6 +60,8 @@ Token scanToken() {
             "scanner.scanToken.isAtEnd = true" ANSI_COLOR_RESET);
     return makeToken(TOKEN_EOF);
   }
+
+  assert(*scanner.current != '\0');
 
   char c = advance();
 
@@ -122,6 +125,8 @@ static char peek() {
 
 static char advance() {
   TRACELN("scanner.advance()");
+  if (isAtEnd())
+    return '\0';
   scanner.current++;
   return scanner.current[-1];
 }
@@ -130,13 +135,13 @@ static bool isAtEnd() { return *scanner.current == '\0'; }
 
 static char peekNext() {
   TRACELN("scanner.peekNext()");
-  if (isAtEnd())
+  if (isAtEnd() || scanner.current[1] == '\0')
     return '\0';
   return scanner.current[1];
 }
 
 static bool match(char expected) {
-  TRACELN("scanner.peak(%s)", &expected);
+  TRACELN("scanner.match(%s)", &expected);
 
   if (isAtEnd())
     return false;
@@ -148,12 +153,20 @@ static bool match(char expected) {
 
 static Token makeToken(TokenType type) {
   const char *typeString = tokenTypeToString(type);
-  TRACELN("scanner.makeToken() -> %s", typeString);
+
+  char *start = scanner.start;
+  int length = (int)(scanner.current - scanner.start);
+
+  if (type == TOKEN_IDENTIFIER) {
+    TRACELN("scanner.makeToken() -> %s = '%.*s'", typeString, length, start);
+  } else {
+    TRACELN("scanner.makeToken() -> %s", typeString);
+  }
 
   Token token;
   token.type = type;
-  token.start = scanner.start;
-  token.length = (int)(scanner.current - scanner.start);
+  token.start = start;
+  token.length = length;
   token.line = scanner.line;
   return token;
 }
@@ -273,7 +286,7 @@ static Token string() {
 }
 
 static void skipWhitespace() {
-  TRACELN("scanner.skipWhitespace()");
+  TRACELN("\nscanner.skipWhitespace()\n");
 
   for (;;) {
     char c = peek();

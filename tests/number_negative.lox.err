@@ -1,5 +1,6 @@
-== code ==
+== <script> ==
 0000    1 OP_CONSTANT         0 '12345'
 0002    | OP_NEGATE
 0003    | OP_PRINT
-0004    | OP_RETURN
+0004    | OP_NIL
+0005    | OP_RETURN

@@ -18,6 +18,7 @@ static uint8_t identifierConstant(Token *name);
 static uint8_t parseVariable(const char *errorMessage);
 static void defineVariable(uint8_t global);
 static void expression();
+static bool check(TokenType type);
 static void varDeclaration();
 static void expressionStatement();
 static void consume(TokenType type, const char *message);
@@ -30,7 +31,7 @@ static void declaration();
 static uint8_t makeConstant(Value value);
 static void emitByte(uint8_t byte);
 static void emitBytes(uint8_t byte1, uint8_t byte2);
-static void endCompiler();
+static ObjFunction *endCompiler();
 static void beginScope();
 static void block();
 static void ifStatement();
@@ -39,30 +40,46 @@ static int emitJump(uint8_t instruction);
 static void whileStatement();
 static void emitLoop(int loopStart);
 static void forStatement();
+static void funDeclaration();
+static void returnStatement();
+static void emitReturn();
 static void endScope();
 
 Parser parser;
 Chunk *compilingChunk;
 Compiler *current = NULL;
 
-static void initCompiler(Compiler *compiler) {
-  TRACELN("compiler.initCompiler()");
+static void initCompiler(Compiler *compiler, FunctionType functionType) {
+  TRACELN("  compiler.initCompiler()");
+  compiler->enclosing = current;
+  compiler->function = NULL;
+  compiler->type = functionType;
   compiler->localCount = 0;
   compiler->scopeDepth = 0;
+  compiler->function = newFunction();
   current = compiler;
+
+  if (functionType != TYPE_SCRIPT) {
+    current->function->name =
+        copyString(parser.previous.start, parser.previous.length);
+  }
+
+  Local *local = &current->locals[current->localCount++];
+  local->depth = 0;
+  local->name.start = "";
+  local->name.length = 0;
 }
 
 /**
  * Compile source code in to a bytecode chunk for the VM
  */
-bool compile(const char *source, Chunk *chunk) {
-  TRACELN("compiler.compile()");
-
-  Compiler compiler;
-  initCompiler(&compiler);
+ObjFunction *compile(const char *source) {
+  TRACELN("  compiler.compile()");
 
   initScanner(source);
-  compilingChunk = chunk;
+
+  Compiler compiler;
+  initCompiler(&compiler, TYPE_SCRIPT);
 
   parser.hadError = false;
   parser.panicMode = false;
@@ -73,13 +90,16 @@ bool compile(const char *source, Chunk *chunk) {
     declaration();
   }
 
-  endCompiler();
+  ObjFunction *function = endCompiler();
 
-  return !parser.hadError;
+  return parser.hadError ? NULL : function;
 }
 
 static void declaration() {
-  if (match(TOKEN_VAR)) {
+  TRACELN("  compiler.declaration()");
+  if (match(TOKEN_FUN)) {
+    funDeclaration();
+  } else if (match(TOKEN_VAR)) {
     varDeclaration();
   } else {
     statement();
@@ -90,12 +110,16 @@ static void declaration() {
 }
 
 static void statement() {
+  TRACELN("  compiler.statement()");
+
   if (match(TOKEN_PRINT)) {
     printStatement();
   } else if (match(TOKEN_FOR)) {
     forStatement();
   } else if (match(TOKEN_IF)) {
     ifStatement();
+  } else if (match(TOKEN_RETURN)) {
+    returnStatement();
   } else if (match(TOKEN_WHILE)) {
     whileStatement();
   } else if (match(TOKEN_LEFT_BRACE)) {
@@ -110,7 +134,7 @@ static void statement() {
 /**
  * Get the current chunk being compiled
  */
-static Chunk *currentChunk() { return compilingChunk; }
+static Chunk *currentChunk() { return &current->function->chunk; }
 
 static void errorAt(Token *token, const char *message) {
   if (parser.panicMode)
@@ -140,7 +164,7 @@ static void errorAtCurrent(const char *message) {
 }
 
 static void advance() {
-  TRACELN(ANSI_COLOR_YELLOW "compiler.advance()" ANSI_COLOR_RESET);
+  // TRACELN(ANSI_COLOR_YELLOW "compiler.advance()" ANSI_COLOR_RESET);
 
   parser.previous = parser.current;
 
@@ -155,7 +179,7 @@ static void advance() {
 }
 
 static void parsePrecedence(Precedence precedence) {
-  TRACELN("\ncompiler.parsePrecedence()");
+  TRACELN("  compiler.parsePrecedence(%d)", precedence);
 
   advance();
   ParseFn prefixRule = getRule(parser.previous.type)->prefix;
@@ -177,7 +201,7 @@ static void parsePrecedence(Precedence precedence) {
     error("Invalid assignment target.");
   }
 
-  TRACELN("compiler.parsePrecedence() end\n");
+  TRACELN("  compiler.parsePrecedence() end");
 }
 
 static uint8_t identifierConstant(Token *name) {
@@ -191,16 +215,20 @@ static bool identifiersEqual(Token *a, Token *b) {
 }
 
 static int resolveLocal(Compiler *compiler, Token *name) {
-  TRACELN("compiler.resolveLocal() %s", tokenTypeToString(name->type));
   for (int i = compiler->localCount - 1; i >= 0; i--) {
     Local *local = &compiler->locals[i];
     if (identifiersEqual(name, &local->name)) {
       if (local->depth == -1) {
         error("Can't read local variable in its own initializer");
       }
+
+      TRACELN("  compiler.resolveLocal() -> Found local %d", i);
+
       return i;
     }
   }
+
+  TRACELN("  compiler.resolveLocal() -> Could not find local");
 
   return -1;
 }
@@ -221,6 +249,7 @@ static void declareVariable() {
     return;
 
   Token *name = &parser.previous;
+  TRACELN("  compiler.declareVariable() -> %s", AS_CSTRING(OBJ_VAL(name)));
   addLocal(*name);
 }
 
@@ -234,7 +263,7 @@ static void and_(bool canAssign) {
 }
 
 static uint8_t parseVariable(const char *errorMessage) {
-  TRACELN("compiler.parseVariable()");
+  TRACELN("  compiler.parseVariable()");
 
   consume(TOKEN_IDENTIFIER, errorMessage);
 
@@ -246,10 +275,14 @@ static uint8_t parseVariable(const char *errorMessage) {
 }
 
 static void markInitialized() {
+  if (current->scopeDepth == 0)
+    return;
   current->locals[current->localCount - 1].depth = current->scopeDepth;
 }
 
 static void defineVariable(uint8_t global) {
+  TRACELN("  compiler.defineVariable()");
+
   if (current->scopeDepth > 0) {
     markInitialized();
     return;
@@ -259,15 +292,35 @@ static void defineVariable(uint8_t global) {
 }
 
 static void consume(TokenType type, const char *message) {
-  TRACELN("compiler.consume(%s)\n", tokenTypeToString(type));
+  TRACELN("  compiler.consume(%s)", tokenTypeToString(type));
 
   if (parser.current.type == type) {
-    TRACELN("compiler.consume matches = true");
+    TRACELN("  compiler.consume matches = true");
     advance();
     return;
   }
 
   errorAtCurrent(message);
+}
+
+static uint8_t argumentList() {
+  TRACELN("  compiler.argumentList()");
+
+  uint8_t argCount = 0;
+
+  if (!check(TOKEN_RIGHT_PAREN)) {
+    do {
+      expression();
+      if (argCount == 255) {
+        error("Can't have more than 255 arguments.");
+      }
+      argCount++;
+    } while (match(TOKEN_COMMA));
+  }
+
+  consume(TOKEN_RIGHT_PAREN, "Expect ')' after arguments.");
+
+  return argCount;
 }
 
 static bool check(TokenType type) { return parser.current.type == type; }
@@ -280,12 +333,14 @@ static bool match(TokenType type) {
 }
 
 static void expression() {
-  TRACELN("compiler.expression()");
+  TRACELN("  compiler.expression()");
 
   parsePrecedence(PREC_ASSIGNMENT);
 }
 
 static void block() {
+  TRACELN("  compiler.block()");
+
   while (!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) {
     declaration();
   }
@@ -293,7 +348,49 @@ static void block() {
   consume(TOKEN_RIGHT_BRACE, "Expect '}' after block.");
 }
 
+static void function(FunctionType type) {
+  TRACELN("  compiler.function()");
+  Compiler compiler;
+  initCompiler(&compiler, type);
+  beginScope();
+
+  consume(TOKEN_LEFT_PAREN, "Expect '(' after function name.");
+
+  if (!check(TOKEN_RIGHT_PAREN)) {
+    do {
+      current->function->arity++;
+      if (current->function->arity > 255) {
+        errorAtCurrent("Can't have more than 255 parameters.");
+      }
+
+      uint8_t constant = parseVariable("Expect parameter name.");
+
+      defineVariable(constant);
+    } while (match(TOKEN_COMMA));
+  }
+
+  consume(TOKEN_RIGHT_PAREN, "Expect ')' after parameters.");
+  consume(TOKEN_LEFT_BRACE, "Expect '{' before function body.");
+  block();
+
+  TRACELN("  compiler.function() end");
+
+  ObjFunction *function = endCompiler();
+  emitBytes(OP_CONSTANT, makeConstant(OBJ_VAL(function)));
+}
+
+static void funDeclaration() {
+  TRACELN("  compiler.funDeclaration()");
+
+  uint8_t global = parseVariable("Expected function name");
+  markInitialized();
+  function(TYPE_FUNCTION);
+  defineVariable(global);
+}
+
 static void varDeclaration() {
+  TRACELN("  compiler.varDeclaration()");
+
   uint8_t global = parseVariable("Expect variable name.");
 
   if (match(TOKEN_EQUAL)) {
@@ -307,7 +404,7 @@ static void varDeclaration() {
 }
 
 static void expressionStatement() {
-  TRACELN("compiler.expressionStatement()");
+  TRACELN("  compiler.expressionStatement()");
 
   expression();
   consume(TOKEN_SEMICOLON, "Expect ';' after expression.");
@@ -315,6 +412,8 @@ static void expressionStatement() {
 }
 
 static void forStatement() {
+  TRACELN("  compiler.forStatement()");
+
   beginScope();
 
   consume(TOKEN_LEFT_PAREN, "Expect '(' after 'for'.");
@@ -363,6 +462,8 @@ static void forStatement() {
 }
 
 static void ifStatement() {
+  TRACELN("  compiler.ifStatement()");
+
   consume(TOKEN_LEFT_PAREN, "Expect '(' after 'if'.");
   expression();
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
@@ -383,14 +484,32 @@ static void ifStatement() {
 }
 
 static void printStatement() {
-  TRACELN("compiler.printStatement()");
+  TRACELN("  compiler.printStatement()");
 
   expression();
   consume(TOKEN_SEMICOLON, "Expect ';' after value.");
   emitByte(OP_PRINT);
 }
 
+static void returnStatement() {
+  TRACELN("  compiler.returnStatement()");
+
+  if (current->type == TYPE_SCRIPT) {
+    error("Can't return from top-level code.");
+  }
+
+  if (match(TOKEN_SEMICOLON)) {
+    emitReturn();
+  } else {
+    expression();
+    consume(TOKEN_SEMICOLON, "Expect ';' after return value.");
+    emitByte(OP_RETURN);
+  }
+}
+
 static void whileStatement() {
+  TRACELN("  compiler.whileStatement()");
+
   int loopStart = currentChunk()->count;
 
   consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
@@ -432,11 +551,16 @@ static void synchronize() {
 }
 
 static void grouping(bool canAssign) {
+  TRACELN("  compiler.grouping()");
+
   expression();
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
 static void emitByte(uint8_t byte) {
+  // #ifdef DEBUG_PRINT_CODE
+  //   TRACELN("  compiler.emitByte() -> %s", disassembleByte(byte));
+  // #endif
   writeChunk(currentChunk(), byte, parser.previous.line);
 }
 
@@ -457,12 +581,16 @@ static void emitLoop(int loopStart) {
 }
 
 static int emitJump(uint8_t instruction) {
+  TRACELN("  compiler.emitJump()");
+
   emitByte(instruction);
   emitBytes(0xff, 0xff);
   return currentChunk()->count - 2;
 }
 
 static void binary(bool canAssign) {
+  TRACELN("  compiler.binary()");
+
   TokenType operatorType = parser.previous.type;
   ParseRule *rule = getRule(operatorType);
   parsePrecedence((Precedence)(rule->precedence + 1));
@@ -503,15 +631,25 @@ static void binary(bool canAssign) {
   }
 }
 
+static void call(bool canAssign) {
+  TRACELN("  compiler.call()");
+
+  uint8_t argCount = argumentList();
+  emitBytes(OP_CALL, argCount);
+}
+
 static void literal(bool canAssign) {
   switch (parser.previous.type) {
   case TOKEN_FALSE:
+    TRACELN("  compiler.literal() -> false");
     emitByte(OP_FALSE);
     break;
   case TOKEN_NIL:
+    TRACELN("  compiler.literal() -> nil");
     emitByte(OP_NIL);
     break;
   case TOKEN_TRUE:
+    TRACELN("  compiler.literal() -> true");
     emitByte(OP_TRUE);
     break;
   default:
@@ -520,6 +658,8 @@ static void literal(bool canAssign) {
 }
 
 static void unary(bool canAssign) {
+  TRACELN("  compiler.unary()");
+
   TokenType operatorType = parser.previous.type;
 
   parsePrecedence(PREC_UNARY);
@@ -537,19 +677,25 @@ static void unary(bool canAssign) {
 }
 
 static uint8_t makeConstant(Value value) {
-  TRACELN("compiler.makeConstant()");
-
   int constant = addConstantToChunk(currentChunk(), value);
+
   if (constant > UINT8_MAX) {
     error("Too many constants in one chunk.");
     return 0;
+  }
+
+  if (IS_STRING(value)) {
+    TRACELN("  compiler.makeConstant() -> %d = %s", constant,
+            AS_CSTRING(value));
+  } else {
+    TRACELN("  compiler.makeConstant(%d) -> %d", value.type, constant);
   }
 
   return (uint8_t)constant;
 }
 
 static void emitConstant(Value value) {
-  TRACELN("compiler.emitConstant()");
+  TRACELN("  compiler.emitConstant()");
 
   emitBytes(OP_CONSTANT, makeConstant(value));
 }
@@ -566,7 +712,7 @@ static void patchJump(int offset) {
 }
 
 static void number(bool canAssign) {
-  TRACELN("compiler.number()");
+  TRACELN("  compiler.number()");
 
   double value = strtod(parser.previous.start, NULL);
   emitConstant(NUMBER_VAL(value));
@@ -584,7 +730,7 @@ static void or_(bool canAssign) {
 }
 
 static void string(bool canAssign) {
-  TRACELN("compiler.string()");
+  TRACELN("  compiler.string()");
 
   const char *chars = parser.previous.start + 1;
   int length = parser.previous.length - 2;
@@ -593,12 +739,16 @@ static void string(bool canAssign) {
 }
 
 static void namedVariable(Token name, bool canAssign) {
+  TRACELN("  compiler.namedVariable()");
+
   uint8_t getOp, setOp;
   int arg = resolveLocal(current, &name);
   if (arg != -1) {
+    TRACELN("  compiler.namedVariable() is local");
     getOp = OP_GET_LOCAL;
     setOp = OP_SET_LOCAL;
   } else {
+    TRACELN("  compiler.namedVariable() is global");
     arg = identifierConstant(&name);
     getOp = OP_GET_GLOBAL;
     setOp = OP_SET_GLOBAL;
@@ -613,12 +763,12 @@ static void namedVariable(Token name, bool canAssign) {
 }
 
 static void variable(bool canAssign) {
-  TRACELN("compiler.variable()");
+  TRACELN("  compiler.variable()");
   namedVariable(parser.previous, canAssign);
 }
 
 ParseRule rules[] = {
-    [TOKEN_LEFT_PAREN] = {grouping, NULL, PREC_NONE},
+    [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
@@ -662,18 +812,30 @@ ParseRule rules[] = {
 
 static ParseRule *getRule(TokenType type) { return &rules[type]; }
 
-static void emitReturn() { emitByte(OP_RETURN); }
+static void emitReturn() {
+  TRACELN("  compiler.emitReturn()");
+  emitByte(OP_NIL);
+  emitByte(OP_RETURN);
+}
 
-static void endCompiler() {
-  TRACELN("compiler.endCompiler()");
+static ObjFunction *endCompiler() {
+  TRACELN("  compiler.endCompiler()");
 
   emitReturn();
 
+  ObjFunction *function = current->function;
+
 #ifdef DEBUG_PRINT_CODE
   if (!parser.hadError) {
-    disassembleChunk(currentChunk(), "code");
+    disassembleChunk(currentChunk(), function->name != NULL
+                                         ? function->name->chars
+                                         : "<script>");
   }
 #endif
+
+  current = current->enclosing;
+
+  return function;
 }
 
 static void beginScope() { current->scopeDepth++; }
