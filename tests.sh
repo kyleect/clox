@@ -23,6 +23,7 @@ done
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
+SUITES=0
 PASS=0
 FAIL=0
 SKIP=0
@@ -106,6 +107,8 @@ for file_in in ./tests/*.lox; do
         continue
     fi
 
+    SUITES=$((SUITES + 1))
+
     expected_out="./tests/$base.lox.out"
     expected_err="./tests/$base.lox.err"
     expected_exit="./tests/$base.lox.exit"
@@ -124,7 +127,7 @@ for file_in in ./tests/*.lox; do
 done
 
 echo
-echo "Total: $TOTAL | Passed: $PASS | Failed: $FAIL | Skipped: $SKIP"
+echo "Total: $TOTAL | Passed: $PASS | Failed: $FAIL | Skipped: $SKIP | Suites: $SUITES"
 
 if [[ $FAIL -ne 0 ]]; then
     exit 1
