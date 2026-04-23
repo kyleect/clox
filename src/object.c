@@ -20,6 +20,12 @@ static Obj *allocateObject(size_t size, ObjType type) {
   return object;
 }
 
+ObjClosure *newClosure(ObjFunction *function) {
+  ObjClosure *closure = ALLOCATE_OBJ(ObjClosure, OBJ_CLOSURE);
+  closure->function = function;
+  return closure;
+}
+
 ObjFunction *newFunction() {
   ObjFunction *function = ALLOCATE_OBJ(ObjFunction, OBJ_FUNCTION);
   function->arity = 0;
@@ -95,7 +101,7 @@ void objectToString(Value value, char *buffer, size_t size) {
   case OBJ_STRING:
     snprintf(buffer, size, "%s", AS_CSTRING(value));
     break;
-  case OBJ_FUNCTION:
+  case OBJ_FUNCTION: {
     ObjFunction *function = AS_FUNCTION(value);
 
     if (function->name == NULL) {
@@ -105,6 +111,22 @@ void objectToString(Value value, char *buffer, size_t size) {
 
     snprintf(buffer, size, "<fn %s>", function->name->chars);
     break;
+  }
+  case OBJ_CLOSURE: {
+    ObjClosure *closure = AS_CLOSURE(value);
+
+    if (closure->function->name == NULL) {
+      printf("<script>");
+      return;
+    }
+
+    snprintf(buffer, size, "<fn %s>", closure->function->name->chars);
+    break;
+  }
+  case OBJ_NATIVE: {
+    snprintf(buffer, size, "<fn native>");
+    break;
+  }
   }
 }
 
@@ -118,6 +140,9 @@ void printObject(Value value) {
     break;
   case OBJ_STRING:
     printf("%s", AS_CSTRING(value));
+    break;
+  case OBJ_CLOSURE:
+    printFunction(AS_CLOSURE(value)->function);
     break;
   }
 }
@@ -134,6 +159,9 @@ void printObjectToErr(Value value) {
     }
 
     fprintf(stderr, "<fn %s>", AS_FUNCTION(value)->name->chars);
+    break;
+  case OBJ_CLOSURE:
+    fprintf(stderr, "<fn %s>", AS_CLOSURE(value)->function->name->chars);
     break;
   }
 }
