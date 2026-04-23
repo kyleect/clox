@@ -7,6 +7,7 @@
 #include "chunk.h"
 #include "common.h"
 #include "debug.h"
+#include "version.h"
 #include "vm.h"
 
 static void repl();
@@ -31,8 +32,10 @@ int main(int argc, const char *argv[]) {
 }
 
 static void repl() {
+  fprintf(stderr, "");
+  fprintf(stderr, "Clox v%s", VERSION_txt);
   for (;;) {
-    char *line = readline("| ");
+    char *line = readline("> ");
 
     if (line == NULL) {
       printf("\n");

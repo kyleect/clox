@@ -63,11 +63,11 @@ Run `just docker-build` to build the docker image `clox`. Run `just docker-run` 
 
 The current language version is defined in the [VERSION.txt](./VERSION.txt) file.
 
-### Generating The C Header File
+### Generating The C File
 
-Generate/update the [`src/version.h`](./src/version.h) file.
+Generate/update the [`src/version.c`](./src/version.c) file.
 
 ```sh
-./scripts/generate_version_header.sh
-just generate_version_header
+./scripts/generate_version_c.sh
+just generate_version_c
 ```

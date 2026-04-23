@@ -13,7 +13,7 @@ cmake:
     ./scripts/cmake.sh
 
 # Build the code
-build:
+build: generate_version_c
     ./scripts/build.sh
 
 # Clean the build artifacts
@@ -36,6 +36,6 @@ docker-build:
 docker-run:
     docker run -it --init --name {{ docker_image }} --rm {{ docker_image }} 
 
-# VERSION.txt => src/version.h
-generate_version_header:
-    ./scripts/generate_version_header.sh
+# VERSION.txt => src/version.c
+generate_version_c:
+    ./scripts/generate_version_c.sh
