@@ -16,6 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Deps
+        run: sudo apt-get update && sudo apt install -y libreadline-dev
+
       - name: Generate Version C File
         run: ./scripts/generate_version_c.sh
 
