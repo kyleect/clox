@@ -10,25 +10,23 @@ run *args: build
 
 # Generate cmake files
 cmake:
-    mkdir -p build
-    cd build && cmake ..
+    ./scripts/cmake.sh
 
 # Build the code
 build:
-    mkdir -p build
-    cd build && make
+    ./scripts/build.sh
 
 # Clean the build artifacts
 clean:
-    cd build && make clean
+    ./scripts/clean.sh
 
 # Run the tests
 test *args: build
-    ./tests.sh {{ args }}
+    ./scripts/tests.sh {{ args }}
 
 # Update the test snapshots
 test-update: build
-    ./tests.sh --update
+    ./scripts/tests.sh --update
 
 # Build the docker image
 docker-build:
@@ -40,7 +38,4 @@ docker-run:
 
 # VERSION.txt => src/version.h
 generate_version_header:
-    #!/usr/bin/env bash
-
-    xxd -i VERSION.txt | sed 's/\([0-9a-f]\)$/\0, 0x00/' > src/version.h
-    echo -e "// This is a generated file. Do not edit!\n// Generated from VERSION.txt\n\n// Language Version: $(cat VERSION.txt)\n$(cat src/version.h)" > src/version.h
+    ./scripts/generate_version_header.sh

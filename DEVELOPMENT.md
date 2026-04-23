@@ -2,19 +2,22 @@
 
 ## Prerequisites
 
-- [Just](https://just.systems)
 - [CMake](https://cmake.org/)
 - [Make](https://www.make.com/en)
+
+## Optional
+
+- [Just](https://just.systems)
 
 ## Scripts
 
 ### CMake
 
-Run `just cmake` to generate make files for the project.
+Run `./scripts/cmake.sh` or `just cmake` to generate make files for the project.
 
 ### Build
 
-Run `just build` to build to project in to `./build` folder.
+Run `./scripts/build.sh` or `just build` to build to project in to `./build` folder.
 
 #### Definitions
 
@@ -30,11 +33,27 @@ Setting `DEBUG_TRACE_EXECUTION` will print execution trace logs.
 
 ### Test
 
-Run `just test` to run the tests in `./test` folder.
+Run `./scripts/test.sh` or `just test` to run the tests in `./test` folder.
+
+#### Filtering Tests
+
+```sh
+./scripts/test.sh PATTERN
+```
+
+### Test (Update Snapshots)
+
+Run `./scripts/test.sh --update` or `just test-update` to run the tests and update the snapshot files.
+
+#### Filtering Updates
+
+```sh
+./scripts/test.sh PATTERN --update
+```
 
 ### Clean
 
-Run `just clean` to remove build artifacts.
+Run `./scripts/clean.sh` or `just clean` to remove build artifacts.
 
 ### Docker Build/Run
 
@@ -49,5 +68,6 @@ The current language version is defined in the [VERSION.txt](./VERSION.txt) file
 Generate/update the [`src/version.h`](./src/version.h) file.
 
 ```sh
+./scripts/generate_version_header.sh
 just generate_version_header
 ```
