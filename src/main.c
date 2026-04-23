@@ -1,3 +1,5 @@
+#include <readline/history.h>
+#include <readline/readline.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,16 +31,22 @@ int main(int argc, const char *argv[]) {
 }
 
 static void repl() {
-  char line[1024];
   for (;;) {
-    printf("> ");
+    char *line = readline("| ");
 
-    if (!fgets(line, sizeof(line), stdin)) {
+    if (line == NULL) {
       printf("\n");
       break;
     }
 
+    if (*line)
+      add_history(line);
+
+    if (strcmp(line, "exit") == 0)
+      exit(0);
+
     interpret(line);
+    free(line);
   }
 }
 
