@@ -8,6 +8,7 @@
 #include "memory.h"
 #include "object.h"
 #include "string.h"
+#include "version.h"
 #include "vm.h"
 
 static void resetStack();
@@ -21,6 +22,10 @@ VM vm;
 
 static Value clockNative(int argCount, Value *args) {
   return NUMBER_VAL((double)clock() / CLOCKS_PER_SEC);
+}
+
+static Value versionNative(int argCount, Value *args) {
+  return OBJ_VAL(copyString(VERSION_txt, (int)strlen(VERSION_txt)));
 }
 
 InterpretResult interpret(const char *source) {
@@ -84,6 +89,7 @@ void initVM() {
   initTable(&vm.strings);
 
   defineNative("clock", clockNative);
+  defineNative("__version__", versionNative);
 }
 
 void freeVM() {

@@ -39,3 +39,15 @@ Run `just clean` to remove build artifacts.
 ### Docker Build/Run
 
 Run `just docker-build` to build the docker image `clox`. Run `just docker-run` to run the `clox` REPL inside a `clox` docker container.
+
+## Language Version
+
+The current language version is defined in the [VERSION.txt](./VERSION.txt) file.
+
+### Generating The C Header File
+
+Generate/update the [`src/version.h`](./src/version.h) file.
+
+```sh
+just generate_version_header
+```
