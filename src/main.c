@@ -33,7 +33,7 @@ int main(int argc, const char *argv[]) {
 
 static void repl() {
   fprintf(stderr, "");
-  fprintf(stderr, "Clox v%s", VERSION_txt);
+  fprintf(stderr, "clox %s\n", VERSION_txt);
   for (;;) {
     char *line = readline("> ");
 

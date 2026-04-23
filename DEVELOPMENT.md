@@ -65,7 +65,7 @@ The current language version is defined in the [VERSION.txt](./VERSION.txt) file
 
 ### Generating The C File
 
-Generate/update the [`src/version.c`](./src/version.c) file.
+The `src/version.c` is generated automatically when the project is built. You can also generate/update the [`src/version.c`](./src/version.c) file explicit.
 
 ```sh
 ./scripts/generate_version_c.sh

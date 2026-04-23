@@ -13,7 +13,7 @@ cmake:
     ./scripts/cmake.sh
 
 # Build the code
-build: generate_version_c
+build: clean generate_version_c
     ./scripts/build.sh
 
 # Clean the build artifacts
