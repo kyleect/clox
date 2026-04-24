@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
       return 0;
 
     case 'v':
-      printf("%s\n", VERSION_txt);
+      printf("%s\n", CLOX_VERSION);
       return 0;
     }
   }
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
 static void repl() {
   fprintf(stderr, "========================================\n");
-  fprintf(stderr, "REPL %30s clox\n\n", VERSION_txt);
+  fprintf(stderr, "REPL %30s clox\n\n", CLOX_VERSION);
   fprintf(stderr, "Enter code or type 'exit' to quit.\n\n");
   // fprintf(stderr, "========================================\n\n");
   for (;;) {

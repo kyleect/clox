@@ -18,6 +18,6 @@ NEW_LEN=$((LEN + 1))
   echo "// clox $(cat VERSION.txt)"
   echo
 
-  printf 'const char VERSION_txt[] = "%s";\n' "$VERSION"
-  printf 'const unsigned int VERSION_txt_len = %d;\n' "${#VERSION}"
+  printf 'const char CLOX_VERSION[] = "%s";\n' "$VERSION"
+  printf 'const unsigned int CLOX_VERSION_len = %d;\n' "${#VERSION}"
 } > "$OUT"
