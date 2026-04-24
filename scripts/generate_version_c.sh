@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+NOW=$(date '+%Y-%m-%dT%T');
+
 OUT="${1:-src/version.c}"
+
+VERSION=$(tr -d '\n' < VERSION.txt)
+
+LEN=$(wc -c < VERSION.txt)
+NEW_LEN=$((LEN + 1))
 
 {
   echo "// This is a generated file. Do not edit!"
   echo "// Generated from VERSION.txt"
+  echo "// $NOW"
   echo
-  echo "// Language Version: $(cat VERSION.txt)"
+  echo "// clox $(cat VERSION.txt)"
   echo
 
-  xxd -i VERSION.txt | sed -e 's/};/, 0x00\n};/'
+  printf 'const char VERSION_txt[] = "%s";\n' "$VERSION"
+  printf 'const unsigned int VERSION_txt_len = %d;\n' "${#VERSION}"
 } > "$OUT"

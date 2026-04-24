@@ -1,3 +1,4 @@
+#include <getopt.h>
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <stdio.h>
@@ -14,26 +15,51 @@ static void repl();
 static char *readFile(const char *path);
 static void runFile(const char *path);
 
-int main(int argc, const char *argv[]) {
-  initVM();
+int main(int argc, char *argv[]) {
+  int opt;
+  int long_index = 0;
 
-  if (argc == 1) {
-    repl();
-  } else if (argc == 2) {
-    runFile(argv[1]);
-  } else {
-    fprintf(stderr, "Usage: clox [path]\n");
-    exit(64);
+  static struct option long_options[] = {{"help", no_argument, 0, 'h'},
+                                         {"version", no_argument, 0, 'v'},
+                                         {0, 0, 0, 0}};
+
+  const char *short_options = "hv";
+  const char *help_message = "Usage: clox [-h] [-v] [path]\n";
+
+  while ((opt = getopt_long(argc, argv, short_options, long_options,
+                            &long_index)) != -1) {
+    switch (opt) {
+    case 'h':
+      printf("%s\n", help_message);
+      return 0;
+
+    case 'v':
+      printf("%s\n", VERSION_txt);
+      return 0;
+    }
   }
 
-  freeVM();
+  if (optind >= argc) {
+    initVM();
+    repl();
+    freeVM();
+  } else if (optind == argc - 1) {
+    initVM();
+    runFile(argv[optind]);
+    freeVM();
+  } else {
+    fprintf(stderr, "%s\n", help_message);
+    exit(64);
+  }
 
   return 0;
 }
 
 static void repl() {
   fprintf(stderr, "");
-  fprintf(stderr, "clox %s\n", VERSION_txt);
+  fprintf(stderr, "========================================\n");
+  fprintf(stderr, "REPL %30s clox\n", VERSION_txt);
+  fprintf(stderr, "========================================\n\n");
   for (;;) {
     char *line = readline("> ");
 
@@ -48,7 +74,19 @@ static void repl() {
     if (strcmp(line, "exit") == 0)
       exit(0);
 
-    interpret(line);
+    InterpretResult result = interpret(line);
+
+    switch (result) {
+    case INTERPRET_COMPILE_ERROR:
+      fprintf(stderr, "Compiler Error!\n");
+      break;
+    case INTERPRET_RUNTIME_ERROR:
+      fprintf(stderr, "Runtime Error!\n");
+      break;
+    default:
+      break;
+    }
+
     free(line);
   }
 }

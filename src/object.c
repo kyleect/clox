@@ -163,5 +163,8 @@ void printObjectToErr(Value value) {
   case OBJ_CLOSURE:
     fprintf(stderr, "<fn %s>", AS_CLOSURE(value)->function->name->chars);
     break;
+  case OBJ_NATIVE:
+    fprintf(stderr, "<fn native>");
+    break;
   }
 }

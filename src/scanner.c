@@ -152,16 +152,18 @@ static bool match(char expected) {
 }
 
 static Token makeToken(TokenType type) {
-  const char *typeString = tokenTypeToString(type);
-
-  char *start = scanner.start;
+  const char *start = scanner.start;
   int length = (int)(scanner.current - scanner.start);
 
+#ifdef DEBUG_TRACE_EXECUTION
   if (type == TOKEN_IDENTIFIER) {
+    const char *typeString = tokenTypeToString(type);
     TRACELN("scanner.makeToken() -> %s = '%.*s'", typeString, length, start);
   } else {
+    const char *typeString = tokenTypeToString(type);
     TRACELN("scanner.makeToken() -> %s", typeString);
   }
+#endif // DEBUG_TRACE_EXECUTION
 
   Token token;
   token.type = type;

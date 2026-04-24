@@ -25,7 +25,7 @@ static Value clockNative(int argCount, Value *args) {
 }
 
 static Value versionNative(int argCount, Value *args) {
-  return OBJ_VAL(copyString(VERSION_txt, (int)strlen(VERSION_txt)));
+  return OBJ_VAL(copyString((const char *)VERSION_txt, VERSION_txt_len));
 }
 
 InterpretResult interpret(const char *source) {
