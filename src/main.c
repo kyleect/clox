@@ -56,7 +56,6 @@ int main(int argc, char *argv[]) {
 }
 
 static void repl() {
-  fprintf(stderr, "");
   fprintf(stderr, "========================================\n");
   fprintf(stderr, "REPL %30s clox\n", VERSION_txt);
   fprintf(stderr, "========================================\n\n");
