@@ -95,10 +95,7 @@ static Value ceilNative(int argCount, Value *args) {
     return NIL_VAL;
   }
 
-  double number_value = AS_NUMBER(value);
-  double new_value = ceil(number_value);
-
-  return NUMBER_VAL(new_value);
+  return NUMBER_VAL(ceil(AS_NUMBER(value)));
 }
 
 static Value readFileToStringNative(int argCount, Value *args) {
