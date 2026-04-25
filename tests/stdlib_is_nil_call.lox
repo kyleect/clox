@@ -1,0 +1,5 @@
+print is_nil(nil);
+print is_nil("Hello");
+print is_nil(12345);
+print is_nil(ceil);
+print is_nil(true);

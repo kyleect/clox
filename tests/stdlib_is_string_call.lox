@@ -1,0 +1,5 @@
+print is_string("Hello");
+print is_string(12345);
+print is_string(ceil);
+print is_string(true);
+print is_string(nil);

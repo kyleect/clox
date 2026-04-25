@@ -1,0 +1,5 @@
+print is_function(ceil);
+print is_function(true);
+print is_function(12345);
+print is_function("Hello");
+print is_function(nil);

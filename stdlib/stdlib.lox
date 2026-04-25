@@ -1,0 +1,23 @@
+fun is(value, type) {
+    return typeof(value) == type;
+}
+
+fun is_function(value) {
+    return is(value, "function");
+}
+
+fun is_number(value) {
+    return is(value, "number");
+}
+
+fun is_string(value) {
+    return is(value, "string");
+}
+
+fun is_bool(value) {
+    return is(value, "bool");
+}
+
+fun is_nil(value) {
+    return is(value, "nil");
+}

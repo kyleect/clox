@@ -1,0 +1,5 @@
+print is_number(12345);
+print is_number(ceil);
+print is_number(true);
+print is_number("Hello");
+print is_number(nil);

@@ -15,16 +15,16 @@ static void repl();
 static char *readFile(const char *path);
 static void runFile(const char *path);
 
+const char *help_message = "Usage: clox [-h] [-v] [path]\n";
+
+const char *short_options = "hv";
+static struct option long_options[] = {{"help", no_argument, 0, 'h'},
+                                       {"version", no_argument, 0, 'v'},
+                                       {0, 0, 0, 0}};
+
 int main(int argc, char *argv[]) {
   int opt;
   int long_index = 0;
-
-  static struct option long_options[] = {{"help", no_argument, 0, 'h'},
-                                         {"version", no_argument, 0, 'v'},
-                                         {0, 0, 0, 0}};
-
-  const char *short_options = "hv";
-  const char *help_message = "Usage: clox [-h] [-v] [path]\n";
 
   while ((opt = getopt_long(argc, argv, short_options, long_options,
                             &long_index)) != -1) {
@@ -41,10 +41,12 @@ int main(int argc, char *argv[]) {
 
   if (optind >= argc) {
     initVM();
+    runFile("stdlib/stdlib.lox");
     repl();
     freeVM();
   } else if (optind == argc - 1) {
     initVM();
+    runFile("stdlib/stdlib.lox");
     runFile(argv[optind]);
     freeVM();
   } else {
