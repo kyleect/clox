@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "common.h"
@@ -26,6 +27,24 @@ static Value clockNative(int argCount, Value *args) {
 
 static Value versionNative(int argCount, Value *args) {
   return OBJ_VAL(copyString(CLOX_VERSION, CLOX_VERSION_len));
+}
+
+static Value exitNative(int argCount, Value *args) {
+  if (argCount != 1) {
+    runtimeError("expected 1 arguments but got %d", argCount);
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  Value exitCode = args[0];
+
+  if (!IS_NUMBER(exitCode)) {
+    runtimeError("expected a number argument");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  exit(exitCode.as.number);
+
+  return NIL_VAL;
 }
 
 InterpretResult interpret(const char *source) {
@@ -90,6 +109,7 @@ void initVM() {
 
   defineNative("clock", clockNative);
   defineNative("__version__", versionNative);
+  defineNative("exit", exitNative);
 }
 
 void freeVM() {
