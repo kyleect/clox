@@ -13,6 +13,7 @@
 #include "version.h"
 #include "vm.h"
 
+static ObjString *readFile(const char *path);
 static void resetStack();
 static void runtimeError(const char *format, ...);
 static Value peek(int distance);
@@ -100,6 +101,25 @@ static Value ceilNative(int argCount, Value *args) {
   return NUMBER_VAL(new_value);
 }
 
+static Value readFileToStringNative(int argCount, Value *args) {
+  if (argCount != 1) {
+    runtimeError("ceil(value) expects 1 arguments.");
+    return NIL_VAL;
+  }
+
+  Value value = args[0];
+
+  if (!IS_STRING(value)) {
+    runtimeError("ceil(value) argument must be a number.");
+    return NIL_VAL;
+  }
+
+  ObjString *path = AS_STRING(value);
+  ObjString *contents = readFile(path->chars);
+
+  return OBJ_VAL(contents);
+}
+
 InterpretResult interpret(const char *source) {
   TRACELN("vm.interpret()");
 
@@ -168,6 +188,7 @@ void initVM() {
   defineNative("rand01", rand01Native);
   defineNative("randBetween", randBetweenNative);
   defineNative("ceil", ceilNative);
+  defineNative("readFileToString", readFileToStringNative);
 }
 
 void freeVM() {
@@ -244,6 +265,46 @@ static void concatenate() {
 
   ObjString *result = takeString(chars, length);
   push(OBJ_VAL(result));
+}
+
+static ObjString *readFile(const char *path) {
+  FILE *file = fopen(path, "rb"); // "rb" = binary mode (safe for all files)
+  if (!file)
+    return NULL;
+
+  // Go to end to get file size
+  if (fseek(file, 0, SEEK_END) != 0) {
+    fclose(file);
+    return NULL;
+  }
+
+  long size = ftell(file);
+  if (size < 0) {
+    fclose(file);
+    return NULL;
+  }
+
+  rewind(file); // Go back to start
+
+  // Allocate buffer (+1 for null terminator)
+  char *buffer = (char *)malloc(size + 1);
+  if (!buffer) {
+    fclose(file);
+    return NULL;
+  }
+
+  size_t bytesRead = fread(buffer, 1, size, file);
+  if (bytesRead != (size_t)size) {
+    free(buffer);
+    fclose(file);
+    return NULL;
+  }
+
+  buffer[size] = '\0'; // Null-terminate so it's a valid C string
+
+  fclose(file);
+
+  return takeString(buffer, size);
 }
 
 static InterpretResult run() {

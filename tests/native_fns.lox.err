@@ -11,5 +11,7 @@
 0014    | OP_PRINT
 0015    6 OP_GET_GLOBAL       5 'ceil'
 0017    | OP_PRINT
-0018    7 OP_NIL
-0019    | OP_RETURN
+0018    7 OP_GET_GLOBAL       6 'readFileToString'
+0020    | OP_PRINT
+0021    8 OP_NIL
+0022    | OP_RETURN
