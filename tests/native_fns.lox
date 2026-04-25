@@ -1,0 +1,6 @@
+print exit;
+print __version__;
+print rand;
+print rand01;
+print randBetween;
+print ceil;
