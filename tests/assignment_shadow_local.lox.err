@@ -1,6 +1,6 @@
 == <script> ==
-0000    2 OP_CONSTANT         0 '123'
-0002    3 OP_CONSTANT         1 '456'
+0000    2 OP_CONSTANT         0 '123.000000'
+0002    3 OP_CONSTANT         1 '456.000000'
 0004    5 OP_GET_LOCAL        2
 0006    | OP_PRINT
 0007    6 OP_POP

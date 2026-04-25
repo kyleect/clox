@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +46,58 @@ static Value exitNative(int argCount, Value *args) {
   exit(exitCode.as.number);
 
   return NIL_VAL;
+}
+
+static Value randNative(int argCount, Value *args) {
+  return NUMBER_VAL((double)rand());
+}
+
+static Value rand01Native(int argCount, Value *args) {
+  return NUMBER_VAL((double)rand() / (double)RAND_MAX);
+}
+
+static Value randBetweenNative(int argCount, Value *args) {
+  if (argCount != 2) {
+    runtimeError("randomRange(min, max) expects 2 arguments.");
+    return NIL_VAL;
+  }
+
+  if (!IS_NUMBER(args[0]) || !IS_NUMBER(args[1])) {
+    runtimeError("randomRange(min, max) arguments must be numbers.");
+    return NIL_VAL;
+  }
+
+  double min = AS_NUMBER(args[0]);
+  double max = AS_NUMBER(args[1]);
+
+  if (min > max) {
+    runtimeError("randomRange(min, max) requires min <= max.");
+    return NIL_VAL;
+  }
+
+  double r = (double)rand() / (double)RAND_MAX; // [0, 1]
+  double result = min + r * (max - min);        // [min, max)
+
+  return NUMBER_VAL(ceil(result));
+}
+
+static Value ceilNative(int argCount, Value *args) {
+  if (argCount != 1) {
+    runtimeError("ceil(value) expects 1 arguments.");
+    return NIL_VAL;
+  }
+
+  Value value = args[0];
+
+  if (!IS_NUMBER(value)) {
+    runtimeError("ceil(value) argument must be a number.");
+    return NIL_VAL;
+  }
+
+  double number_value = AS_NUMBER(value);
+  double new_value = ceil(number_value);
+
+  return NUMBER_VAL(new_value);
 }
 
 InterpretResult interpret(const char *source) {
@@ -102,6 +155,7 @@ static void defineNative(const char *name, NativeFn function) {
 
 void initVM() {
   TRACELN("vm.initVM()");
+  srand(time(NULL));
   resetStack();
   vm.objects = NULL;
   initTable(&vm.globals);
@@ -110,6 +164,10 @@ void initVM() {
   defineNative("clock", clockNative);
   defineNative("__version__", versionNative);
   defineNative("exit", exitNative);
+  defineNative("rand", randNative);
+  defineNative("rand01", rand01Native);
+  defineNative("randBetween", randBetweenNative);
+  defineNative("ceil", ceilNative);
 }
 
 void freeVM() {

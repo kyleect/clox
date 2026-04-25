@@ -1,5 +1,5 @@
 == <script> ==
-0000    1 OP_CONSTANT         0 '1.23457e+09'
+0000    1 OP_CONSTANT         0 '1234567890.000000'
 0002    | OP_PRINT
 0003    | OP_NIL
 0004    | OP_RETURN
