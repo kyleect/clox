@@ -7,3 +7,4 @@ print ceil;
 print readFileToString;
 print getenv;
 print setenv;
+print len;

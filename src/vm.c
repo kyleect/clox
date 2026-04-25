@@ -168,6 +168,24 @@ static Value setEnvNative(int argCount, Value *args) {
   return NIL_VAL; // or you could return true if you prefer
 }
 
+static Value lenNative(int argCount, Value *args) {
+  if (argCount != 1) {
+    runtimeError("len(value) expects 1 argument.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  Value name = args[0];
+
+  if (!IS_STRING(name)) {
+    runtimeError("len(value) argument must have a length (string).");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  int length = AS_STRING(name)->length;
+
+  return NUMBER_VAL(length);
+}
+
 InterpretResult interpret(const char *source) {
   TRACELN("vm.interpret()");
 
@@ -239,6 +257,7 @@ void initVM() {
   defineNative("readFileToString", readFileToStringNative);
   defineNative("getenv", getEnvNative);
   defineNative("setenv", setEnvNative);
+  defineNative("len", lenNative);
 }
 
 void freeVM() {
