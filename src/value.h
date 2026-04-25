@@ -45,6 +45,7 @@ void writeValueArray(ValueArray *array, Value value);
 void freeValueArray(ValueArray *array);
 
 void valueToString(Value value, char *buffer, size_t size);
+void valueTypeToString(Value value, char *buffer, size_t size);
 void printValue(Value value);
 void printValueToErr(Value value);
 

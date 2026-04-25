@@ -63,6 +63,7 @@ ObjString *takeString(char *chars, int length);
 ObjString *copyString(const char *chars, int length);
 
 void objectToString(Value value, char *buffer, size_t size);
+void objectTypeToString(ObjType type, char *buffer, size_t size);
 void printObject(Value value);
 void printObjectToErr(Value value);
 

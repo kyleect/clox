@@ -45,6 +45,23 @@ void valueToString(Value value, char *buffer, size_t size) {
   }
 }
 
+void valueTypeToString(Value value, char *buffer, size_t size) {
+  switch (value.type) {
+  case VAL_BOOL:
+    snprintf(buffer, size, "bool");
+    break;
+  case VAL_NIL:
+    snprintf(buffer, size, "nil");
+    break;
+  case VAL_NUMBER:
+    snprintf(buffer, size, "number");
+    break;
+  case VAL_OBJ:
+    objectTypeToString(value.as.obj->type, buffer, size);
+    break;
+  }
+}
+
 void printValue(Value value) {
   if (value.type == VAL_OBJ) {
     printObject(value);

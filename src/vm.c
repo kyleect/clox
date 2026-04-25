@@ -186,6 +186,28 @@ static Value lenNative(int argCount, Value *args) {
   return NUMBER_VAL(length);
 }
 
+static Value typeofNative(int argCount, Value *args) {
+  if (argCount != 1) {
+    runtimeError("typeof(value) expects 1 argument.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  Value value = args[0];
+  ValueType type = value.type;
+
+  // Longest value/object type is function (8 chars) + null terminator
+  char *buffer = malloc(9);
+
+  if (buffer == NULL) {
+    runtimeError("typeof(value) unable to allocate string for type string.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  valueTypeToString(value, buffer, 9);
+
+  return OBJ_VAL(takeString(buffer, strlen(buffer)));
+}
+
 InterpretResult interpret(const char *source) {
   TRACELN("vm.interpret()");
 
@@ -258,6 +280,7 @@ void initVM() {
   defineNative("getenv", getEnvNative);
   defineNative("setenv", setEnvNative);
   defineNative("len", lenNative);
+  defineNative("typeof", typeofNative);
 }
 
 void freeVM() {

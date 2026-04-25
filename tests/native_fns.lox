@@ -1,10 +1,32 @@
 print exit;
+print typeof(exit);
+
 print __version__;
+print typeof(__version__);
+
 print rand;
+print typeof(rand);
+
 print rand01;
+print typeof(rand01);
+
 print randBetween;
+print typeof(randBetween);
+
 print ceil;
+print typeof(ceil);
+
 print readFileToString;
+print typeof(readFileToString);
+
 print getenv;
+print typeof(getenv);
+
 print setenv;
+print typeof(setenv);
+
 print len;
+print typeof(len);
+
+print typeof;
+print typeof(typeof);

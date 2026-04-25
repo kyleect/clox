@@ -1,23 +1,69 @@
 == <script> ==
 0000    1 OP_GET_GLOBAL       0 'exit'
 0002    | OP_PRINT
-0003    2 OP_GET_GLOBAL       1 '__version__'
-0005    | OP_PRINT
-0006    3 OP_GET_GLOBAL       2 'rand'
-0008    | OP_PRINT
-0009    4 OP_GET_GLOBAL       3 'rand01'
-0011    | OP_PRINT
-0012    5 OP_GET_GLOBAL       4 'randBetween'
-0014    | OP_PRINT
-0015    6 OP_GET_GLOBAL       5 'ceil'
-0017    | OP_PRINT
-0018    7 OP_GET_GLOBAL       6 'readFileToString'
-0020    | OP_PRINT
-0021    8 OP_GET_GLOBAL       7 'getenv'
-0023    | OP_PRINT
-0024    9 OP_GET_GLOBAL       8 'setenv'
-0026    | OP_PRINT
-0027   10 OP_GET_GLOBAL       9 'len'
+0003    2 OP_GET_GLOBAL       1 'typeof'
+0005    | OP_GET_GLOBAL       2 'exit'
+0007    | OP_CALL             1
+0009    | OP_PRINT
+0010    4 OP_GET_GLOBAL       3 '__version__'
+0012    | OP_PRINT
+0013    5 OP_GET_GLOBAL       4 'typeof'
+0015    | OP_GET_GLOBAL       5 '__version__'
+0017    | OP_CALL             1
+0019    | OP_PRINT
+0020    7 OP_GET_GLOBAL       6 'rand'
+0022    | OP_PRINT
+0023    8 OP_GET_GLOBAL       7 'typeof'
+0025    | OP_GET_GLOBAL       8 'rand'
+0027    | OP_CALL             1
 0029    | OP_PRINT
-0030   11 OP_NIL
-0031    | OP_RETURN
+0030   10 OP_GET_GLOBAL       9 'rand01'
+0032    | OP_PRINT
+0033   11 OP_GET_GLOBAL      10 'typeof'
+0035    | OP_GET_GLOBAL      11 'rand01'
+0037    | OP_CALL             1
+0039    | OP_PRINT
+0040   13 OP_GET_GLOBAL      12 'randBetween'
+0042    | OP_PRINT
+0043   14 OP_GET_GLOBAL      13 'typeof'
+0045    | OP_GET_GLOBAL      14 'randBetween'
+0047    | OP_CALL             1
+0049    | OP_PRINT
+0050   16 OP_GET_GLOBAL      15 'ceil'
+0052    | OP_PRINT
+0053   17 OP_GET_GLOBAL      16 'typeof'
+0055    | OP_GET_GLOBAL      17 'ceil'
+0057    | OP_CALL             1
+0059    | OP_PRINT
+0060   19 OP_GET_GLOBAL      18 'readFileToString'
+0062    | OP_PRINT
+0063   20 OP_GET_GLOBAL      19 'typeof'
+0065    | OP_GET_GLOBAL      20 'readFileToString'
+0067    | OP_CALL             1
+0069    | OP_PRINT
+0070   22 OP_GET_GLOBAL      21 'getenv'
+0072    | OP_PRINT
+0073   23 OP_GET_GLOBAL      22 'typeof'
+0075    | OP_GET_GLOBAL      23 'getenv'
+0077    | OP_CALL             1
+0079    | OP_PRINT
+0080   25 OP_GET_GLOBAL      24 'setenv'
+0082    | OP_PRINT
+0083   26 OP_GET_GLOBAL      25 'typeof'
+0085    | OP_GET_GLOBAL      26 'setenv'
+0087    | OP_CALL             1
+0089    | OP_PRINT
+0090   28 OP_GET_GLOBAL      27 'len'
+0092    | OP_PRINT
+0093   29 OP_GET_GLOBAL      28 'typeof'
+0095    | OP_GET_GLOBAL      29 'len'
+0097    | OP_CALL             1
+0099    | OP_PRINT
+0100   31 OP_GET_GLOBAL      30 'typeof'
+0102    | OP_PRINT
+0103   32 OP_GET_GLOBAL      31 'typeof'
+0105    | OP_GET_GLOBAL      32 'typeof'
+0107    | OP_CALL             1
+0109    | OP_PRINT
+0110   33 OP_NIL
+0111    | OP_RETURN

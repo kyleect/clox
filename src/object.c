@@ -130,6 +130,26 @@ void objectToString(Value value, char *buffer, size_t size) {
   }
 }
 
+void objectTypeToString(ObjType type, char *buffer, size_t size) {
+  switch (type) {
+  case OBJ_STRING:
+    snprintf(buffer, size, "string");
+    break;
+  case OBJ_FUNCTION: {
+    snprintf(buffer, size, "function");
+    break;
+  }
+  case OBJ_CLOSURE: {
+    snprintf(buffer, size, "function");
+    break;
+  }
+  case OBJ_NATIVE: {
+    snprintf(buffer, size, "function");
+    break;
+  }
+  }
+}
+
 void printObject(Value value) {
   switch (OBJ_TYPE(value)) {
   case OBJ_FUNCTION:
