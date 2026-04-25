@@ -37,7 +37,7 @@ void valueToString(Value value, char *buffer, size_t size) {
     snprintf(buffer, size, "nil");
     break;
   case VAL_NUMBER:
-    snprintf(buffer, size, "%g", AS_NUMBER(value));
+    snprintf(buffer, size, "%f", AS_NUMBER(value));
     break;
   case VAL_OBJ:
     objectToString(value, buffer, size); // signal: handled elsewhere
