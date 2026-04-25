@@ -1,0 +1,3 @@
+print setenv("HELLO", "WORLD");
+
+print getenv("HELLO");

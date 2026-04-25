@@ -13,5 +13,9 @@
 0017    | OP_PRINT
 0018    7 OP_GET_GLOBAL       6 'readFileToString'
 0020    | OP_PRINT
-0021    8 OP_NIL
-0022    | OP_RETURN
+0021    8 OP_GET_GLOBAL       7 'getenv'
+0023    | OP_PRINT
+0024    9 OP_GET_GLOBAL       8 'setenv'
+0026    | OP_PRINT
+0027   10 OP_NIL
+0028    | OP_RETURN

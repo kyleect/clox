@@ -5,3 +5,5 @@ print rand01;
 print randBetween;
 print ceil;
 print readFileToString;
+print getenv;
+print setenv;

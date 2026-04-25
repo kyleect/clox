@@ -117,6 +117,57 @@ static Value readFileToStringNative(int argCount, Value *args) {
   return OBJ_VAL(contents);
 }
 
+static Value getEnvNative(int argCount, Value *args) {
+  if (argCount != 1) {
+    runtimeError("getenv(name) expects 1 argument.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  Value name = args[0];
+
+  if (!IS_STRING(name)) {
+    runtimeError("getenv(name) argument must be a string.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  char *name_str = AS_CSTRING(name);
+
+  char *env_value = getenv(name_str);
+
+  if (env_value == NULL) {
+    runtimeError("Environment variable not found: '%s'", name_str);
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  return OBJ_VAL(copyString(env_value, (int)strlen(env_value)));
+}
+
+static Value setEnvNative(int argCount, Value *args) {
+  if (argCount != 2) {
+    runtimeError("setenv(name, value) takes exactly 2 arguments.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  if (!IS_STRING(args[0]) || !IS_STRING(args[1])) {
+    runtimeError("setenv(name, value) arguments must be strings.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  ObjString *name = AS_STRING(args[0]);
+  ObjString *value = AS_STRING(args[1]);
+
+  // overwrite = 1 means always replace existing value
+  int result = setenv(name->chars, value->chars, 1);
+
+  if (result != 0) {
+    runtimeError("setenv unable to set environment variable: '%s'",
+                 name->chars);
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  return NIL_VAL; // or you could return true if you prefer
+}
+
 InterpretResult interpret(const char *source) {
   TRACELN("vm.interpret()");
 
@@ -186,6 +237,8 @@ void initVM() {
   defineNative("randBetween", randBetweenNative);
   defineNative("ceil", ceilNative);
   defineNative("readFileToString", readFileToStringNative);
+  defineNative("getenv", getEnvNative);
+  defineNative("setenv", setEnvNative);
 }
 
 void freeVM() {
