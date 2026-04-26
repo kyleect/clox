@@ -4,3 +4,4 @@
 <fn is_string>
 <fn is_nil>
 <fn is_bool>
+<fn is_empty>

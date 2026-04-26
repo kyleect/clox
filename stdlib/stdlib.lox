@@ -21,3 +21,7 @@ fun is_bool(value) {
 fun is_nil(value) {
     return is(value, "nil");
 }
+
+fun is_empty(value) {
+    return is_string(value) and len(value) == 0;
+}
