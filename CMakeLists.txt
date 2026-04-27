@@ -24,12 +24,10 @@ add_custom_command(
     COMMENT "Generating src/version.c from VERSION.txt"
 )
 
-# A tiny custom target that groups the generation step.
 add_custom_target(generate_version_c
     DEPENDS ${VERSION_C}
 )
 
-# Tell CMake that version.c is generated (so it won’t warn about a missing file)
 set_source_files_properties(${VERSION_C} PROPERTIES GENERATED TRUE)
 
 # -----------------------------------------------------------------
@@ -45,10 +43,11 @@ list(FILTER SRC_FILES EXCLUDE REGEX ".*/version\\.c$")
 # Add the generated file to the source list for each target.
 add_executable(clox ${SRC_FILES} ${VERSION_C})
 # target_compile_definitions(clox PRIVATE DEBUG_TRACE_EXECUTION)
+# target_compile_definitions(clox PRIVATE DEBUG_STRESS_GC)
+# target_compile_definitions(clox PRIVATE DEBUG_LOG_GC)
 
 add_executable(clox-test ${SRC_FILES} ${VERSION_C})
-target_compile_definitions(clox-test PRIVATE DEBUG_PRINT_CODE)
+target_compile_definitions(clox-test PRIVATE DEBUG_PRINT_CODE DEBUG_STRESS_GC)
 
-# Ensure the generation step runs before we try to compile the targets.
 add_dependencies(clox generate_version_c)
 add_dependencies(clox-test generate_version_c)
