@@ -78,15 +78,51 @@
 0026    | OP_DEFINE_GLOBAL   12 'is_empty'
 0028   28 OP_NIL
 0029    | OP_RETURN
+== f ==
+0000    4 OP_GET_UPVALUE      0
+0002    | OP_PRINT
+0003    5 OP_NIL
+0004    | OP_RETURN
+== g ==
+0000    8 OP_GET_UPVALUE      0
+0002    | OP_PRINT
+0003    9 OP_NIL
+0004    | OP_RETURN
+== h ==
+0000   12 OP_GET_UPVALUE      0
+0002    | OP_PRINT
+0003   13 OP_NIL
+0004    | OP_RETURN
 == <script> ==
-0000    1 OP_CONSTANT         1 '123.000000'
-0002    | OP_DEFINE_GLOBAL    0 'a'
-0004    4 OP_CONSTANT         2 '456.000000'
-0006    5 OP_GET_LOCAL        1
-0008    | OP_PRINT
-0009    6 OP_POP
-0010    | OP_POP
-0011    8 OP_GET_GLOBAL       3 'a'
-0013    | OP_PRINT
-0014    9 OP_NIL
-0015    | OP_RETURN
+0000    2 OP_CONSTANT         0 '1.000000'
+0002    5 OP_CLOSURE          1 <fn f>
+0004      |                     local 1
+0006    6 OP_CONSTANT         2 '2.000000'
+0008    9 OP_CLOSURE          3 <fn g>
+0010      |                     local 3
+0012   10 OP_CONSTANT         4 '3.000000'
+0014   13 OP_CLOSURE          5 <fn h>
+0016      |                     local 5
+0018   15 OP_GET_LOCAL        2
+0020    | OP_CALL             0
+0022    | OP_POP
+0023   16 OP_GET_LOCAL        4
+0025    | OP_CALL             0
+0027    | OP_POP
+0028   17 OP_GET_LOCAL        6
+0030    | OP_CALL             0
+0032    | OP_POP
+0033   18 OP_POP
+0034    | OP_CLOSE_UPVALUE
+0035    | OP_POP
+0036    | OP_POP
+0037    | OP_POP
+0038    | OP_CLOSE_UPVALUE
+0039    | OP_POP
+0040    | OP_POP
+0041    | OP_POP
+0042    | OP_CLOSE_UPVALUE
+0043    | OP_POP
+0044    | OP_POP
+0045   20 OP_NIL
+0046    | OP_RETURN
