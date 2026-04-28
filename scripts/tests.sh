@@ -106,7 +106,7 @@ run_exit_test() {
         else
             message="got $actual_code, expected $expected_code"
         fi
-
+        
         echo "  ❌ $label ($message)"
         FAIL=$((FAIL + 1))
     else
@@ -137,10 +137,11 @@ for file_in in ./tests/*.lox; do
     exit_code=$?
     set -e
 
-    [[ $VERBOSE -eq 1 ]] && echo "📄 $base"
-    run_test      "[out]  $base" "$expected_out" "$actual_out"
-    run_test      "[err]  $base" "$expected_err" "$actual_err"
-    run_exit_test "[exit] $base" "$expected_exit" "$exit_code"
+    echo "🔬 $BIN $file_in"
+    run_test      "stdout" "$expected_out" "$actual_out"
+    run_test      "stderr" "$expected_err" "$actual_err"
+    run_exit_test "exit code" "$expected_exit" "$exit_code"
+    [[ $VERBOSE -eq 1 ]] && echo ""
 done
 
 echo
