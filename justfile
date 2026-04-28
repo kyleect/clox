@@ -4,6 +4,14 @@ docker_image := "clox"
 default:
     just --list
 
+# Build the VS Code language extension
+build-vsc:
+    ./scripts/build-vsc.sh
+
+# Open the project with the VS Code language extension enabled
+open-vsc: build-vsc
+    ./scripts/open-vsc.sh
+
 # Run the clox CLI
 run *args: build
     ./{{ cli }} {{ args }}

@@ -1,0 +1,52 @@
+{
+  "name": "clox-vscode-extension",
+  "version": "1.0.0",
+  "description": "VS Code extension for clox language",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:clox"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "clox",
+        "aliases": [
+          "Clox"
+        ],
+        "extensions": [
+          ".lox"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "clox",
+        "scopeName": "source.clox",
+        "path": "./syntaxes/clox.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "clox.run",
+        "title": "Run Clox File"
+      }
+    ]
+  },
+  "scripts": {
+    "tsc": "tsc",
+    "build": "tsc -p ."
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/vscode": "1.85.0",
+    "typescript": "6.0.3"
+  },
+  "author": "Kylee Tilley <kyleetilley@gmail.com>",
+  "license": "MIT"
+}

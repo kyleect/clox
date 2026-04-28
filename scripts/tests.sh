@@ -5,6 +5,8 @@ set -euo pipefail
 BIN="${BIN:-./build/clox-test}"
 DIFF="diff -u"
 
+export CLOX_TEST="CLOX_TEST=true"
+
 UPDATE=0
 VERBOSE=0
 FILTER=""

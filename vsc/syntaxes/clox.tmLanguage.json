@@ -1,0 +1,29 @@
+{
+  "scopeName": "source.clox",
+  "patterns": [
+    {
+      "name": "keyword.control.clox",
+      "match": "\\b(if|else|for|while|fun|return|var|print|true|false|nil)\\b"
+    },
+    {
+      "name": "entity.name.function.native.clox",
+      "match": "\\b(len|argv|argc|typeof|rand|rand01|randBetween|ceil|readFileToString|getenv|setenv|__version__|exit)\\b"
+    },
+    {
+      "name": "entity.name.function.stdlib.clox",
+      "match": "\\b(is|is_number|is_string|is_nil|is_function|is_bool|is_empty)\\b"
+    },
+    {
+      "name": "string.quoted.double.clox",
+      "match": "\".*?\""
+    },
+    {
+      "name": "constant.numeric.clox",
+      "match": "\\b\\d+(\\.\\d+)?\\b"
+    },
+    {
+      "name": "comment.line.double-slash.clox",
+      "match": "//.*$"
+    }
+  ]
+}
