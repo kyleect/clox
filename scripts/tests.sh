@@ -60,10 +60,10 @@ run_test() {
     fi
 
     if ! $DIFF "$expected" "$actual"; then
-        echo "❌ FAIL $label"
+        echo "❌ $label"
         FAIL=$((FAIL + 1))
     else
-        echo "✅ PASS $label"
+        echo "✅ $label"
         PASS=$((PASS + 1))
     fi
 }
@@ -91,10 +91,20 @@ run_exit_test() {
     expected_code=$(cat "$expected")
 
     if [[ "$actual_code" != "$expected_code" ]]; then
-        echo "❌ FAIL $label (got $actual_code, expected $expected_code)"
+        message=""
+
+        if  [[ "$actual_code" == "139" ]]; then
+            message="SEGFAULT"
+        elif [[ "$actual_code" == "134" ]]; then
+            message="OUT OF BOUNDS"
+        else
+            message="got $actual_code, expected $expected_code"
+        fi
+
+        echo "❌ $label ($message)"
         FAIL=$((FAIL + 1))
     else
-        echo "✅ PASS $label"
+        echo "✅ $label"
         PASS=$((PASS + 1))
     fi
 }
@@ -121,9 +131,13 @@ for file_in in ./tests/*.lox; do
     exit_code=$?
     set -e
 
+    echo "SUITE: $base"
+    echo ""
     run_test      "[out]  $base" "$expected_out" "$actual_out"
     run_test      "[err]  $base" "$expected_err" "$actual_err"
     run_exit_test "[exit] $base" "$expected_exit" "$exit_code"
+
+    echo ""
 done
 
 echo
