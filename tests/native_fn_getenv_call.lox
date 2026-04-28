@@ -1,1 +1,1 @@
-print getenv("PATH");
+print getenv("CLOX_TEST");

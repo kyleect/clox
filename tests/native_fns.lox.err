@@ -157,5 +157,11 @@
 0125    | OP_GET_GLOBAL      38 'argv'
 0127    | OP_CALL             1
 0129    | OP_PRINT
-0130   39 OP_NIL
-0131    | OP_RETURN
+0130   40 OP_GET_GLOBAL      39 'clock'
+0132    | OP_PRINT
+0133   41 OP_GET_GLOBAL      40 'typeof'
+0135    | OP_GET_GLOBAL      41 'clock'
+0137    | OP_CALL             1
+0139    | OP_PRINT
+0140   42 OP_NIL
+0141    | OP_RETURN

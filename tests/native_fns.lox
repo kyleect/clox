@@ -36,3 +36,6 @@ print typeof(argc);
 
 print argv;
 print typeof(argv);
+
+print clock;
+print typeof(clock);
