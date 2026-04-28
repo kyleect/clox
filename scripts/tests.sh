@@ -6,13 +6,19 @@ BIN="${BIN:-./build/clox-test}"
 DIFF="diff -u"
 
 UPDATE=0
+VERBOSE=0
 FILTER=""
 
-# Parse args (supports --update and optional filter)
 for arg in "$@"; do
     case "$arg" in
         --update)
             UPDATE=1
+            ;;
+        --verbose)
+            VERBOSE=1
+            ;;
+        -v)
+            VERBOSE=1
             ;;
         *)
             FILTER="$arg"
@@ -48,22 +54,22 @@ run_test() {
 
     if [[ $UPDATE -eq 1 ]]; then
         cp "$actual" "$expected"
-        echo "🔄 UPDATED: $label"
+        echo "  🔄 UPDATED: $label"
         PASS=$((PASS + 1))
         return
     fi
 
     if [[ ! -f "$expected" ]]; then
-        echo "🟨 SKIP $label (missing $(basename "$expected"))"
+        echo "  🟨 SKIP $label (missing $(basename "$expected"))"
         SKIP=$((SKIP + 1))
         return
     fi
 
     if ! $DIFF "$expected" "$actual"; then
-        echo "❌ $label"
+        echo "  ❌ $label"
         FAIL=$((FAIL + 1))
     else
-        echo "✅ $label"
+        [[ $VERBOSE -eq 1 ]] && echo "  ✅ $label"
         PASS=$((PASS + 1))
     fi
 }
@@ -77,13 +83,13 @@ run_exit_test() {
 
     if [[ $UPDATE -eq 1 ]]; then
         echo "$actual_code" > "$expected"
-        echo "🔄 UPDATED: $label"
+        echo "  🔄 UPDATED: $label"
         PASS=$((PASS + 1))
         return
     fi
 
     if [[ ! -f "$expected" ]]; then
-        echo "🟨 SKIP $label (missing $(basename "$expected"))"
+        echo "  🟨 SKIP $label (missing $(basename "$expected"))"
         SKIP=$((SKIP + 1))
         return
     fi
@@ -101,10 +107,10 @@ run_exit_test() {
             message="got $actual_code, expected $expected_code"
         fi
 
-        echo "❌ $label ($message)"
+        echo "  ❌ $label ($message)"
         FAIL=$((FAIL + 1))
     else
-        echo "✅ $label"
+        [[ $VERBOSE -eq 1 ]] && echo "  ✅ $label"
         PASS=$((PASS + 1))
     fi
 }
@@ -131,13 +137,10 @@ for file_in in ./tests/*.lox; do
     exit_code=$?
     set -e
 
-    echo "SUITE: $base"
-    echo ""
+    [[ $VERBOSE -eq 1 ]] && echo "📄 $base"
     run_test      "[out]  $base" "$expected_out" "$actual_out"
     run_test      "[err]  $base" "$expected_err" "$actual_err"
     run_exit_test "[exit] $base" "$expected_exit" "$exit_code"
-
-    echo ""
 done
 
 echo
