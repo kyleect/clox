@@ -3,7 +3,10 @@ fun fib(n) {
   return fib(n - 2) + fib(n - 1);
 }
 
-var n = parseNumber(argv(3));
+var argIndex = 3;
+var arg = argv(argIndex);
+
+var n = parseNumber(arg);
 
 print "Fib";
 print n;
