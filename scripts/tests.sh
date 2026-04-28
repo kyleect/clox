@@ -128,16 +128,23 @@ for file_in in ./tests/*.lox; do
     expected_out="./tests/$base.lox.out"
     expected_err="./tests/$base.lox.err"
     expected_exit="./tests/$base.lox.exit"
+    argv_file="./tests/$base.lox.argv"
 
     actual_out="$TMP_DIR/$base.lox.out"
     actual_err="$TMP_DIR/$base.lox.err"
 
+    # Gather extra arguments if an .lox.argv file exists
+    extra_args=()
+    if [[ -f "$argv_file" ]]; then
+        read -r -a extra_args < "$argv_file"
+    fi
+
     set +e
-    "$BIN" "$file_in" >"$actual_out" 2>"$actual_err"
+    "$BIN" -f "$file_in" -- ${extra_args[@]:-} >"$actual_out" 2>"$actual_err"
     exit_code=$?
     set -e
 
-    echo "🔬 $BIN $file_in"
+    echo "🔬 $BIN $file_in ${extra_args[*]:-}"
     run_test      "stdout" "$expected_out" "$actual_out"
     run_test      "stderr" "$expected_err" "$actual_err"
     run_exit_test "exit code" "$expected_exit" "$exit_code"

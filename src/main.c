@@ -15,14 +15,23 @@ static void repl();
 static char *readFile(const char *path);
 static void runFile(const char *path);
 
-const char *help_message = "Usage: clox [-h] [-v] [path]\n";
+const char *help_message = "Usage: clox [-h] [-v] [-r|-f [path]] \n";
 
-const char *short_options = "hv";
+const char *short_options = "hvrf";
 static struct option long_options[] = {{"help", no_argument, 0, 'h'},
                                        {"version", no_argument, 0, 'v'},
+                                       {"file", no_argument, 0, 'f'},
+                                       {"repl", no_argument, 0, 'r'},
                                        {0, 0, 0, 0}};
 
 int main(int argc, char *argv[]) {
+  int saved_argc = argc;
+  char **saved_argv = malloc(sizeof(char *) * (argc + 1));
+  for (int i = 0; i < argc; i++) {
+    saved_argv[i] = argv[i];
+  }
+  saved_argv[argc] = NULL;
+
   int opt;
   int long_index = 0;
 
@@ -36,25 +45,25 @@ int main(int argc, char *argv[]) {
     case 'v':
       printf("%s\n", CLOX_VERSION);
       return 0;
+    case 'r':
+      initVM(saved_argc, saved_argv);
+      runFile("stdlib/stdlib.lox");
+      repl();
+      freeVM();
+      free(saved_argv);
+      return 0;
+    case 'f':
+      initVM(saved_argc, saved_argv);
+      runFile("stdlib/stdlib.lox");
+      runFile(argv[optind]);
+      freeVM();
+      free(saved_argv);
+      return 0;
     }
   }
 
-  if (optind >= argc) {
-    initVM();
-    runFile("stdlib/stdlib.lox");
-    repl();
-    freeVM();
-  } else if (optind == argc - 1) {
-    initVM();
-    runFile("stdlib/stdlib.lox");
-    runFile(argv[optind]);
-    freeVM();
-  } else {
-    fprintf(stderr, "%s\n", help_message);
-    exit(64);
-  }
-
-  return 0;
+  printf("%s", help_message);
+  return 64;
 }
 
 static void repl() {

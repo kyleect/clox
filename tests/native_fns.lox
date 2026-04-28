@@ -30,3 +30,9 @@ print typeof(len);
 
 print typeof;
 print typeof(typeof);
+
+print argc;
+print typeof(argc);
+
+print argv;
+print typeof(argv);

@@ -145,5 +145,17 @@
 0105    | OP_GET_GLOBAL      32 'typeof'
 0107    | OP_CALL             1
 0109    | OP_PRINT
-0110   33 OP_NIL
-0111    | OP_RETURN
+0110   34 OP_GET_GLOBAL      33 'argc'
+0112    | OP_PRINT
+0113   35 OP_GET_GLOBAL      34 'typeof'
+0115    | OP_GET_GLOBAL      35 'argc'
+0117    | OP_CALL             1
+0119    | OP_PRINT
+0120   37 OP_GET_GLOBAL      36 'argv'
+0122    | OP_PRINT
+0123   38 OP_GET_GLOBAL      37 'typeof'
+0125    | OP_GET_GLOBAL      38 'argv'
+0127    | OP_CALL             1
+0129    | OP_PRINT
+0130   39 OP_NIL
+0131    | OP_RETURN

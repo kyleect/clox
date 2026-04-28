@@ -207,6 +207,59 @@ static Value typeofNative(int argCount, Value *args) {
   return OBJ_VAL(takeString(buffer, strlen(buffer)));
 }
 
+static Value argvNative(int argCount, Value *args) {
+  if (argCount != 1) {
+    runtimeError("argv(index) expects exactly 1 argument.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  Value index = args[0];
+  if (!IS_NUMBER(index)) {
+    runtimeError("argv(index) argument must be a number.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  int idx = (int)AS_NUMBER(index);
+  if (idx < 0 || idx >= vm.argc) {
+    runtimeError("argv index %d out of bounds (0‑%d).", idx, vm.argc - 1);
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  const char *c_arg = vm.argv[idx];
+  ObjString *cloxStr = copyString(c_arg, (int)strlen(c_arg));
+
+  return OBJ_VAL(cloxStr);
+}
+
+static Value argcNative(int argCount, Value *args) {
+  if (argCount != 0) {
+    runtimeError("argv() expects exactly 0 arguments.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  int argc = vm.argc;
+
+  return NUMBER_VAL(argc);
+}
+
+static Value parseNumberNative(int argCount, Value *args) {
+  if (argCount != 1) {
+    runtimeError("parseNumber(value) expects exactly 1 argument.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  Value value = args[0];
+  if (!IS_STRING(value)) {
+    runtimeError("parseNumber(value) argument must be a string.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  char *valueString = AS_CSTRING(value);
+  int valueInt = strtol(valueString, NULL, 10);
+
+  return NUMBER_VAL(valueInt);
+}
+
 InterpretResult interpret(const char *source) {
   TRACELN("vm.interpret()");
 
@@ -261,10 +314,12 @@ static void defineNative(const char *name, NativeFn function) {
   pop();
 }
 
-void initVM() {
+void initVM(int argc, char *argv[]) {
   TRACELN("vm.initVM()");
   srand(time(NULL));
   resetStack();
+  vm.argc = argc;
+  vm.argv = argv;
   vm.objects = NULL;
 
   vm.grayCount = 0;
@@ -286,6 +341,9 @@ void initVM() {
   defineNative("setenv", setEnvNative);
   defineNative("len", lenNative);
   defineNative("typeof", typeofNative);
+  defineNative("argv", argvNative);
+  defineNative("argc", argcNative);
+  defineNative("parseNumber", parseNumberNative);
 }
 
 void freeVM() {

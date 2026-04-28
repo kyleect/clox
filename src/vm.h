@@ -16,6 +16,9 @@ typedef struct {
 } CallFrame;
 
 typedef struct {
+  int argc;
+  char **argv;
+
   CallFrame frames[FRAMES_MAX];
   int frameCount;
 
@@ -40,7 +43,7 @@ typedef enum {
   INTERPRET_RUNTIME_ERROR
 } InterpretResult;
 
-void initVM();
+void initVM(int argc, char *argv[]);
 void freeVM();
 InterpretResult interpret(const char *source);
 void push(Value value);
