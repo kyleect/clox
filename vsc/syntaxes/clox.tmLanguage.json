@@ -3,7 +3,7 @@
   "patterns": [
     {
       "name": "keyword.control.clox",
-      "match": "\\b(if|else|for|while|fun|return|var|print|true|false|nil)\\b"
+      "match": "\\b(if|else|for|while|fun|return|var|print|true|false|nil|class)\\b"
     },
     {
       "name": "entity.name.function.native.clox",

@@ -34,6 +34,7 @@ typedef enum {
   OP_LESS,
   OP_CALL,
   OP_CLOSURE,
+  OP_CLASS,
 } OpCode;
 
 typedef struct {
