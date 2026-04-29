@@ -194,6 +194,14 @@ void objectTypeToString(ObjType type, char *buffer, size_t size) {
     snprintf(buffer, size, "upvalue");
     break;
   }
+  case OBJ_CLASS: {
+    snprintf(buffer, size, "class");
+    break;
+  }
+  case OBJ_INSTANCE: {
+    snprintf(buffer, size, "instance");
+    break;
+  }
   }
 }
 
