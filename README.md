@@ -4,4 +4,7 @@
 
 Yet another clox implementation.
 
-- [DEVELOPMENT.md](./DEVELOPMENT.md)
+## Documentation
+
+- [Development](./docs/DEVELOPMENT.md)
+- [Goals](./docs/GOALSV1.md)
