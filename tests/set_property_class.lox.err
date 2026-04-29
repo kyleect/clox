@@ -81,11 +81,13 @@
 == <script> ==
 0000    1 OP_CLASS            0 'Class'
 0002    | OP_DEFINE_GLOBAL    0 'Class'
-0004    3 OP_GET_GLOBAL       1 'Class'
-0006    | OP_NIL
-0007    | OP_SET_PROPERTY     2 'value'
-0009    | OP_POP
-0010    4 OP_NIL
-0011    | OP_RETURN
+0004    | OP_GET_GLOBAL       1 'Class'
+0006    | OP_POP
+0007    3 OP_GET_GLOBAL       2 'Class'
+0009    | OP_NIL
+0010    | OP_SET_PROPERTY     3 'value'
+0012    | OP_POP
+0013    4 OP_NIL
+0014    | OP_RETURN
 Only instances have fields.
 [line 3] in script
