@@ -1,0 +1,9 @@
+class Class {
+    init (value) {
+        this.value = value;
+    }
+}
+
+var instance = Class(123);
+
+print instance.value;

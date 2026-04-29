@@ -1,0 +1,15 @@
+class Class {
+    printThis() {
+        fun innerClosure() {
+            print this;
+        }
+
+        return innerClosure;
+    }
+}
+
+var instance = Class();
+
+var closure = instance.printThis();
+
+closure();

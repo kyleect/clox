@@ -40,7 +40,12 @@ typedef struct {
   bool isCaptured;
 } Local;
 
-typedef enum { TYPE_FUNCTION, TYPE_SCRIPT } FunctionType;
+typedef enum {
+  TYPE_FUNCTION,
+  TYPE_METHOD,
+  TYPE_INITIALIZER,
+  TYPE_SCRIPT
+} FunctionType;
 
 typedef struct {
   uint8_t index;
@@ -59,6 +64,10 @@ struct Compiler {
   Upvalue upvalues[UINT8_COUNT];
   int scopeDepth;
 };
+
+typedef struct ClassCompiler {
+  struct ClassCompiler *enclosing;
+} ClassCompiler;
 
 ObjFunction *compile(const char *source);
 void markCompilerRoots();
