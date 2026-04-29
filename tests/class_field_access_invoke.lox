@@ -1,0 +1,11 @@
+class Class {}
+
+var instance = Class();
+
+fun fn() {
+    print "Hello World";
+}
+
+instance.fn = fn;
+
+instance.fn();

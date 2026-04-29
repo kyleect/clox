@@ -96,19 +96,18 @@
 0013    | OP_CALL             0
 0015    | OP_DEFINE_GLOBAL    4 'instance'
 0017    9 OP_GET_GLOBAL       6 'instance'
-0019    | OP_GET_PROPERTY     7 'set'
-0021    | OP_CONSTANT         8 'Hello'
-0023    | OP_CALL             1
-0025    | OP_POP
-0026   11 OP_GET_GLOBAL       9 'instance'
-0028    | OP_GET_PROPERTY    10 'value'
-0030    | OP_PRINT
-0031   13 OP_GET_GLOBAL      11 'instance'
-0033    | OP_CONSTANT        13 'World'
-0035    | OP_SET_PROPERTY    12 'value'
-0037    | OP_POP
-0038   15 OP_GET_GLOBAL      14 'instance'
-0040    | OP_GET_PROPERTY    15 'value'
-0042    | OP_PRINT
-0043   16 OP_NIL
-0044    | OP_RETURN
+0019    | OP_CONSTANT         8 'Hello'
+0021    | OP_INVOKE        (1 args)    7 'set'
+0024    | OP_POP
+0025   11 OP_GET_GLOBAL       9 'instance'
+0027    | OP_GET_PROPERTY    10 'value'
+0029    | OP_PRINT
+0030   13 OP_GET_GLOBAL      11 'instance'
+0032    | OP_CONSTANT        13 'World'
+0034    | OP_SET_PROPERTY    12 'value'
+0036    | OP_POP
+0037   15 OP_GET_GLOBAL      14 'instance'
+0039    | OP_GET_PROPERTY    15 'value'
+0041    | OP_PRINT
+0042   16 OP_NIL
+0043    | OP_RETURN
