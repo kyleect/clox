@@ -18,10 +18,35 @@
 #define FREE_ARRAY(type, pointer, oldCount)                                    \
   reallocate(pointer, sizeof(type) * (oldCount), 0)
 
+/**
+ * Reallocate a block of memory
+ *
+ * - Triggers garbage collection check when allocating more memory
+ */
 void *reallocate(void *pointer, size_t oldSize, size_t newSize);
+
+/**
+ * Mark object as reachable/used
+ */
 void markObject(Obj *object);
+
+/**
+ * Mark value as reachable/used
+ *
+ * This only happens if the value is an object
+ */
 void markValue(Value value);
+
+/**
+ * Check for unreachable/unsed objects and free them from memory
+ */
 void collectGarbage();
+
+/**
+ * Free object from memory
+ *
+ * This happens when the VM is shutting down
+ */
 void freeObjects();
 
 #endif

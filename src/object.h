@@ -89,7 +89,14 @@ typedef struct {
   ObjClosure *method;
 } ObjBoundMethod;
 
+/**
+ * Allocate a new class
+ */
 ObjClass *newClass(ObjString *name);
+
+/**
+ * Allocate a new closure
+ */
 ObjClosure *newClosure(ObjFunction *function);
 
 typedef Value (*NativeFn)(int argCount, Value *args);
@@ -99,11 +106,22 @@ typedef struct {
   NativeFn function;
 } ObjNative;
 
+/**
+ * Allocate a new function
+ */
 ObjFunction *newFunction();
+
+/**
+ * Allocate a new class instance
+ */
 ObjInstance *newInstance(ObjClass *klass);
 ObjNative *newNative(NativeFn function);
 ObjString *takeString(char *chars, int length);
 ObjString *copyString(const char *chars, int length);
+
+/**
+ * Allocate a new closure upvalue
+ */
 ObjUpvalue *newUpvalue(Value *slot);
 ObjBoundMethod *newBoundMethod(Value receiver, ObjClosure *method);
 

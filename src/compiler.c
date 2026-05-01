@@ -53,6 +53,13 @@ Chunk *compilingChunk;
 Compiler *current = NULL;
 ClassCompiler *currentClass = NULL;
 
+/**
+ * Initialize compiler to compile a function
+ *
+ * - Sets current compiler as the enclosing compiler
+ * - Sets the function type being compiled
+ * - Sets new compiler as the current one
+ */
 static void initCompiler(Compiler *compiler, FunctionType functionType) {
   TRACELN("  compiler.initCompiler()");
   compiler->enclosing = current;
@@ -81,9 +88,6 @@ static void initCompiler(Compiler *compiler, FunctionType functionType) {
   }
 }
 
-/**
- * Compile source code in to a bytecode chunk for the VM
- */
 ObjFunction *compile(const char *source) {
   TRACELN("  compiler.compile()");
 

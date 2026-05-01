@@ -260,20 +260,28 @@ static Value parseNumberNative(int argCount, Value *args) {
   return NUMBER_VAL(valueInt);
 }
 
-InterpretResult interpret(const char *source) {
-  TRACELN("vm.interpret()");
+InterpretResult interpretFunction(ObjFunction *function) {
+  TRACELN("vm.interpretFunction()");
 
-  ObjFunction *function = compile(source);
   if (function == NULL)
     return INTERPRET_COMPILE_ERROR;
 
   push(OBJ_VAL(function));
   ObjClosure *closure = newClosure(function);
   pop();
+
   push(OBJ_VAL(closure));
   call(closure, 0);
 
   return run();
+}
+
+InterpretResult interpret(const char *source) {
+  TRACELN("vm.interpret()");
+
+  ObjFunction *function = compile(source);
+
+  return interpretFunction(function);
 }
 
 static void resetStack() {

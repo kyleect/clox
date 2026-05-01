@@ -69,7 +69,16 @@ typedef struct ClassCompiler {
   struct ClassCompiler *enclosing;
 } ClassCompiler;
 
+/**
+ * Compile source code in to a compiled function object.
+ *
+ * This compiled object can be ran by the VM.
+ */
 ObjFunction *compile(const char *source);
+
+/**
+ * Mark all objects that are referenced by the compiler as roots
+ */
 void markCompilerRoots();
 
 #endif
