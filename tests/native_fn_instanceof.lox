@@ -1,0 +1,10 @@
+class ClassA {}
+class ClassB {}
+
+var instanceA = ClassA();
+var instanceB = ClassB();
+
+print instanceOf(instanceA, ClassA);
+print instanceOf(instanceB, ClassB);
+print instanceOf(instanceA, ClassB);
+print instanceOf(instanceB, ClassA);

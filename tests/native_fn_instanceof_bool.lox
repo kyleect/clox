@@ -1,0 +1,3 @@
+class Class {}
+
+print instanceOf(true, Class);

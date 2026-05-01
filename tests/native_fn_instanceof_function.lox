@@ -1,0 +1,5 @@
+class Class {}
+
+fun test() {}
+
+print instanceOf(test, Class);

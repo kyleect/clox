@@ -207,6 +207,31 @@ static Value typeofNative(int argCount, Value *args) {
   return OBJ_VAL(takeString(buffer, strlen(buffer)));
 }
 
+static Value instanceOfNative(int argCount, Value *args) {
+  if (argCount != 2) {
+    runtimeError("instanceOf(value, class) expects 2 argument.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  Value value = args[0];
+  Value klass = args[1];
+
+  if (!IS_INSTANCE(value)) {
+    return BOOL_VAL(false);
+  }
+
+  if (!IS_CLASS(klass)) {
+    runtimeError(
+        "instanceOf(value, class) expects second argument to be a class");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  ObjInstance *instance = AS_INSTANCE(value);
+  ObjClass *klass2 = AS_CLASS(klass);
+
+  return BOOL_VAL(instance->klass == klass2);
+}
+
 static Value argvNative(int argCount, Value *args) {
   if (argCount != 1) {
     runtimeError("argv(index) expects exactly 1 argument.");
@@ -357,6 +382,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("argv", argvNative);
   defineNative("argc", argcNative);
   defineNative("parseNumber", parseNumberNative);
+  defineNative("instanceOf", instanceOfNative);
 }
 
 void freeVM() {
