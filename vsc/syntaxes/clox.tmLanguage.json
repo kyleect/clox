@@ -7,7 +7,7 @@
     },
     {
       "name": "entity.name.function.native.clox",
-      "match": "\\b(len|argv|argc|typeof|rand|rand01|randBetween|ceil|readFileToString|getenv|setenv|__version__|exit|instanceOf)\\b"
+      "match": "\\b(len|argv|argc|typeof|rand|rand01|randBetween|ceil|readFileToString|getenv|setenv|__version__|exit|instanceOf|prompt|stdin)\\b"
     },
     {
       "name": "entity.name.function.stdlib.clox",

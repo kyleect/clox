@@ -1,0 +1,7 @@
+// Read in text from stdin. Reads until EOF.
+//
+// cat path/to/file.txt | clox stdin.lox
+
+var text = stdin();
+
+print text;

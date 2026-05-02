@@ -232,6 +232,122 @@ static Value instanceOfNative(int argCount, Value *args) {
   return BOOL_VAL(instance->klass == klass2);
 }
 
+static Value stdinNative(int argCount, Value *args) {
+  if (argCount > 1) {
+    runtimeError("input() takes at most 1 argument.");
+    return NIL_VAL;
+  }
+
+  if (argCount == 1) {
+    if (!IS_STRING(args[0])) {
+      runtimeError("input() argument must be a string.");
+      return NIL_VAL;
+    }
+    ObjString *prompt = AS_STRING(args[0]);
+    fwrite(prompt->chars, sizeof(char), prompt->length, stdout);
+    fflush(stdout);
+  }
+
+  const size_t MAX_INPUT = 1024 * 1024 * 5; // 5 MB cap
+
+  size_t capacity = 64;
+  size_t length = 0;
+  char *buffer = ALLOCATE(char, capacity);
+
+  int c;
+  while ((c = getchar()) != EOF) {
+    // Handle Windows CRLF: skip '\r'
+    if (c == '\r')
+      continue;
+
+    if (length + 1 >= capacity) {
+      size_t newCapacity = capacity * 2;
+
+      if (newCapacity > MAX_INPUT) {
+        newCapacity = MAX_INPUT;
+      }
+
+      if (capacity == MAX_INPUT) {
+        FREE_ARRAY(char, buffer, capacity);
+        runtimeError("input() exceeded maximum length.");
+        return NIL_VAL;
+      }
+
+      buffer = GROW_ARRAY(char, buffer, capacity, newCapacity);
+      capacity = newCapacity;
+    }
+
+    buffer[length++] = (char)c;
+  }
+
+  if (c == EOF && length == 0) {
+    FREE_ARRAY(char, buffer, capacity);
+    return NIL_VAL;
+  }
+
+  buffer[length] = '\0';
+
+  return OBJ_VAL(takeString(buffer, length));
+}
+
+static Value promptNative(int argCount, Value *args) {
+  if (argCount > 1) {
+    runtimeError("input() takes at most 1 argument.");
+    return NIL_VAL;
+  }
+
+  if (argCount == 1) {
+    if (!IS_STRING(args[0])) {
+      runtimeError("input() argument must be a string.");
+      return NIL_VAL;
+    }
+    ObjString *prompt = AS_STRING(args[0]);
+    fwrite(prompt->chars, sizeof(char), prompt->length, stdout);
+    fflush(stdout);
+  }
+
+  const size_t MAX_INPUT = 1024 * 1024; // 1 MB cap
+
+  size_t capacity = 64;
+  size_t length = 0;
+  char *buffer = ALLOCATE(char, capacity);
+
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF) {
+    // Handle Windows CRLF: skip '\r'
+    if (c == '\r')
+      continue;
+
+    if (length + 1 >= capacity) {
+      size_t newCapacity = capacity * 2;
+
+      if (newCapacity > MAX_INPUT) {
+        newCapacity = MAX_INPUT;
+      }
+
+      if (capacity == MAX_INPUT) {
+        FREE_ARRAY(char, buffer, capacity);
+        runtimeError("input() exceeded maximum length.");
+        return NIL_VAL;
+      }
+
+      buffer = GROW_ARRAY(char, buffer, capacity, newCapacity);
+      capacity = newCapacity;
+    }
+
+    buffer[length++] = (char)c;
+  }
+
+  if (c == EOF && length == 0) {
+    FREE_ARRAY(char, buffer, capacity);
+    return NIL_VAL;
+  }
+
+  buffer[length] = '\0';
+
+  return OBJ_VAL(takeString(buffer, length));
+}
+
 static Value argvNative(int argCount, Value *args) {
   if (argCount != 1) {
     runtimeError("argv(index) expects exactly 1 argument.");
@@ -383,6 +499,8 @@ void initVM(int argc, char *argv[]) {
   defineNative("argc", argcNative);
   defineNative("parseNumber", parseNumberNative);
   defineNative("instanceOf", instanceOfNative);
+  defineNative("prompt", promptNative);
+  defineNative("stdin", stdinNative);
 }
 
 void freeVM() {
