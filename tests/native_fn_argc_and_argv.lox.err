@@ -102,5 +102,9 @@
 0035    | OP_CONSTANT        10 '4.000000'
 0037    | OP_CALL             1
 0039    | OP_PRINT
-0040    | OP_NIL
-0041    | OP_RETURN
+0040    7 OP_GET_GLOBAL      11 'argv'
+0042    | OP_CONSTANT        12 '99.000000'
+0044    | OP_CALL             1
+0046    | OP_PRINT
+0047    | OP_NIL
+0048    | OP_RETURN

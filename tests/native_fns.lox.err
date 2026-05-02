@@ -163,5 +163,17 @@
 0135    | OP_GET_GLOBAL      41 'clock'
 0137    | OP_CALL             1
 0139    | OP_PRINT
-0140   42 OP_NIL
-0141    | OP_RETURN
+0140   43 OP_GET_GLOBAL      42 'prompt'
+0142    | OP_PRINT
+0143   44 OP_GET_GLOBAL      43 'typeof'
+0145    | OP_GET_GLOBAL      44 'prompt'
+0147    | OP_CALL             1
+0149    | OP_PRINT
+0150   46 OP_GET_GLOBAL      45 'stdin'
+0152    | OP_PRINT
+0153   47 OP_GET_GLOBAL      46 'typeof'
+0155    | OP_GET_GLOBAL      47 'stdin'
+0157    | OP_CALL             1
+0159    | OP_PRINT
+0160   48 OP_NIL
+0161    | OP_RETURN

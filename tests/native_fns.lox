@@ -39,3 +39,9 @@ print typeof(argv);
 
 print clock;
 print typeof(clock);
+
+print prompt;
+print typeof(prompt);
+
+print stdin;
+print typeof(stdin);
