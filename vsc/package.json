@@ -8,9 +8,6 @@
   "categories": [
     "Programming Languages"
   ],
-  "activationEvents": [
-    "onLanguage:clox"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "languages": [
@@ -21,7 +18,8 @@
         ],
         "extensions": [
           ".lox"
-        ]
+        ],
+        "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
