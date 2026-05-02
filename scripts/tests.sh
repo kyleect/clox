@@ -5,8 +5,6 @@ set -euo pipefail
 BIN="${BIN:-./build/clox-test}"
 DIFF="diff -u"
 
-export CLOX_TEST="CLOX_TEST=true"
-
 UPDATE=0
 VERBOSE=0
 FILTER=""
@@ -16,10 +14,7 @@ for arg in "$@"; do
         --update)
             UPDATE=1
             ;;
-        --verbose)
-            VERBOSE=1
-            ;;
-        -v)
+        --verbose|-v)
             VERBOSE=1
             ;;
         *)
@@ -40,10 +35,7 @@ TOTAL=0
 should_run() {
     local name="$1"
 
-    if [[ -z "$FILTER" ]]; then
-        return 0
-    fi
-
+    [[ -z "$FILTER" ]] && return 0
     [[ "$name" == *"$FILTER"* ]]
 }
 
@@ -99,16 +91,14 @@ run_exit_test() {
     expected_code=$(cat "$expected")
 
     if [[ "$actual_code" != "$expected_code" ]]; then
-        message=""
-
-        if  [[ "$actual_code" == "139" ]]; then
+        if [[ "$actual_code" == "139" ]]; then
             message="SEGFAULT"
         elif [[ "$actual_code" == "134" ]]; then
             message="OUT OF BOUNDS"
         else
             message="got $actual_code, expected $expected_code"
         fi
-        
+
         echo "  ❌ $label ($message)"
         FAIL=$((FAIL + 1))
     else
@@ -120,10 +110,7 @@ run_exit_test() {
 for file_in in ./tests/*.lox; do
     base=$(basename "$file_in" .lox)
 
-    # Apply filter
-    if ! should_run "$base"; then
-        continue
-    fi
+    should_run "$base" || continue
 
     SUITES=$((SUITES + 1))
 
@@ -132,45 +119,50 @@ for file_in in ./tests/*.lox; do
     expected_exit="./tests/$base.lox.exit"
     argv_file="./tests/$base.lox.argv"
     env_file="./tests/$base.lox.env"
+    input_file="./tests/$base.lox.in"
 
     actual_out="$TMP_DIR/$base.lox.out"
     actual_err="$TMP_DIR/$base.lox.err"
 
-    # Gather extra arguments if an .lox.argv file exists
     extra_args=()
-    if [[ -f "$argv_file" ]]; then
-        read -r -a extra_args < "$argv_file"
-    fi
+    [[ -f "$argv_file" ]] && read -r -a extra_args < "$argv_file"
 
     echo "🔬 $file_in ${extra_args[*]:-}"
 
     set +e
 
-    if [[ -f "$env_file" ]]; then
-        (
-            set -a
-            source "$env_file"
-            set +a
+    run_cmd=( "$BIN" -f "$file_in" -- "${extra_args[@]:-}" )
 
-            "$BIN" -f "$file_in" -- "${extra_args[@]:-}" \
-                >"$actual_out" 2>"$actual_err"
-        )
-    else
-        "$BIN" -f "$file_in" -- "${extra_args[@]:-}" \
-            >"$actual_out" 2>"$actual_err"
+    stdin_cmd=()
+    [[ -f "$input_file" ]] && stdin_cmd=( cat "$input_file" )
+
+    if [[ -f "$env_file" ]]; then
+        run_cmd=( bash -c '
+            set -a
+            source "$1"
+            set +a
+            shift
+            exec "$@"
+        ' _ "$env_file" "${run_cmd[@]}" )
     fi
+
+    if [[ ${#stdin_cmd[@]} -gt 0 ]]; then
+        "${stdin_cmd[@]}" | "${run_cmd[@]}" >"$actual_out" 2>"$actual_err"
+    else
+        "${run_cmd[@]}" >"$actual_out" 2>"$actual_err"
+    fi
+
     exit_code=$?
     set -e
 
     run_test      "stdout" "$expected_out" "$actual_out"
     run_test      "stderr" "$expected_err" "$actual_err"
     run_exit_test "exit code" "$expected_exit" "$exit_code"
+
     [[ $VERBOSE -eq 1 ]] && echo ""
 done
 
 echo
 echo "Total: $TOTAL | Passed: $PASS | Failed: $FAIL | Skipped: $SKIP | Suites: $SUITES"
 
-if [[ $FAIL -ne 0 ]]; then
-    exit 1
-fi
+[[ $FAIL -ne 0 ]] && exit 1

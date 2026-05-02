@@ -181,5 +181,5 @@
 0165    | OP_GET_GLOBAL      50 'instanceOf'
 0167    | OP_CALL             1
 0169    | OP_PRINT
-0170    | OP_NIL
+0170   51 OP_NIL
 0171    | OP_RETURN
