@@ -45,3 +45,6 @@ print typeof(prompt);
 
 print stdin;
 print typeof(stdin);
+
+print instanceOf;
+print typeof(instanceOf);

@@ -175,5 +175,11 @@
 0155    | OP_GET_GLOBAL      47 'stdin'
 0157    | OP_CALL             1
 0159    | OP_PRINT
-0160   48 OP_NIL
-0161    | OP_RETURN
+0160   49 OP_GET_GLOBAL      48 'instanceOf'
+0162    | OP_PRINT
+0163   50 OP_GET_GLOBAL      49 'typeof'
+0165    | OP_GET_GLOBAL      50 'instanceOf'
+0167    | OP_CALL             1
+0169    | OP_PRINT
+0170    | OP_NIL
+0171    | OP_RETURN
