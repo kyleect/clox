@@ -19,6 +19,9 @@ print typeof(ceil);
 print readFileToString;
 print typeof(readFileToString);
 
+print fileExists;
+print typeof(fileExists);
+
 print getenv;
 print typeof(getenv);
 

@@ -1,0 +1,4 @@
+print fileExists("./tests/native_fn_read_file_to_string.lox");
+print fileExists("./tests/");
+print fileExists("./doesnt_exit.lox");
+print fileExists("./doesnt_exit/");

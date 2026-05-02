@@ -121,65 +121,71 @@
 0065    | OP_GET_GLOBAL      20 'readFileToString'
 0067    | OP_CALL             1
 0069    | OP_PRINT
-0070   22 OP_GET_GLOBAL      21 'getenv'
+0070   22 OP_GET_GLOBAL      21 'fileExists'
 0072    | OP_PRINT
 0073   23 OP_GET_GLOBAL      22 'typeof'
-0075    | OP_GET_GLOBAL      23 'getenv'
+0075    | OP_GET_GLOBAL      23 'fileExists'
 0077    | OP_CALL             1
 0079    | OP_PRINT
-0080   25 OP_GET_GLOBAL      24 'setenv'
+0080   25 OP_GET_GLOBAL      24 'getenv'
 0082    | OP_PRINT
 0083   26 OP_GET_GLOBAL      25 'typeof'
-0085    | OP_GET_GLOBAL      26 'setenv'
+0085    | OP_GET_GLOBAL      26 'getenv'
 0087    | OP_CALL             1
 0089    | OP_PRINT
-0090   28 OP_GET_GLOBAL      27 'len'
+0090   28 OP_GET_GLOBAL      27 'setenv'
 0092    | OP_PRINT
 0093   29 OP_GET_GLOBAL      28 'typeof'
-0095    | OP_GET_GLOBAL      29 'len'
+0095    | OP_GET_GLOBAL      29 'setenv'
 0097    | OP_CALL             1
 0099    | OP_PRINT
-0100   31 OP_GET_GLOBAL      30 'typeof'
+0100   31 OP_GET_GLOBAL      30 'len'
 0102    | OP_PRINT
 0103   32 OP_GET_GLOBAL      31 'typeof'
-0105    | OP_GET_GLOBAL      32 'typeof'
+0105    | OP_GET_GLOBAL      32 'len'
 0107    | OP_CALL             1
 0109    | OP_PRINT
-0110   34 OP_GET_GLOBAL      33 'argc'
+0110   34 OP_GET_GLOBAL      33 'typeof'
 0112    | OP_PRINT
 0113   35 OP_GET_GLOBAL      34 'typeof'
-0115    | OP_GET_GLOBAL      35 'argc'
+0115    | OP_GET_GLOBAL      35 'typeof'
 0117    | OP_CALL             1
 0119    | OP_PRINT
-0120   37 OP_GET_GLOBAL      36 'argv'
+0120   37 OP_GET_GLOBAL      36 'argc'
 0122    | OP_PRINT
 0123   38 OP_GET_GLOBAL      37 'typeof'
-0125    | OP_GET_GLOBAL      38 'argv'
+0125    | OP_GET_GLOBAL      38 'argc'
 0127    | OP_CALL             1
 0129    | OP_PRINT
-0130   40 OP_GET_GLOBAL      39 'clock'
+0130   40 OP_GET_GLOBAL      39 'argv'
 0132    | OP_PRINT
 0133   41 OP_GET_GLOBAL      40 'typeof'
-0135    | OP_GET_GLOBAL      41 'clock'
+0135    | OP_GET_GLOBAL      41 'argv'
 0137    | OP_CALL             1
 0139    | OP_PRINT
-0140   43 OP_GET_GLOBAL      42 'prompt'
+0140   43 OP_GET_GLOBAL      42 'clock'
 0142    | OP_PRINT
 0143   44 OP_GET_GLOBAL      43 'typeof'
-0145    | OP_GET_GLOBAL      44 'prompt'
+0145    | OP_GET_GLOBAL      44 'clock'
 0147    | OP_CALL             1
 0149    | OP_PRINT
-0150   46 OP_GET_GLOBAL      45 'stdin'
+0150   46 OP_GET_GLOBAL      45 'prompt'
 0152    | OP_PRINT
 0153   47 OP_GET_GLOBAL      46 'typeof'
-0155    | OP_GET_GLOBAL      47 'stdin'
+0155    | OP_GET_GLOBAL      47 'prompt'
 0157    | OP_CALL             1
 0159    | OP_PRINT
-0160   49 OP_GET_GLOBAL      48 'instanceOf'
+0160   49 OP_GET_GLOBAL      48 'stdin'
 0162    | OP_PRINT
 0163   50 OP_GET_GLOBAL      49 'typeof'
-0165    | OP_GET_GLOBAL      50 'instanceOf'
+0165    | OP_GET_GLOBAL      50 'stdin'
 0167    | OP_CALL             1
 0169    | OP_PRINT
-0170   51 OP_NIL
-0171    | OP_RETURN
+0170   52 OP_GET_GLOBAL      51 'instanceOf'
+0172    | OP_PRINT
+0173   53 OP_GET_GLOBAL      52 'typeof'
+0175    | OP_GET_GLOBAL      53 'instanceOf'
+0177    | OP_CALL             1
+0179    | OP_PRINT
+0180   54 OP_NIL
+0181    | OP_RETURN

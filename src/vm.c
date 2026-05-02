@@ -1,3 +1,4 @@
+#include "sys/stat.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -20,6 +21,7 @@ static Value peek(int distance);
 static InterpretResult run();
 static void concatenate();
 static bool call(ObjClosure *function, int argCount);
+Value fileExists(char *filename);
 
 VM vm;
 
@@ -98,17 +100,35 @@ static Value ceilNative(int argCount, Value *args) {
   return NUMBER_VAL(ceil(AS_NUMBER(value)));
 }
 
-static Value readFileToStringNative(int argCount, Value *args) {
+static Value fileExistsNative(int argCount, Value *args) {
   if (argCount != 1) {
-    runtimeError("ceil(value) expects 1 arguments.");
-    return NIL_VAL;
+    runtimeError("fileExists(path) expects 1 arguments.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
   Value value = args[0];
 
   if (!IS_STRING(value)) {
-    runtimeError("ceil(value) argument must be a number.");
-    return NIL_VAL;
+    runtimeError("fileExists(path) argument must be a string.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  ObjString *path = AS_STRING(value);
+
+  return fileExists(path->chars);
+}
+
+static Value readFileToStringNative(int argCount, Value *args) {
+  if (argCount != 1) {
+    runtimeError("readFileToString(path) expects 1 arguments.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  Value value = args[0];
+
+  if (!IS_STRING(value)) {
+    runtimeError("readFileToString(path) argument must be a string.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
   ObjString *path = AS_STRING(value);
@@ -490,6 +510,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("randBetween", randBetweenNative);
   defineNative("ceil", ceilNative);
   defineNative("readFileToString", readFileToStringNative);
+  defineNative("fileExists", fileExistsNative);
   defineNative("getenv", getEnvNative);
   defineNative("setenv", setEnvNative);
   defineNative("len", lenNative);
@@ -720,6 +741,11 @@ static ObjString *readFile(const char *path) {
   fclose(file);
 
   return takeString(buffer, size);
+}
+
+Value fileExists(char *filename) {
+  struct stat buffer;
+  return BOOL_VAL((stat(filename, &buffer) == 0));
 }
 
 static InterpretResult run() {

@@ -72,6 +72,12 @@ export function activate(context: vscode.ExtensionContext) {
             "utf8",
           );
           break;
+        case "fileExists":
+          contents = readFileSync(
+            join(EXT_ROOT, "hovers", "fileExists.md"),
+            "utf8",
+          );
+          break;
         case "ceil":
           contents = readFileSync(join(EXT_ROOT, "hovers", "ceil.md"), "utf8");
           break;
