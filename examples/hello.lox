@@ -1,1 +1,7 @@
-print "Hello " + argv(4);
+var name = argv(4);
+
+if (name == nil) {
+    name = prompt("Name: ");
+}
+
+print "Hello " + name;

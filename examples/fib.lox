@@ -3,12 +3,17 @@ fun fib(n) {
   return fib(n - 2) + fib(n - 1);
 }
 
+print "Fibonacci";
+
 var argIndex = 4;
 var arg = argv(argIndex);
 
+if (arg == nil) {
+  arg = prompt("n: ");
+}
+
 var n = parseNumber(arg);
 
-print "Fib";
 print n;
 print "";
 

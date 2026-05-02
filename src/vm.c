@@ -362,8 +362,7 @@ static Value argvNative(int argCount, Value *args) {
 
   int idx = (int)AS_NUMBER(index);
   if (idx < 0 || idx >= vm.argc) {
-    runtimeError("argv index %d out of bounds (0‑%d).", idx, vm.argc - 1);
-    exit(70); // INTERPRET_RUNTIME_ERROR
+    return NIL_VAL;
   }
 
   const char *c_arg = vm.argv[idx];
