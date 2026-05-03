@@ -21,16 +21,23 @@ TAG="v${VERSION}"
 
 printf '%s\n' "${VERSION}" > VERSION.txt
 
+# Update test snapshots
+# This updates the __version__ native function call test
 ./scripts/tests.sh --update
 
 git add VERSION.txt tests/native_fn_version_call.lox.out
-
 git commit -m "Increment version to ${TAG}"
 
+# Create new tag. This will prompt for the tag's message
 if ! git tag -a "${TAG}"; then
     echo "⚠️ Tag creation failed, rolling back the commit"
     git reset --hard HEAD~1
     exit 1
 fi
 
+echo "Releasing ${TAG}"
+
 git push origin "${TAG}"
+git push
+
+echo "Released ${TAG}"
