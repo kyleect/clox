@@ -8,3 +8,4 @@ Yet another clox implementation.
 
 - [Development](./docs/DEVELOPMENT.md)
 - [Goals](./docs/GOALSV1.md)
+- [Tests](./tests/README.md)
