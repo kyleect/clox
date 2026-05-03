@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "assert.h"
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
@@ -16,7 +17,7 @@
 
 static ObjString *readFile(const char *path);
 static void resetStack();
-static void runtimeError(const char *format, ...);
+void runtimeError(VM *vm, const char *format, ...);
 static Value peek(int distance);
 static InterpretResult run();
 static void concatenate();
@@ -27,23 +28,24 @@ static void writeFile(const char *path, const char *text);
 VM vm;
 
 static Value clockNative(int argCount, Value *args) {
+  assertArgCount(&vm, "clock", 0, argCount);
+
   return NUMBER_VAL((double)clock() / CLOCKS_PER_SEC);
 }
 
 static Value versionNative(int argCount, Value *args) {
+  assertArgCount(&vm, "__version__", 0, argCount);
+
   return OBJ_VAL(copyString(CLOX_VERSION, CLOX_VERSION_len));
 }
 
 static Value exitNative(int argCount, Value *args) {
-  if (argCount != 1) {
-    runtimeError("expected 1 arguments but got %d", argCount);
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "exit", 1, argCount);
 
   Value exitCode = args[0];
 
   if (!IS_NUMBER(exitCode)) {
-    runtimeError("expected a number argument");
+    runtimeError(&vm, "expected a number argument");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -53,21 +55,22 @@ static Value exitNative(int argCount, Value *args) {
 }
 
 static Value randNative(int argCount, Value *args) {
+  assertArgCount(&vm, "rand", 0, argCount);
+
   return NUMBER_VAL((double)rand());
 }
 
 static Value rand01Native(int argCount, Value *args) {
+  assertArgCount(&vm, "rand01", 0, argCount);
+
   return NUMBER_VAL((double)rand() / (double)RAND_MAX);
 }
 
 static Value randBetweenNative(int argCount, Value *args) {
-  if (argCount != 2) {
-    runtimeError("randomRange(min, max) expects 2 arguments.");
-    return NIL_VAL;
-  }
+  assertArgCount(&vm, "randBetween", 2, argCount);
 
   if (!IS_NUMBER(args[0]) || !IS_NUMBER(args[1])) {
-    runtimeError("randomRange(min, max) arguments must be numbers.");
+    runtimeError(&vm, "randomRange(min, max) arguments must be numbers.");
     return NIL_VAL;
   }
 
@@ -75,7 +78,7 @@ static Value randBetweenNative(int argCount, Value *args) {
   double max = AS_NUMBER(args[1]);
 
   if (min > max) {
-    runtimeError("randomRange(min, max) requires min <= max.");
+    runtimeError(&vm, "randomRange(min, max) requires min <= max.");
     return NIL_VAL;
   }
 
@@ -86,15 +89,12 @@ static Value randBetweenNative(int argCount, Value *args) {
 }
 
 static Value ceilNative(int argCount, Value *args) {
-  if (argCount != 1) {
-    runtimeError("ceil(value) expects 1 arguments.");
-    return NIL_VAL;
-  }
+  assertArgCount(&vm, "ceil", 1, argCount);
 
   Value value = args[0];
 
   if (!IS_NUMBER(value)) {
-    runtimeError("ceil(value) argument must be a number.");
+    runtimeError(&vm, "ceil(value) argument must be a number.");
     return NIL_VAL;
   }
 
@@ -102,15 +102,12 @@ static Value ceilNative(int argCount, Value *args) {
 }
 
 static Value fileExistsNative(int argCount, Value *args) {
-  if (argCount != 1) {
-    runtimeError("fileExists(path) expects 1 arguments.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "fileExists", 1, argCount);
 
   Value value = args[0];
 
   if (!IS_STRING(value)) {
-    runtimeError("fileExists(path) argument must be a string.");
+    runtimeError(&vm, "fileExists(path) argument must be a string.");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -120,15 +117,12 @@ static Value fileExistsNative(int argCount, Value *args) {
 }
 
 static Value readFileToStringNative(int argCount, Value *args) {
-  if (argCount != 1) {
-    runtimeError("readFileToString(path) expects 1 arguments.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "readFileToString", 1, argCount);
 
   Value value = args[0];
 
   if (!IS_STRING(value)) {
-    runtimeError("readFileToString(path) argument must be a string.");
+    runtimeError(&vm, "readFileToString(path) argument must be a string.");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -139,23 +133,20 @@ static Value readFileToStringNative(int argCount, Value *args) {
 }
 
 static Value writeStringToFileNative(int argCount, Value *args) {
-  if (argCount != 2) {
-    runtimeError("writeStringToFileNative(path, text) expects 2 arguments.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "writeStringToFile", 2, argCount);
 
   Value path_arg = args[0];
   Value text_arg = args[1];
 
   if (!IS_STRING(path_arg)) {
     runtimeError(
-        "writeStringToFileNative(path, text) path argument must be a string.");
+        &vm, "writeStringToFile(path, text) path argument must be a string.");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
   if (!IS_STRING(path_arg)) {
     runtimeError(
-        "writeStringToFileNative(path, text) text argument must be a string.");
+        &vm, "writeStringToFile(path, text) text argument must be a string.");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -168,15 +159,12 @@ static Value writeStringToFileNative(int argCount, Value *args) {
 }
 
 static Value getEnvNative(int argCount, Value *args) {
-  if (argCount != 1) {
-    runtimeError("getenv(name) expects 1 argument.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "getenv", 1, argCount);
 
   Value name = args[0];
 
   if (!IS_STRING(name)) {
-    runtimeError("getenv(name) argument must be a string.");
+    runtimeError(&vm, "getenv(name) argument must be a string.");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -185,7 +173,7 @@ static Value getEnvNative(int argCount, Value *args) {
   char *env_value = getenv(name_str);
 
   if (env_value == NULL) {
-    runtimeError("Environment variable not found: '%s'", name_str);
+    runtimeError(&vm, "Environment variable not found: '%s'", name_str);
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -193,13 +181,10 @@ static Value getEnvNative(int argCount, Value *args) {
 }
 
 static Value setEnvNative(int argCount, Value *args) {
-  if (argCount != 2) {
-    runtimeError("setenv(name, value) takes exactly 2 arguments.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "setenv", 2, argCount);
 
   if (!IS_STRING(args[0]) || !IS_STRING(args[1])) {
-    runtimeError("setenv(name, value) arguments must be strings.");
+    runtimeError(&vm, "setenv(name, value) arguments must be strings.");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -210,7 +195,7 @@ static Value setEnvNative(int argCount, Value *args) {
   int result = setenv(name->chars, value->chars, 1);
 
   if (result != 0) {
-    runtimeError("setenv unable to set environment variable: '%s'",
+    runtimeError(&vm, "setenv unable to set environment variable: '%s'",
                  name->chars);
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
@@ -219,15 +204,12 @@ static Value setEnvNative(int argCount, Value *args) {
 }
 
 static Value lenNative(int argCount, Value *args) {
-  if (argCount != 1) {
-    runtimeError("len(value) expects 1 argument.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "len", 1, argCount);
 
   Value name = args[0];
 
   if (!IS_STRING(name)) {
-    runtimeError("len(value) argument must have a length (string).");
+    runtimeError(&vm, "len(value) argument must have a length (string).");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -237,10 +219,7 @@ static Value lenNative(int argCount, Value *args) {
 }
 
 static Value typeofNative(int argCount, Value *args) {
-  if (argCount != 1) {
-    runtimeError("typeof(value) expects 1 argument.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "typeof", 1, argCount);
 
   Value value = args[0];
 
@@ -248,7 +227,8 @@ static Value typeofNative(int argCount, Value *args) {
   char *buffer = malloc(9);
 
   if (buffer == NULL) {
-    runtimeError("typeof(value) unable to allocate string for type string.");
+    runtimeError(&vm,
+                 "typeof(value) unable to allocate string for type string.");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -258,10 +238,7 @@ static Value typeofNative(int argCount, Value *args) {
 }
 
 static Value instanceOfNative(int argCount, Value *args) {
-  if (argCount != 2) {
-    runtimeError("instanceOf(value, class) expects 2 argument.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "instanceOf", 2, argCount);
 
   Value value = args[0];
   Value klass = args[1];
@@ -272,7 +249,7 @@ static Value instanceOfNative(int argCount, Value *args) {
 
   if (!IS_CLASS(klass)) {
     runtimeError(
-        "instanceOf(value, class) expects second argument to be a class");
+        &vm, "instanceOf(value, class) expects second argument to be a class");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -284,13 +261,12 @@ static Value instanceOfNative(int argCount, Value *args) {
 
 static Value stdinNative(int argCount, Value *args) {
   if (argCount > 1) {
-    runtimeError("input() takes at most 1 argument.");
-    return NIL_VAL;
+    assertArgCount(&vm, "stdin", 1, argCount);
   }
 
   if (argCount == 1) {
     if (!IS_STRING(args[0])) {
-      runtimeError("input() argument must be a string.");
+      runtimeError(&vm, "input() argument must be a string.");
       return NIL_VAL;
     }
     ObjString *prompt = AS_STRING(args[0]);
@@ -319,7 +295,7 @@ static Value stdinNative(int argCount, Value *args) {
 
       if (capacity == MAX_INPUT) {
         FREE_ARRAY(char, buffer, capacity);
-        runtimeError("input() exceeded maximum length.");
+        runtimeError(&vm, "stdin() exceeded maximum length.");
         return NIL_VAL;
       }
 
@@ -342,13 +318,12 @@ static Value stdinNative(int argCount, Value *args) {
 
 static Value promptNative(int argCount, Value *args) {
   if (argCount > 1) {
-    runtimeError("input() takes at most 1 argument.");
-    return NIL_VAL;
+    assertArgCount(&vm, "prompt", 1, argCount);
   }
 
   if (argCount == 1) {
     if (!IS_STRING(args[0])) {
-      runtimeError("input() argument must be a string.");
+      runtimeError(&vm, "prompt() argument must be a string.");
       return NIL_VAL;
     }
     ObjString *prompt = AS_STRING(args[0]);
@@ -377,7 +352,7 @@ static Value promptNative(int argCount, Value *args) {
 
       if (capacity == MAX_INPUT) {
         FREE_ARRAY(char, buffer, capacity);
-        runtimeError("input() exceeded maximum length.");
+        runtimeError(&vm, "input() exceeded maximum length.");
         return NIL_VAL;
       }
 
@@ -399,14 +374,11 @@ static Value promptNative(int argCount, Value *args) {
 }
 
 static Value argvNative(int argCount, Value *args) {
-  if (argCount != 1) {
-    runtimeError("argv(index) expects exactly 1 argument.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "argv", 1, argCount);
 
   Value index = args[0];
   if (!IS_NUMBER(index)) {
-    runtimeError("argv(index) argument must be a number.");
+    runtimeError(&vm, "argv(index) argument must be a number.");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -422,10 +394,7 @@ static Value argvNative(int argCount, Value *args) {
 }
 
 static Value argcNative(int argCount, Value *args) {
-  if (argCount != 0) {
-    runtimeError("argv() expects exactly 0 arguments.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "argc", 0, argCount);
 
   int argc = vm.argc;
 
@@ -433,14 +402,11 @@ static Value argcNative(int argCount, Value *args) {
 }
 
 static Value parseNumberNative(int argCount, Value *args) {
-  if (argCount != 1) {
-    runtimeError("parseNumber(value) expects exactly 1 argument.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgCount(&vm, "parseNumber", 1, argCount);
 
   Value value = args[0];
   if (!IS_STRING(value)) {
-    runtimeError("parseNumber(value) argument must be a string.");
+    runtimeError(&vm, "parseNumber(value) argument must be a string.");
     exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
@@ -480,15 +446,15 @@ static void resetStack() {
   vm.openUpvalues = NULL;
 }
 
-static void runtimeError(const char *format, ...) {
+void runtimeError(VM *vm, const char *format, ...) {
   va_list args;
   va_start(args, format);
   vfprintf(stderr, format, args);
   va_end(args);
   fputs("\n", stderr);
 
-  for (int i = vm.frameCount - 1; i >= 0; i--) {
-    CallFrame *frame = &vm.frames[i];
+  for (int i = vm->frameCount - 1; i >= 0; i--) {
+    CallFrame *frame = &vm->frames[i];
     ObjFunction *function = frame->closure->function;
     size_t instruction = frame->ip - function->chunk.code - 1;
 
@@ -576,13 +542,13 @@ static Value peek(int distance) { return vm.stackTop[-1 - distance]; }
 
 static bool call(ObjClosure *closure, int argCount) {
   if (argCount != closure->function->arity) {
-    runtimeError("Expected %d arguments but got %d.", closure->function->arity,
-                 argCount);
+    runtimeError(&vm, "Expected %d arguments but got %d.",
+                 closure->function->arity, argCount);
     return false;
   }
 
   if (vm.frameCount == FRAMES_MAX) {
-    runtimeError("Stack overflow.");
+    runtimeError(&vm, "Stack overflow.");
     return false;
   }
 
@@ -604,7 +570,7 @@ static bool callValue(Value callee, int argCount) {
       if (tableGet(&klass->methods, vm.initString, &initializer)) {
         return call(AS_CLOSURE(initializer), argCount);
       } else if (argCount != 0) {
-        runtimeError("Expected 0 arguments but got %d.", argCount);
+        runtimeError(&vm, "Expected 0 arguments but got %d.", argCount);
         return false;
       }
 
@@ -628,14 +594,14 @@ static bool callValue(Value callee, int argCount) {
       break; // Non-callable object type.
     }
   }
-  runtimeError("Can only call functions and classes.");
+  runtimeError(&vm, "Can only call functions and classes.");
   return false;
 }
 
 static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
   Value method;
   if (!tableGet(&klass->methods, name, &method)) {
-    runtimeError("Undefined property '%s'.", name->chars);
+    runtimeError(&vm, "Undefined property '%s'.", name->chars);
     return false;
   }
   return call(AS_CLOSURE(method), argCount);
@@ -645,7 +611,7 @@ static bool invoke(ObjString *name, int argCount) {
   Value receiver = peek(argCount);
 
   if (!IS_INSTANCE(receiver)) {
-    runtimeError("Only instances have methods.");
+    runtimeError(&vm, "Only instances have methods.");
     return false;
   }
 
@@ -663,7 +629,7 @@ static bool invoke(ObjString *name, int argCount) {
 static bool bindMethod(ObjClass *klass, ObjString *name) {
   Value method;
   if (!tableGet(&klass->methods, name, &method)) {
-    runtimeError("Undefined property '%s'.", name->chars);
+    runtimeError(&vm, "Undefined property '%s'.", name->chars);
     return false;
   }
 
@@ -799,7 +765,7 @@ static InterpretResult run() {
 #define BINARY_OP(valueType, op)                                               \
   do {                                                                         \
     if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) {                          \
-      runtimeError("Operands must be numbers.");                               \
+      runtimeError(&vm, "Operands must be numbers.");                          \
       return INTERPRET_RUNTIME_ERROR;                                          \
     }                                                                          \
     double b = AS_NUMBER(pop());                                               \
@@ -848,7 +814,7 @@ static InterpretResult run() {
         double a = AS_NUMBER(pop());
         push(NUMBER_VAL(a + b));
       } else {
-        runtimeError("Operands must be two numbers or two strings.");
+        runtimeError(&vm, "Operands must be two numbers or two strings.");
         return INTERPRET_RUNTIME_ERROR;
       }
       break;
@@ -867,7 +833,7 @@ static InterpretResult run() {
       break;
     case OP_NEGATE:
       if (!IS_NUMBER(peek(0))) {
-        runtimeError("Operand must be a number.");
+        runtimeError(&vm, "Operand must be a number.");
         return INTERPRET_RUNTIME_ERROR;
       }
       push(NUMBER_VAL(-AS_NUMBER(pop())));
@@ -921,7 +887,7 @@ static InterpretResult run() {
       ObjString *name = READ_STRING();
       Value value;
       if (!tableGet(&vm.globals, name, &value)) {
-        runtimeError("Undefined variable '%s'.", name->chars);
+        runtimeError(&vm, "Undefined variable '%s'.", name->chars);
         return INTERPRET_RUNTIME_ERROR;
       }
       push(value);
@@ -932,7 +898,7 @@ static InterpretResult run() {
 
       if (tableSet(&vm.globals, name, peek(0))) {
         tableDelete(&vm.globals, name);
-        runtimeError("Undefined variable %s", name->chars);
+        runtimeError(&vm, "Undefined variable %s", name->chars);
         return INTERPRET_RUNTIME_ERROR;
       }
 
@@ -1004,7 +970,7 @@ static InterpretResult run() {
       break;
     case OP_GET_PROPERTY: {
       if (!IS_INSTANCE(peek(0))) {
-        runtimeError("Only instances have properties.");
+        runtimeError(&vm, "Only instances have properties.");
         return INTERPRET_RUNTIME_ERROR;
       }
 
@@ -1026,7 +992,7 @@ static InterpretResult run() {
     }
     case OP_SET_PROPERTY: {
       if (!IS_INSTANCE(peek(1))) {
-        runtimeError("Only instances have fields.");
+        runtimeError(&vm, "Only instances have fields.");
         return INTERPRET_RUNTIME_ERROR;
       }
 

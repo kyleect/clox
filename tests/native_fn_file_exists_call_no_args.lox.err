@@ -84,5 +84,5 @@
 0004    | OP_PRINT
 0005    2 OP_NIL
 0006    | OP_RETURN
-fileExists(path) expects 1 arguments.
+function fileExists expects 1 argument(s) but got 0 instead.
 [line 1] in script

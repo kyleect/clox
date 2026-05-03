@@ -87,5 +87,5 @@
 0009    | OP_POP
 0010    2 OP_NIL
 0011    | OP_RETURN
-writeStringToFileNative(path, text) expects 2 arguments.
+function writeStringToFile expects 2 argument(s) but got 3 instead.
 [line 1] in script

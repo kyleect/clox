@@ -95,6 +95,8 @@ InterpretResult interpretFunction(ObjFunction *function);
  */
 InterpretResult interpret(const char *source);
 
+void runtimeError(VM *vm, const char *format, ...);
+
 // Push a value on to the VM's stack
 void push(Value value);
 

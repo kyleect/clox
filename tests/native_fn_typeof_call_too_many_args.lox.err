@@ -86,5 +86,5 @@
 0008    | OP_PRINT
 0009    2 OP_NIL
 0010    | OP_RETURN
-typeof(value) expects 1 argument.
+function typeof expects 1 argument(s) but got 2 instead.
 [line 1] in script
