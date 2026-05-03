@@ -165,4 +165,6 @@ done
 echo
 echo "Total: $TOTAL | Passed: $PASS | Failed: $FAIL | Skipped: $SKIP | Suites: $SUITES"
 
-[[ $FAIL -ne 0 ]] && exit 1
+if [[ $FAIL -ne 0 ]]; then
+    exit 1
+fi
