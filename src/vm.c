@@ -22,6 +22,7 @@ static InterpretResult run();
 static void concatenate();
 static bool call(ObjClosure *function, int argCount);
 Value fileExists(char *filename);
+static ObjString *writeFile(const char *path, const char *text);
 
 VM vm;
 
@@ -135,6 +136,35 @@ static Value readFileToStringNative(int argCount, Value *args) {
   ObjString *contents = readFile(path->chars);
 
   return OBJ_VAL(contents);
+}
+
+static Value writeStringToFileNative(int argCount, Value *args) {
+  if (argCount != 2) {
+    runtimeError("writeStringToFileNative(path, text) expects 2 arguments.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  Value path_arg = args[0];
+  Value text_arg = args[1];
+
+  if (!IS_STRING(path_arg)) {
+    runtimeError(
+        "writeStringToFileNative(path, text) path argument must be a string.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  if (!IS_STRING(path_arg)) {
+    runtimeError(
+        "writeStringToFileNative(path, text) text argument must be a string.");
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
+  ObjString *path = AS_STRING(path_arg);
+  char *text = AS_CSTRING(text_arg);
+
+  writeFile(path->chars, text);
+
+  return NIL_VAL;
 }
 
 static Value getEnvNative(int argCount, Value *args) {
@@ -510,6 +540,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("randBetween", randBetweenNative);
   defineNative("ceil", ceilNative);
   defineNative("readFileToString", readFileToStringNative);
+  defineNative("writeStringToFile", writeStringToFileNative);
   defineNative("fileExists", fileExistsNative);
   defineNative("getenv", getEnvNative);
   defineNative("setenv", setEnvNative);
@@ -741,6 +772,14 @@ static ObjString *readFile(const char *path) {
   fclose(file);
 
   return takeString(buffer, size);
+}
+
+static ObjString *writeFile(const char *path, const char *text) {
+  FILE *file = fopen(path, "wb"); // "rb" = binary mode (safe for all files)
+  if (!file)
+    return NULL;
+
+  fprintf(file, "%s", text);
 }
 
 Value fileExists(char *filename) {

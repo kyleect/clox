@@ -19,6 +19,9 @@ print typeof(ceil);
 print readFileToString;
 print typeof(readFileToString);
 
+print writeStringToFile;
+print typeof(writeStringToFile);
+
 print fileExists;
 print typeof(fileExists);
 
