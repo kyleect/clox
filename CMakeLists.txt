@@ -8,7 +8,7 @@ project(clox LANGUAGES C)
 # -----------------------------------------------------------------
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_FLAGS "-Wall -lreadline")
+set(CMAKE_C_FLAGS "-Wall")
 
 # -----------------------------------------------------------------
 # Version‑generation
@@ -49,6 +49,9 @@ add_executable(clox ${SRC_FILES} ${VERSION_C})
 
 add_executable(clox-test ${SRC_FILES} ${VERSION_C})
 target_compile_definitions(clox-test PRIVATE DEBUG_PRINT_CODE DEBUG_STRESS_GC)
+
+target_link_libraries(clox          PRIVATE readline)
+target_link_libraries(clox-test     PRIVATE readline)
 
 add_dependencies(clox generate_version_c)
 add_dependencies(clox-test generate_version_c)

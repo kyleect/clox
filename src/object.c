@@ -284,11 +284,12 @@ void printObjectToErr(Value value) {
   case OBJ_CLASS:
     fprintf(stderr, "%s", AS_CLASS(value)->name->chars);
     break;
-  case OBJ_INSTANCE:
+  case OBJ_INSTANCE: {
     char buf[512];
     objectToString(value, buf, 1024);
     fprintf(stderr, "%s instance", AS_INSTANCE(value)->klass->name->chars);
     break;
+  }
   case OBJ_BOUND_METHOD:
     fprintf(stderr, "<fn method %s>",
             AS_BOUND_METHOD(value)->method->function->name->chars);
