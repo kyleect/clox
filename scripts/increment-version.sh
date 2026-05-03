@@ -20,7 +20,11 @@ VERSION="$(./tools/semver/semver.sh "$@")"
 TAG="v${VERSION}"
 
 printf '%s\n' "${VERSION}" > VERSION.txt
-git add VERSION.txt
+
+./scripts/tests.sh --update
+
+git add VERSION.txt tests/native_fn_version_call.lox.out
+
 git commit -m "Increment version to ${TAG}"
 
 if ! git tag -a "${TAG}"; then
