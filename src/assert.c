@@ -53,6 +53,14 @@ void assertArgIsString(VM *vm, const char *function, Value *args, int index) {
   }
 }
 
+void assertArgIsInstance(VM *vm, const char *function, Value *args, int index) {
+  if (!IS_INSTANCE(args[index])) {
+    runtimeError(vm, "function %s expects argument %d to be an instance.",
+                 function, index + 1);
+    exit(70);
+  }
+}
+
 void assertNonZero(VM *vm, const char *function, double number, int index) {
   if (number == 0) {
     if (index < 0)

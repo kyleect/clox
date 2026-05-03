@@ -85,5 +85,5 @@
 0005    | OP_PRINT
 0006    2 OP_NIL
 0007    | OP_RETURN
-readFileToString(path) argument must be a string.
+function readFileToString expects argument 1 to be a string.
 [line 1] in script

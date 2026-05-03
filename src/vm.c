@@ -41,13 +41,9 @@ static Value versionNative(int argCount, Value *args) {
 
 static Value exitNative(int argCount, Value *args) {
   assertArgCount(&vm, "exit", 1, argCount);
+  assertArgIsNumber(&vm, "exit", args, 0);
 
   Value exitCode = args[0];
-
-  if (!IS_NUMBER(exitCode)) {
-    runtimeError(&vm, "expected a number argument");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
 
   exit(exitCode.as.number);
 
@@ -68,18 +64,15 @@ static Value rand01Native(int argCount, Value *args) {
 
 static Value randBetweenNative(int argCount, Value *args) {
   assertArgCount(&vm, "randBetween", 2, argCount);
-
-  if (!IS_NUMBER(args[0]) || !IS_NUMBER(args[1])) {
-    runtimeError(&vm, "randomRange(min, max) arguments must be numbers.");
-    return NIL_VAL;
-  }
+  assertArgIsNumber(&vm, "randBetween", args, 0);
+  assertArgIsNumber(&vm, "randBetween", args, 1);
 
   double min = AS_NUMBER(args[0]);
   double max = AS_NUMBER(args[1]);
 
   if (min > max) {
     runtimeError(&vm, "randomRange(min, max) requires min <= max.");
-    return NIL_VAL;
+    exit(70); // INTERPRET_RUNTIME_ERROR
   }
 
   double r = (double)rand() / (double)RAND_MAX; // [0, 1]
@@ -90,26 +83,18 @@ static Value randBetweenNative(int argCount, Value *args) {
 
 static Value ceilNative(int argCount, Value *args) {
   assertArgCount(&vm, "ceil", 1, argCount);
+  assertArgIsNumber(&vm, "ceil", args, 0);
 
   Value value = args[0];
-
-  if (!IS_NUMBER(value)) {
-    runtimeError(&vm, "ceil(value) argument must be a number.");
-    return NIL_VAL;
-  }
 
   return NUMBER_VAL(ceil(AS_NUMBER(value)));
 }
 
 static Value fileExistsNative(int argCount, Value *args) {
   assertArgCount(&vm, "fileExists", 1, argCount);
+  assertArgIsString(&vm, "fileExists", args, 0);
 
   Value value = args[0];
-
-  if (!IS_STRING(value)) {
-    runtimeError(&vm, "fileExists(path) argument must be a string.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
 
   ObjString *path = AS_STRING(value);
 
@@ -118,13 +103,9 @@ static Value fileExistsNative(int argCount, Value *args) {
 
 static Value readFileToStringNative(int argCount, Value *args) {
   assertArgCount(&vm, "readFileToString", 1, argCount);
+  assertArgIsString(&vm, "readFileToString", args, 0);
 
   Value value = args[0];
-
-  if (!IS_STRING(value)) {
-    runtimeError(&vm, "readFileToString(path) argument must be a string.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
 
   ObjString *path = AS_STRING(value);
   ObjString *contents = readFile(path->chars);
@@ -134,21 +115,11 @@ static Value readFileToStringNative(int argCount, Value *args) {
 
 static Value writeStringToFileNative(int argCount, Value *args) {
   assertArgCount(&vm, "writeStringToFile", 2, argCount);
+  assertArgIsString(&vm, "writeStringToFile", args, 0);
+  assertArgIsString(&vm, "writeStringToFile", args, 1);
 
   Value path_arg = args[0];
   Value text_arg = args[1];
-
-  if (!IS_STRING(path_arg)) {
-    runtimeError(
-        &vm, "writeStringToFile(path, text) path argument must be a string.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
-
-  if (!IS_STRING(path_arg)) {
-    runtimeError(
-        &vm, "writeStringToFile(path, text) text argument must be a string.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
 
   ObjString *path = AS_STRING(path_arg);
   char *text = AS_CSTRING(text_arg);
@@ -160,13 +131,9 @@ static Value writeStringToFileNative(int argCount, Value *args) {
 
 static Value getEnvNative(int argCount, Value *args) {
   assertArgCount(&vm, "getenv", 1, argCount);
+  assertArgIsString(&vm, "getenv", args, 0);
 
   Value name = args[0];
-
-  if (!IS_STRING(name)) {
-    runtimeError(&vm, "getenv(name) argument must be a string.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
 
   char *name_str = AS_CSTRING(name);
 
@@ -182,11 +149,8 @@ static Value getEnvNative(int argCount, Value *args) {
 
 static Value setEnvNative(int argCount, Value *args) {
   assertArgCount(&vm, "setenv", 2, argCount);
-
-  if (!IS_STRING(args[0]) || !IS_STRING(args[1])) {
-    runtimeError(&vm, "setenv(name, value) arguments must be strings.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  assertArgIsString(&vm, "setenv", args, 0);
+  assertArgIsString(&vm, "setenv", args, 1);
 
   ObjString *name = AS_STRING(args[0]);
   ObjString *value = AS_STRING(args[1]);
@@ -205,13 +169,9 @@ static Value setEnvNative(int argCount, Value *args) {
 
 static Value lenNative(int argCount, Value *args) {
   assertArgCount(&vm, "len", 1, argCount);
+  assertArgIsString(&vm, "len", args, 0);
 
   Value name = args[0];
-
-  if (!IS_STRING(name)) {
-    runtimeError(&vm, "len(value) argument must have a length (string).");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
 
   int length = AS_STRING(name)->length;
 
@@ -239,19 +199,15 @@ static Value typeofNative(int argCount, Value *args) {
 
 static Value instanceOfNative(int argCount, Value *args) {
   assertArgCount(&vm, "instanceOf", 2, argCount);
+  assertArgIsClass(&vm, "instanceOf", args, 1);
 
   Value value = args[0];
-  Value klass = args[1];
 
   if (!IS_INSTANCE(value)) {
     return BOOL_VAL(false);
   }
 
-  if (!IS_CLASS(klass)) {
-    runtimeError(
-        &vm, "instanceOf(value, class) expects second argument to be a class");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
+  Value klass = args[1];
 
   ObjInstance *instance = AS_INSTANCE(value);
   ObjClass *klass2 = AS_CLASS(klass);
@@ -319,6 +275,7 @@ static Value stdinNative(int argCount, Value *args) {
 static Value promptNative(int argCount, Value *args) {
   if (argCount > 1) {
     assertArgCount(&vm, "prompt", 1, argCount);
+    assertArgIsString(&vm, "prompt", args, 0);
   }
 
   if (argCount == 1) {
@@ -375,12 +332,9 @@ static Value promptNative(int argCount, Value *args) {
 
 static Value argvNative(int argCount, Value *args) {
   assertArgCount(&vm, "argv", 1, argCount);
+  assertArgIsNumber(&vm, "argv", args, 0);
 
   Value index = args[0];
-  if (!IS_NUMBER(index)) {
-    runtimeError(&vm, "argv(index) argument must be a number.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
 
   int idx = (int)AS_NUMBER(index);
   if (idx < 0 || idx >= vm.argc) {
@@ -403,12 +357,9 @@ static Value argcNative(int argCount, Value *args) {
 
 static Value parseNumberNative(int argCount, Value *args) {
   assertArgCount(&vm, "parseNumber", 1, argCount);
+  assertArgIsString(&vm, "parseNumber", args, 0);
 
   Value value = args[0];
-  if (!IS_STRING(value)) {
-    runtimeError(&vm, "parseNumber(value) argument must be a string.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
-  }
 
   char *valueString = AS_CSTRING(value);
   int valueInt = strtol(valueString, NULL, 10);

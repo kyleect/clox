@@ -93,5 +93,5 @@
 0021    | OP_PRINT
 0022    6 OP_NIL
 0023    | OP_RETURN
-instanceOf(value, class) expects second argument to be a class
+function instanceOf expects argument 2 to be a class.
 [line 5] in script
