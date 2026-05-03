@@ -6,7 +6,8 @@
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Snippets"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -27,6 +28,12 @@
         "language": "clox",
         "scopeName": "source.clox",
         "path": "./syntaxes/clox.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "clox",
+        "path": "./snippets.json"
       }
     ],
     "commands": [

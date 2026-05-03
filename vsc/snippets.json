@@ -1,0 +1,63 @@
+{
+  "fun name (a, ...): R => { ... }": {
+    "prefix": "fun",
+    "body": [
+      "fun ${1:name} (${2}) { $3 }$0"
+    ],
+    "description": "Declare a function"
+  },
+  "var a;": {
+    "prefix": "var",
+    "body": [
+      "var ${1:a};$0"
+    ],
+    "description": "Declare a variable"
+  },
+  "var a = ...;": {
+    "prefix": "var",
+    "body": [
+      "var ${1:a} = ${2:nil};$0"
+    ],
+    "description": "Declare a variable with a value"
+  },
+  "if else (expression)": {
+    "prefix": [
+      "if",
+      "ifelse"
+    ],
+    "body": [
+      "if (${1:cond}) { $2 } else { $3 }$0"
+    ],
+    "description": "Create an if/else expression"
+  },
+  "if (statement)": {
+    "prefix": "if",
+    "body": [
+      "if (${1:cond}) {",
+      "  $2",
+      "};$0"
+    ],
+    "description": "Create an if statement"
+  },
+  "if else (statement)": {
+    "prefix": "ifelse",
+    "body": [
+      "if (${1:cond}) {",
+      "  $2",
+      "} else $3 {",
+      "  $4",
+      "};$0"
+    ],
+    "description": "Create an if/else statement"
+  },
+  "return": {
+    "prefix": [
+      "ret",
+      "return"
+    ],
+    "body": [
+      "return $1;$0"
+    ],
+    "description": "Create a return statement"
+  }
+}
