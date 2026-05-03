@@ -22,7 +22,7 @@ static InterpretResult run();
 static void concatenate();
 static bool call(ObjClosure *function, int argCount);
 Value fileExists(char *filename);
-static ObjString *writeFile(const char *path, const char *text);
+static void writeFile(const char *path, const char *text);
 
 VM vm;
 
@@ -774,12 +774,14 @@ static ObjString *readFile(const char *path) {
   return takeString(buffer, size);
 }
 
-static ObjString *writeFile(const char *path, const char *text) {
+static void writeFile(const char *path, const char *text) {
   FILE *file = fopen(path, "wb"); // "rb" = binary mode (safe for all files)
   if (!file)
-    return NULL;
+    return;
 
   fprintf(file, "%s", text);
+
+  return;
 }
 
 Value fileExists(char *filename) {

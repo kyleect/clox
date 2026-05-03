@@ -177,6 +177,20 @@ void objectToString(Value value, char *buffer, size_t size) {
     snprintf(buffer, size, "upvalue");
     break;
   }
+  case OBJ_CLASS: {
+    snprintf(buffer, size, "%s", AS_CLASS(value)->name->chars);
+    break;
+  }
+  case OBJ_INSTANCE: {
+    snprintf(buffer, size, "%s instance",
+             AS_INSTANCE(value)->klass->name->chars);
+    break;
+  }
+  case OBJ_BOUND_METHOD: {
+    snprintf(buffer, size, "<fn method %s>",
+             AS_BOUND_METHOD(value)->method->function->name->chars);
+    break;
+  }
   }
 }
 
@@ -207,6 +221,10 @@ void objectTypeToString(ObjType type, char *buffer, size_t size) {
   }
   case OBJ_INSTANCE: {
     snprintf(buffer, size, "instance");
+    break;
+  }
+  case OBJ_BOUND_METHOD: {
+    snprintf(buffer, size, "function");
     break;
   }
   }
@@ -262,6 +280,18 @@ void printObjectToErr(Value value) {
     break;
   case OBJ_UPVALUE:
     fprintf(stderr, "upvalue");
+    break;
+  case OBJ_CLASS:
+    fprintf(stderr, "%s", AS_CLASS(value)->name->chars);
+    break;
+  case OBJ_INSTANCE:
+    char buf[512];
+    objectToString(value, buf, 1024);
+    fprintf(stderr, "%s instance", AS_INSTANCE(value)->klass->name->chars);
+    break;
+  case OBJ_BOUND_METHOD:
+    fprintf(stderr, "<fn method %s>",
+            AS_BOUND_METHOD(value)->method->function->name->chars);
     break;
   }
 }
