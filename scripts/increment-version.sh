@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# -----------------------------------------------------------------------------
+# Bump repository version and tag it.
+#
+# Usage:  ./increment-version.sh -M|-m|-p
+#   -M   Increment major version
+#   -m   Increment minor version
+#   -p   Increment patch version
+# -----------------------------------------------------------------------------
+
+if [[ $# -eq 0 ]] || ! [[ "$@" =~ (^|[[:space:]])-([MmPp])($|[[:space:]]) ]]; then
+    echo "⚠️ You must specify one of -M, -m, or -p."
+    echo "Usage: ./increment-version.sh -M|-m|-p"
+    exit 1
+fi
+
+VERSION="$(./tools/semver/semver.sh "$@")"
+TAG="v${VERSION}"
+
+printf '%s\n' "${VERSION}" > VERSION.txt
+git add VERSION.txt
+git commit -m "Increment version to ${TAG}"
+
+if ! git tag -a "${TAG}"; then
+    echo "⚠️ Tag creation failed, rolling back the commit"
+    git reset --hard HEAD~1
+    exit 1
+fi
+
+git push origin "${TAG}"
