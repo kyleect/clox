@@ -71,8 +71,7 @@ static Value randBetweenNative(int argCount, Value *args) {
   double max = AS_NUMBER(args[1]);
 
   if (min > max) {
-    runtimeError(&vm, "randomRange(min, max) requires min <= max.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
+    raiseError(&vm, "randomRange(min, max) requires min <= max");
   }
 
   double r = (double)rand() / (double)RAND_MAX; // [0, 1]
@@ -187,9 +186,7 @@ static Value typeofNative(int argCount, Value *args) {
   char *buffer = malloc(9);
 
   if (buffer == NULL) {
-    runtimeError(&vm,
-                 "typeof(value) unable to allocate string for type string.");
-    exit(70); // INTERPRET_RUNTIME_ERROR
+    raiseError(&vm, "typeof(value) unable to allocate string for type string.");
   }
 
   valueTypeToString(value, buffer, 9);

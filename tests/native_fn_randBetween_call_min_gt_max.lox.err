@@ -86,5 +86,5 @@
 0008    | OP_POP
 0009    2 OP_NIL
 0010    | OP_RETURN
-randomRange(min, max) requires min <= max.
+randomRange(min, max) requires min <= max
 [line 1] in script
