@@ -38,3 +38,4 @@ See [scripts](../scripts/README.md)
   - [ ] Call with no args (if applicable)
   - [ ] Call with too many args (if applicable)
   - [ ] Call with incorrect arg types (if applicable)
+- [ ] 5. Add `vsc/hovers/function_name.md` with a description that will display when hovering over the function
