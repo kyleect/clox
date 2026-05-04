@@ -24,6 +24,13 @@ Run `./scripts/test.sh --update` or `just test-update` to run the tests and upda
 ./scripts/test.sh PATTERN --update
 ```
 
+## Run Examples
+
+```sh
+./scripts/run-example.sh fib 30
+./scripts/run-example.sh hello World
+```
+
 ## Clean
 
 Run `./scripts/clean.sh` or `just clean` to remove build artifacts.

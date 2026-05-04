@@ -50,3 +50,7 @@ generate_version_c:
 
 increment-version *args:
     ./scripts/increment-version.sh {{ args }}
+
+# Run one of the example programs
+examples file *args:
+    ./scripts/run-example.sh {{ file }} {{ args }}
