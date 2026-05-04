@@ -1,0 +1,13 @@
+fun outer () {
+    var a = 123;
+
+    fun inner () {
+        return a;
+    }
+
+    return inner;
+}
+
+var inner = outer();
+
+print inner();
