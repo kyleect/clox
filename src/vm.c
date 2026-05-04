@@ -45,6 +45,8 @@ static Value exitNative(int argCount, Value *args) {
 
   Value exitCode = args[0];
 
+  assertPositiveNumber(&vm, "exit", exitCode.as.number, 0);
+
   exit(exitCode.as.number);
 
   return NIL_VAL;
@@ -538,8 +540,6 @@ static bool callValue(Value callee, int argCount) {
       push(result);
       return true;
     }
-    default:
-      break; // Non-callable object type.
     }
   }
   runtimeError(&vm, "Can only call functions and classes.");
@@ -773,9 +773,12 @@ static InterpretResult run() {
     case OP_MULTIPLY:
       BINARY_OP(NUMBER_VAL, *);
       break;
-    case OP_DIVIDE:
+    case OP_DIVIDE: {
+      assertNonZero(&vm, "/", peek(0).as.number, 1);
+      assertNonZero(&vm, "/", peek(1).as.number, 0);
       BINARY_OP(NUMBER_VAL, /);
       break;
+    }
     case OP_NOT:
       push(BOOL_VAL(isFalsey(pop())));
       break;

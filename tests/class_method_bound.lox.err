@@ -95,12 +95,12 @@
 0011    7 OP_GET_GLOBAL       5 'Greeter'
 0013    | OP_CALL             0
 0015    | OP_DEFINE_GLOBAL    4 'greeter'
-0017    9 OP_GET_GLOBAL       6 'greeter'
-0019    | OP_GET_PROPERTY     7 'greet'
-0021    | OP_PRINT
-0022   11 OP_GET_GLOBAL       8 'greeter'
-0024    | OP_CONSTANT        10 'World'
-0026    | OP_INVOKE        (1 args)    9 'greet'
+0017    9 OP_GET_GLOBAL       7 'greeter'
+0019    | OP_GET_PROPERTY     8 'greet'
+0021    | OP_DEFINE_GLOBAL    6 'greet'
+0023   11 OP_GET_GLOBAL       9 'greet'
+0025    | OP_CONSTANT        10 'World'
+0027    | OP_CALL             1
 0029    | OP_POP
 0030   12 OP_NIL
 0031    | OP_RETURN

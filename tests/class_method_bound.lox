@@ -6,6 +6,6 @@ class Greeter {
 
 var greeter = Greeter();
 
-print greeter.greet;
+var greet = greeter.greet;
 
-greeter.greet("World");
+greet("World");
