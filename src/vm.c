@@ -43,11 +43,11 @@ static Value exitNative(int argCount, Value *args) {
   assertArgCount(&vm, "exit", 1, argCount);
   assertArgIsNumber(&vm, "exit", args, 0);
 
-  Value exitCode = args[0];
+  double exitCode = args[0].as.number;
 
-  assertPositiveNumber(&vm, "exit", exitCode.as.number, 0);
+  assertPositiveNumber(&vm, "exit", exitCode, 0);
 
-  exit(exitCode.as.number);
+  exit(exitCode);
 
   return NIL_VAL;
 }

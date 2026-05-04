@@ -39,3 +39,37 @@ See [scripts](../scripts/README.md)
   - [ ] Call with too many args (if applicable)
   - [ ] Call with incorrect arg types (if applicable)
 - [ ] 5. Add `vsc/hovers/function_name.md` with a description that will display when hovering over the function
+
+#### Example
+
+```c
+// file: src/vm.c
+
+#include "assert.h"
+
+static Value exitNative(int argCount, Value *args) {
+  // Function arity
+  assertArgCount(&vm, "exit", 1, argCount);
+  // Runtime argument type checking
+  assertArgIsNumber(&vm, "exit", args, 0);
+
+  double exitCode = args[0].as.number;
+
+  // Assert runtime value conditions
+  assertPositiveNumber(&vm, "exit", exitCode, 0);
+
+  exit(exitCode);
+
+  return NIL_VAL;
+}
+```
+
+```diff
+// file: src/vm.c
+
+ void initVM(int argc, char *argv[]) {
+   // ...
++  defineNative("exit", exitNative);
+   // ...
+ }
+```
