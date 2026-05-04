@@ -50,8 +50,8 @@ add_executable(clox ${SRC_FILES} ${VERSION_C})
 add_executable(clox-test ${SRC_FILES} ${VERSION_C})
 target_compile_definitions(clox-test PRIVATE DEBUG_PRINT_CODE DEBUG_STRESS_GC)
 
-target_link_libraries(clox          PRIVATE readline)
-target_link_libraries(clox-test     PRIVATE readline)
+target_link_libraries(clox          PRIVATE readline m)
+target_link_libraries(clox-test     PRIVATE readline m)
 
 add_dependencies(clox generate_version_c)
 add_dependencies(clox-test generate_version_c)
