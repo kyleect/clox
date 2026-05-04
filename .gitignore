@@ -2,3 +2,4 @@ build
 .DS_Store
 tests/.tmp
 src/version.c
+lcov.info

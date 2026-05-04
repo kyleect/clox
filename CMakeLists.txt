@@ -55,3 +55,23 @@ target_link_libraries(clox-test     PRIVATE readline m)
 
 add_dependencies(clox generate_version_c)
 add_dependencies(clox-test generate_version_c)
+
+# -----------------------------------------------------------------
+# Coverage option
+# -----------------------------------------------------------------
+option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
+
+if(ENABLE_COVERAGE)
+    message(STATUS "Coverage enabled")
+
+    # GCC/Clang-compatible flags
+    set(COVERAGE_COMPILE_FLAGS --coverage -O0 -g)
+    set(COVERAGE_LINK_FLAGS    --coverage)
+
+    # Apply to both targets
+    target_compile_options(clox PRIVATE ${COVERAGE_COMPILE_FLAGS})
+    target_link_options(clox PRIVATE ${COVERAGE_LINK_FLAGS})
+
+    target_compile_options(clox-test PRIVATE ${COVERAGE_COMPILE_FLAGS})
+    target_link_options(clox-test PRIVATE ${COVERAGE_LINK_FLAGS})
+endif()

@@ -32,6 +32,10 @@ clean:
 test *args: build
     ./scripts/tests.sh {{ args }}
 
+# Run the tests with coverage enabled
+coverage *args:
+    ./scripts/coverage.sh {{ args }}
+
 # Update the test snapshots
 test-update: build
     ./scripts/tests.sh --update

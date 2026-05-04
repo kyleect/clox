@@ -24,6 +24,18 @@ Run `./scripts/test.sh --update` or `just test-update` to run the tests and upda
 ./scripts/test.sh PATTERN --update
 ```
 
+## Coverage
+
+Run `./scripts/coverage.sh` or `just coverage` to generate code coverage data.
+
+**Requires:** `lcov`
+
+```sh
+./scripts/coverage.sh
+```
+
+Outputs `lcov.info` at the root of the project.
+
 ## Run Examples
 
 ```sh
