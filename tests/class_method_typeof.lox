@@ -1,0 +1,9 @@
+class Greeter {
+    greet(name) {
+        print "Hello " + name;
+    }
+}
+
+var greeter = Greeter();
+
+print typeof(greeter.greet);

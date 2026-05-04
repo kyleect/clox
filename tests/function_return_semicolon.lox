@@ -1,0 +1,7 @@
+fun function() {
+    return;
+}
+
+print function;
+
+print function();
