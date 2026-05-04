@@ -4,10 +4,11 @@
 
 - [CMake](https://cmake.org/)
 - [Make](https://www.make.com/en)
-
-## Optional
-
 - [Just](https://just.systems)
+
+### Optional
+
+- lcov for code coverage
 
 ## Scripts
 
