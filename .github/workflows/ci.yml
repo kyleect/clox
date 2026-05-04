@@ -28,14 +28,22 @@ jobs:
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-      - name: Test
-        run: ./scripts/tests.sh
+      - name: Test (With Coverage)
+        run: ./scripts/coverage.sh
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v4
         with:
           name: clox
           path: ./build/clox
+          if-no-files-found: error
+          overwrite: true
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lcov.info
+          path: ./lcov.info
           if-no-files-found: error
           overwrite: true
 
