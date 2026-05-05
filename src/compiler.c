@@ -741,6 +741,9 @@ static void binary(bool canAssign) {
   case TOKEN_SLASH:
     emitByte(OP_DIVIDE);
     break;
+  case TOKEN_MODULO:
+    emitByte(OP_MODULO);
+    break;
   default:
     return; // Unreachable.
   }
@@ -949,6 +952,7 @@ ParseRule rules[] = {
     [TOKEN_TRUE] = {literal, NULL, PREC_NONE},
     [TOKEN_VAR] = {NULL, NULL, PREC_NONE},
     [TOKEN_WHILE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_MODULO] = {NULL, binary, PREC_FACTOR},
     [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
     [TOKEN_EOF] = {NULL, NULL, PREC_NONE},
 };

@@ -103,6 +103,8 @@ Token scanToken() {
     return makeToken(match('=') ? TOKEN_LESS_EQUAL : TOKEN_LESS);
   case '>':
     return makeToken(match('=') ? TOKEN_GREATER_EQUAL : TOKEN_GREATER);
+  case '%':
+    return makeToken(TOKEN_MODULO);
   case '"':
     return string();
   }
@@ -395,6 +397,8 @@ const char *tokenTypeToString(TokenType type) {
     return "TOKEN_VAR";
   case TOKEN_WHILE:
     return "TOKEN_WHILE";
+  case TOKEN_MODULO:
+    return "TOKEN_MOD";
   case TOKEN_ERROR:
     return "TOKEN_ERROR";
   case TOKEN_EOF:

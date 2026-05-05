@@ -1,0 +1,18 @@
+var n = prompt("n: ");
+var nint = parseNumber(n);
+
+fun fizzbuzz(i) {
+    if (i % 5 == 0 and i % 3 == 0) {
+        return "FizzBuzz";
+    } else if (i % 3 == 0) {
+        return "Fizz";
+    } else if (i % 5 == 0) {
+        return "Buzz";
+    } else {
+        return i;
+    }
+}
+
+for (var i = 1; i <= nint; i = i + 1) {
+    print fizzbuzz(i);
+}
