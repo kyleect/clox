@@ -404,7 +404,7 @@ const char *tokenTypeToString(TokenType type) {
   case TOKEN_WHILE:
     return "TOKEN_WHILE";
   case TOKEN_MODULO:
-    return "TOKEN_MOD";
+    return "TOKEN_MODULO";
   case TOKEN_ERROR:
     return "TOKEN_ERROR";
   case TOKEN_EOF:
