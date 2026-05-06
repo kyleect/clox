@@ -193,5 +193,11 @@
 0185    | OP_GET_GLOBAL      56 'instanceOf'
 0187    | OP_CALL             1
 0189    | OP_PRINT
-0190   57 OP_NIL
-0191    | OP_RETURN
+0190   58 OP_GET_GLOBAL      57 'parseNumber'
+0192    | OP_PRINT
+0193   59 OP_GET_GLOBAL      58 'typeof'
+0195    | OP_GET_GLOBAL      59 'parseNumber'
+0197    | OP_CALL             1
+0199    | OP_PRINT
+0200    | OP_NIL
+0201    | OP_RETURN

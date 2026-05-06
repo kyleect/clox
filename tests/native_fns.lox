@@ -54,3 +54,6 @@ print typeof(stdin);
 
 print instanceOf;
 print typeof(instanceOf);
+
+print parseNumber;
+print typeof(parseNumber);
