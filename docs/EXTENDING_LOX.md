@@ -4,8 +4,13 @@ These are the documented changes to the language/syntax from the original Lox la
 
 ## Next: 0.2.0
 
+- Modulo operator: `%`
+  - New token: `TOKEN_MODULO`
+  - New bytecode op: `OP_MODULO`
 - Short forms of `and`, `or`: `&&` and `||`
 - Nullish coalescing operator (`??`)
+  - New tokens: `TOKEN_QUESTION_QUESTION`
+  - New bytecode OPs: `OP_NULLISH`, `OP_JUMP_IF_NOT_NIL`
 
 ## 0.1.0
 
