@@ -1,1 +1,2 @@
 print true and true;
+print true && true;

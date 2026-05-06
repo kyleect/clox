@@ -1,1 +1,2 @@
 print false and true;
+print false && true;
