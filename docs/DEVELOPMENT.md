@@ -33,12 +33,13 @@ See [scripts](../scripts/README.md)
 - [ ] 1. Declare a new function in [vm.c](../src/vm.c)
 - [ ] 2. Register the native function with `defineNative("function_name", functionNameNative)` in `initVM`
 - [ ] 3. Add [tests](../tests/README.md) for the new function
-- [ ] 4. Add function to [`clox.tmLanguage.json`](../vsc/syntaxes/clox.tmLanguage.json) under `"name": "entity.name.function.native.clox"`
+- [ ] 4. Add function to [EXTENDING_LOC.md](EXTENDING_LOX.md) under the "next" version
+- [ ] 5. Add function to [`clox.tmLanguage.json`](../vsc/syntaxes/clox.tmLanguage.json) under `"name": "entity.name.function.native.clox"`
   - [ ] Call
   - [ ] Call with no args (if applicable)
   - [ ] Call with too many args (if applicable)
   - [ ] Call with incorrect arg types (if applicable)
-- [ ] 5. Add `vsc/hovers/function_name.md` with a description that will display when hovering over the function
+- [ ] 6. Add `vsc/hovers/function_name.md` with a description that will display when hovering over the function
 
 #### Example
 
