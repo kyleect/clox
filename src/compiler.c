@@ -863,6 +863,15 @@ static void or_(bool canAssign) {
   patchJump(endJump);
 }
 
+static void nullish(bool canAssign) {
+  int endJump = emitJump(OP_JUMP_IF_NOT_NIL);
+
+  emitByte(OP_POP);         // discard left if it's nil
+  parsePrecedence(PREC_OR); // compile RHS
+
+  patchJump(endJump);
+}
+
 static void string(bool canAssign) {
   TRACELN("  compiler.string()");
 
@@ -945,6 +954,7 @@ ParseRule rules[] = {
     [TOKEN_IF] = {NULL, NULL, PREC_NONE},
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, or_, PREC_OR},
+    [TOKEN_QUESTION_QUESTION] = {NULL, nullish, PREC_OR},
     [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
     [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
     [TOKEN_SUPER] = {NULL, NULL, PREC_NONE},

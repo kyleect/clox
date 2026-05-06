@@ -7,6 +7,7 @@
 typedef enum {
   OP_CONSTANT,
   OP_NIL,
+  OP_NULLISH, // ??
   OP_TRUE,
   OP_FALSE,
   OP_ADD,
@@ -29,6 +30,7 @@ typedef enum {
   OP_GET_LOCAL,
   OP_SET_LOCAL,
   OP_JUMP_IF_FALSE,
+  OP_JUMP_IF_NOT_NIL,
   OP_JUMP,
   OP_LOOP,
   OP_GREATER,

@@ -1,0 +1,25 @@
+print nil ?? 123;
+print nil ?? nil ?? 456;
+print 789 ?? 000;
+
+fun should_not_call () {
+    print "Should not print";
+}
+
+print "Hello World" ?? should_not_call();
+
+if (false ?? should_not_call()) {
+    print "True condition met";
+} else {
+    print "False condition met";
+}
+
+fun returns_nil () {
+    return nil;
+}
+
+if (returns_nil() ?? true) {
+    print "True condition met";
+} else {
+    print "False condition met";
+}

@@ -5,13 +5,7 @@ fun fib(n) {
 
 print "Fibonacci";
 
-var argIndex = 4;
-var arg = argv(argIndex);
-
-if (arg == nil) {
-  arg = prompt("n: ");
-}
-
+var arg = argv(4) ?? prompt("n: ");
 var n = parseNumber(arg);
 
 print n;

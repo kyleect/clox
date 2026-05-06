@@ -9,3 +9,9 @@ print true || true;
 
 print false or false;
 print false || false;
+
+fun should_not_call () {
+    print "Should not print";
+}
+
+print true or should_not_call();

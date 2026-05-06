@@ -879,6 +879,12 @@ static InterpretResult run() {
         f->ip += offset;
       break;
     }
+    case OP_JUMP_IF_NOT_NIL: {
+      uint16_t offset = READ_SHORT();
+      if (!IS_NIL(peek(0)))
+        f->ip += offset;
+      break;
+    }
     case OP_JUMP: {
       uint16_t offset = READ_SHORT();
       f->ip += offset;

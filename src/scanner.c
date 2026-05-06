@@ -95,6 +95,8 @@ Token scanToken() {
     return makeToken(TOKEN_SLASH);
   case '*':
     return makeToken(TOKEN_STAR);
+  case '?':
+    return makeToken(match('?') ? TOKEN_QUESTION_QUESTION : TOKEN_ERROR);
   case '&':
     return makeToken(match('&') ? TOKEN_AND : TOKEN_ERROR);
   case '|':
