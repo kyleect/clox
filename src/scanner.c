@@ -97,6 +97,8 @@ Token scanToken() {
     return makeToken(TOKEN_STAR);
   case '&':
     return makeToken(match('&') ? TOKEN_AND : TOKEN_ERROR);
+  case '|':
+    return makeToken(match('|') ? TOKEN_OR : TOKEN_ERROR);
   case '!':
     return makeToken(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
   case '=':
