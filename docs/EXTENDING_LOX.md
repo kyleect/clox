@@ -4,7 +4,7 @@ These are the documented changes to the language/syntax from the original Lox la
 
 ## Next: 0.2.0
 
-- Short forms of `and`/`or`: `&&` and `||`
+- Short forms of `and`, `or`: `&&` and `||`
 - Nullish coalescing operator (`??`)
 
 ## 0.1.0
