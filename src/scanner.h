@@ -1,6 +1,15 @@
 #ifndef clox_scanner_h
 #define clox_scanner_h
 
+typedef struct {
+  const char *start;
+  /**
+   * The current character being scanned.
+   */
+  const char *current;
+  int line;
+} Scanner;
+
 typedef enum {
   // Single-character tokens.
   TOKEN_LEFT_PAREN,
@@ -58,8 +67,8 @@ typedef struct {
   int line;
 } Token;
 
-void initScanner(const char *source);
-Token scanToken();
+void initScanner(Scanner *scanner, const char *source);
+Token scanToken(Scanner *scanner);
 const char *tokenTypeToString(TokenType type);
 
 #endif

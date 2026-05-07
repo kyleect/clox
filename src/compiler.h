@@ -26,7 +26,7 @@ typedef enum {
   PREC_PRIMARY
 } Precedence;
 
-typedef void (*ParseFn)(bool canAssign);
+typedef void (*ParseFn)(Scanner *scanner, bool canAssign);
 
 typedef struct {
   ParseFn prefix;
@@ -74,7 +74,7 @@ typedef struct ClassCompiler {
  *
  * This compiled object can be ran by the VM.
  */
-ObjFunction *compile(const char *source);
+ObjFunction *compile(Scanner *scanner, const char *source);
 
 /**
  * Mark all objects that are referenced by the compiler as roots

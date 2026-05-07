@@ -385,7 +385,10 @@ InterpretResult interpretFunction(ObjFunction *function) {
 InterpretResult interpret(const char *source) {
   TRACELN("vm.interpret()");
 
-  ObjFunction *function = compile(source);
+  Scanner scanner;
+  initScanner(&scanner, source);
+
+  ObjFunction *function = compile(&scanner, source);
 
   return interpretFunction(function);
 }
