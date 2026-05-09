@@ -994,12 +994,12 @@ static InterpretResult run() {
     case OP_FIELD: {
       ObjString *name = READ_STRING();
 
-      if (!IS_CLASS(peek(0))) {
+      if (!IS_CLASS(peek(1))) {
         runtimeError(&vm, "Field declaration outside class.");
         return INTERPRET_RUNTIME_ERROR;
       }
 
-      ObjClass *klass = AS_CLASS(peek(0));
+      ObjClass *klass = AS_CLASS(peek(1));
 
       Value existing;
 
@@ -1010,7 +1010,18 @@ static InterpretResult run() {
 
       tableSet(&klass->fields, name, NUMBER_VAL(klass->fieldCount));
 
+      Value initializer = peek(0);
+
+      if (klass->fieldCount >= 256) {
+        runtimeError(&vm, "A class can't have more than 256 fields");
+      }
+
+      klass->fieldDefaults[klass->fieldCount] = initializer;
+
       klass->fieldCount++;
+
+      pop(); // initializer
+
       break;
     }
     case OP_METHOD:

@@ -467,6 +467,13 @@ static void method(Scanner *scanner) {
 static void fieldDeclaration(Scanner *scanner) {
   consume(scanner, TOKEN_IDENTIFIER, "Expect field name.");
   uint8_t constant = identifierConstant(&parser.previous);
+
+  if (match(scanner, TOKEN_EQUAL)) {
+    expression(scanner);
+  } else {
+    emitByte(OP_NIL);
+  }
+
   consume(scanner, TOKEN_SEMICOLON, "Expect ';' after field.");
   emitBytes(OP_FIELD, constant);
 }

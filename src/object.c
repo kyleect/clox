@@ -38,6 +38,11 @@ ObjClass *newClass(ObjString *name) {
   initTable(&klass->methods);
   initTable(&klass->fields);
   klass->fieldCount = 0;
+
+  for (int i = 0; i < 256; i++) {
+    klass->fieldDefaults[i] = NIL_VAL;
+  }
+
   return klass;
 }
 
@@ -80,7 +85,7 @@ ObjInstance *newInstance(ObjClass *klass) {
   } else {
     instance->fields = ALLOCATE(Value, klass->fieldCount);
     for (int i = 0; i < klass->fieldCount; i++) {
-      instance->fields[i] = NIL_VAL;
+      instance->fields[i] = klass->fieldDefaults[i];
     }
   }
 
