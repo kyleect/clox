@@ -1,5 +1,9 @@
 # Development
 
+## Reference
+
+- [Bytecode](./OPCODES.md)
+
 ## Important Files
 
 - [`justfile`](../justfile) Build, run tests, etc... See: [just.systems](https://just.systems/man/en/)
