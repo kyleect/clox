@@ -77,7 +77,7 @@ typedef struct {
   Table methods;
   Table fields;
   int fieldCount;
-  Value fieldDefaults[256]
+  Value fieldDefaults[256];
 } ObjClass;
 
 typedef struct {

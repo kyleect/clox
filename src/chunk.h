@@ -7,7 +7,6 @@
 typedef enum {
   OP_CONSTANT,
   OP_NIL,
-  OP_NULLISH, // Nullish coalescing operator: ??
   OP_TRUE,
   OP_FALSE,
   OP_ADD,

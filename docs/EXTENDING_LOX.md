@@ -10,7 +10,7 @@ These are the documented changes to the language/syntax from the original Lox la
 - Short forms of `and`, `or`: `&&` and `||`
 - Nullish coalescing operator (`??`)
   - New tokens: `TOKEN_QUESTION_QUESTION`
-  - New bytecode OPs: `OP_NULLISH`, `OP_JUMP_IF_NOT_NIL`
+  - New bytecode OPs: `OP_JUMP_IF_NOT_NIL`
 - Class field declarations
   - Class fields are no longer dynamically defined. They must be declared before use.
   - New bytecode OP: `OP_FIELD`
