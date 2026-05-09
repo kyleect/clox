@@ -75,12 +75,14 @@ typedef struct {
   Obj obj;
   ObjString *name;
   Table methods;
+  Table fields;
+  int fieldCount;
 } ObjClass;
 
 typedef struct {
   Obj obj;
   ObjClass *klass;
-  Table fields;
+  Value *fields;
 } ObjInstance;
 
 typedef struct {
@@ -93,6 +95,8 @@ typedef struct {
  * Allocate a new class
  */
 ObjClass *newClass(ObjString *name);
+
+bool classFieldSlot(ObjClass *klass, ObjString *name, int *slot);
 
 /**
  * Allocate a new closure

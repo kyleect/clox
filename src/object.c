@@ -36,7 +36,17 @@ ObjClass *newClass(ObjString *name) {
   ObjClass *klass = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
   klass->name = name;
   initTable(&klass->methods);
+  initTable(&klass->fields);
+  klass->fieldCount = 0;
   return klass;
+}
+
+bool classFieldSlot(ObjClass *klass, ObjString *name, int *slot) {
+  Value value;
+  if (!tableGet(&klass->fields, name, &value))
+    return false;
+  *slot = (int)AS_NUMBER(value);
+  return true;
 }
 
 ObjClosure *newClosure(ObjFunction *function) {
@@ -64,7 +74,16 @@ ObjFunction *newFunction() {
 ObjInstance *newInstance(ObjClass *klass) {
   ObjInstance *instance = ALLOCATE_OBJ(ObjInstance, OBJ_INSTANCE);
   instance->klass = klass;
-  initTable(&instance->fields);
+
+  if (klass->fieldCount == 0) {
+    instance->fields = NULL;
+  } else {
+    instance->fields = ALLOCATE(Value, klass->fieldCount);
+    for (int i = 0; i < klass->fieldCount; i++) {
+      instance->fields[i] = NIL_VAL;
+    }
+  }
+
   return instance;
 }
 
@@ -140,6 +159,15 @@ static void printFunction(ObjFunction *function) {
   }
 
   printf("<fn %s>", function->name->chars);
+}
+
+static void printFunctionToErr(ObjFunction *function) {
+  if (function->name == NULL) {
+    fprintf(stderr, "<script>");
+    return;
+  }
+
+  fprintf(stderr, "<fn %s>", function->name->chars);
 }
 
 void objectToString(Value value, char *buffer, size_t size) {
@@ -273,7 +301,9 @@ void printObjectToErr(Value value) {
     fprintf(stderr, "<fn %s>", AS_FUNCTION(value)->name->chars);
     break;
   case OBJ_CLOSURE:
-    fprintf(stderr, "<fn %s>", AS_CLOSURE(value)->function->name->chars);
+    ObjClosure *closure = AS_CLOSURE(value);
+
+    printFunctionToErr(closure->function);
     break;
   case OBJ_NATIVE:
     fprintf(stderr, "<fn native>");

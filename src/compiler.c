@@ -464,6 +464,12 @@ static void method(Scanner *scanner) {
   emitBytes(OP_METHOD, constant);
 }
 
+static void fieldDeclaration(Scanner *scanner) {
+  consume(scanner, TOKEN_IDENTIFIER, "Expect field name.");
+  uint8_t constant = identifierConstant(&parser.previous);
+  consume(scanner, TOKEN_SEMICOLON, "Expect ';' after field.");
+  emitBytes(OP_FIELD, constant);
+}
 static void classDeclaration(Scanner *scanner) {
   consume(scanner, TOKEN_IDENTIFIER, "Expect class name.");
   Token className = parser.previous;
@@ -480,7 +486,11 @@ static void classDeclaration(Scanner *scanner) {
   namedVariable(scanner, className, false);
   consume(scanner, TOKEN_LEFT_BRACE, "Expect '{' before class body.");
   while (!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) {
-    method(scanner);
+    if (match(scanner, TOKEN_VAR)) {
+      fieldDeclaration(scanner);
+    } else {
+      method(scanner);
+    }
   }
   consume(scanner, TOKEN_RIGHT_BRACE, "Expect '}' after class body.");
   emitByte(OP_POP);

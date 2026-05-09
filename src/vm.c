@@ -568,8 +568,11 @@ static bool invoke(ObjString *name, int argCount) {
 
   ObjInstance *instance = AS_INSTANCE(receiver);
 
-  Value value;
-  if (tableGet(&instance->fields, name, &value)) {
+  int slot;
+
+  if (classFieldSlot(instance->klass, name, &slot)) {
+    Value value = instance->fields[slot];
+
     vm.stackTop[-argCount - 1] = value;
     return callValue(value, argCount);
   }
@@ -580,7 +583,6 @@ static bool invoke(ObjString *name, int argCount) {
 static bool bindMethod(ObjClass *klass, ObjString *name) {
   Value method;
   if (!tableGet(&klass->methods, name, &method)) {
-    runtimeError(&vm, "Undefined property '%s'.", name->chars);
     return false;
   }
 
@@ -949,18 +951,22 @@ static InterpretResult run() {
       ObjInstance *instance = AS_INSTANCE(peek(0));
       ObjString *name = READ_STRING();
 
-      Value value;
-      if (tableGet(&instance->fields, name, &value)) {
-        pop(); // Instance.
+      int slot;
+
+      if (classFieldSlot(instance->klass, name, &slot)) {
+        Value value = instance->fields[slot];
+
+        pop(); // instance
         push(value);
         break;
       }
 
-      if (!bindMethod(instance->klass, name)) {
-        return INTERPRET_RUNTIME_ERROR;
+      if (bindMethod(instance->klass, name)) {
+        break;
       }
 
-      break;
+      runtimeError(&vm, "Undefined property '%s'.", name->chars);
+      return INTERPRET_RUNTIME_ERROR;
     }
     case OP_SET_PROPERTY: {
       if (!IS_INSTANCE(peek(1))) {
@@ -969,10 +975,42 @@ static InterpretResult run() {
       }
 
       ObjInstance *instance = AS_INSTANCE(peek(1));
-      tableSet(&instance->fields, READ_STRING(), peek(0));
-      Value value = pop();
-      pop();
+      ObjString *name = READ_STRING();
+
+      int slot;
+
+      if (!classFieldSlot(instance->klass, name, &slot)) {
+        runtimeError(&vm, "Undefined field '%s'.", name->chars);
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      instance->fields[slot] = peek(0);
+
+      Value value = pop(); // value
+      pop();               // instance
       push(value);
+      break;
+    }
+    case OP_FIELD: {
+      ObjString *name = READ_STRING();
+
+      if (!IS_CLASS(peek(0))) {
+        runtimeError(&vm, "Field declaration outside class.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      ObjClass *klass = AS_CLASS(peek(0));
+
+      Value existing;
+
+      if (tableGet(&klass->fields, name, &existing)) {
+        runtimeError(&vm, "Duplicate field '%s'.", name->chars);
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      tableSet(&klass->fields, name, NUMBER_VAL(klass->fieldCount));
+
+      klass->fieldCount++;
       break;
     }
     case OP_METHOD:

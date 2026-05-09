@@ -82,16 +82,17 @@
 0000    1 OP_CLASS            0 'Class'
 0002    | OP_DEFINE_GLOBAL    0 'Class'
 0004    | OP_GET_GLOBAL       1 'Class'
-0006    | OP_POP
-0007    3 OP_GET_GLOBAL       3 'Class'
-0009    | OP_CALL             0
-0011    | OP_DEFINE_GLOBAL    2 'instance'
-0013    5 OP_GET_GLOBAL       4 'instance'
-0015    | OP_CONSTANT         6 'World'
-0017    | OP_SET_PROPERTY     5 'hello'
-0019    | OP_POP
-0020    7 OP_GET_GLOBAL       7 'instance'
-0022    | OP_GET_PROPERTY     8 'hello'
-0024    | OP_PRINT
-0025    8 OP_NIL
-0026    | OP_RETURN
+0006    2 OP_FIELD            2 'hello'
+0008    3 OP_POP
+0009    5 OP_GET_GLOBAL       4 'Class'
+0011    | OP_CALL             0
+0013    | OP_DEFINE_GLOBAL    3 'instance'
+0015    7 OP_GET_GLOBAL       5 'instance'
+0017    | OP_CONSTANT         7 'World'
+0019    | OP_SET_PROPERTY     6 'hello'
+0021    | OP_POP
+0022    9 OP_GET_GLOBAL       8 'instance'
+0024    | OP_GET_PROPERTY     9 'hello'
+0026    | OP_PRINT
+0027   10 OP_NIL
+0028    | OP_RETURN

@@ -1,4 +1,6 @@
 class Class {
+    var value;
+    
     set(value) {
         this.value = value;
     }

@@ -1,4 +1,6 @@
-class Class {}
+class Class {
+    var fn;
+}
 
 var instance = Class();
 

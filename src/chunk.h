@@ -38,6 +38,7 @@ typedef enum {
   OP_CALL,
   OP_CLOSURE,
   OP_CLASS,
+  OP_FIELD,
   OP_GET_PROPERTY,
   OP_SET_PROPERTY,
   OP_METHOD,

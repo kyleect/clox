@@ -1,4 +1,6 @@
 class Class {
+    var value;
+    
     init (value) {
         this.value = value;
     }

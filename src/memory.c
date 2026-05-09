@@ -88,12 +88,17 @@ static void blackenObject(Obj *object) {
     ObjClass *klass = (ObjClass *)object;
     markObject((Obj *)klass->name);
     markTable(&klass->methods);
+    markTable(&klass->fields);
     break;
   }
   case OBJ_INSTANCE: {
     ObjInstance *instance = (ObjInstance *)object;
     markObject((Obj *)instance->klass);
-    markTable(&instance->fields);
+
+    for (int i = 0; i < instance->klass->fieldCount; i++) {
+      markValue(instance->fields[i]);
+    }
+
     break;
   }
   case OBJ_BOUND_METHOD: {
@@ -134,12 +139,13 @@ static void freeObject(Obj *object) {
   case OBJ_CLASS: {
     ObjClass *klass = (ObjClass *)object;
     freeTable(&klass->methods);
+    freeTable(&klass->fields);
     FREE(ObjClass, object);
     break;
   }
   case OBJ_INSTANCE: {
     ObjInstance *instance = (ObjInstance *)object;
-    freeTable(&instance->fields);
+    FREE_ARRAY(Value, instance->fields, instance->klass->fieldCount);
     FREE(ObjInstance, object);
     break;
   }

@@ -65,8 +65,16 @@ struct Compiler {
   int scopeDepth;
 };
 
+typedef struct {
+  ObjString *name;
+  uint8_t slot;
+} Field;
+
 typedef struct ClassCompiler {
   struct ClassCompiler *enclosing;
+
+  Field fields[256];
+  int fieldCount;
 } ClassCompiler;
 
 /**
