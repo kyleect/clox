@@ -263,11 +263,7 @@ static Value arrInsertNative(int argCount, Value *args) {
   int index = (int)AS_NUMBER(args[1]);
   Value value = args[2];
 
-  if (index < 0 || index > array->count) {
-    runtimeError(&vm, "insert index out of bounds.");
-
-    return NIL_VAL;
-  }
+  assertIsInArrayBounds(&vm, array, index);
 
   writeValueToArrayObj(array, NIL_VAL);
 
@@ -278,6 +274,27 @@ static Value arrInsertNative(int argCount, Value *args) {
   array->values[index] = value;
 
   return NIL_VAL;
+}
+
+static Value arrRemoveNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrRemove", 2, argCount);
+  assertArgIsArray(&vm, "arrRemove", args, 0);
+  assertArgIsNumber(&vm, "arrRemove", args, 1);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  int index = (int)AS_NUMBER(args[1]);
+
+  assertIsInArrayBounds(&vm, array, index);
+
+  Value removed = array->values[index];
+
+  for (int i = index; i < array->count - 1; i++) {
+    array->values[i] = array->values[i + 1];
+  }
+
+  array->count--;
+
+  return removed;
 }
 
 static Value stdinNative(int argCount, Value *args) {
@@ -554,6 +571,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("arrPush", arrPushNative);
   defineNative("arrPop", arrPopNative);
   defineNative("arrInsert", arrInsertNative);
+  defineNative("arrRemove", arrRemoveNative);
 }
 
 void freeVM() {
