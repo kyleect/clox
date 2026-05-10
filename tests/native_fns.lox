@@ -60,3 +60,18 @@ print typeof(parseNumber);
 
 print numberToString;
 print typeof(numberToString);
+
+print arrPush;
+print typeof(arrPush);
+
+print arrPop;
+print typeof(arrPop);
+
+print arrInsert;
+print typeof(arrInsert);
+
+print arrRemove;
+print typeof(arrRemove);
+
+print arrCopy;
+print typeof(arrCopy);

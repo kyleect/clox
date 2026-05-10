@@ -1,0 +1,3 @@
+var array = [nil];
+
+print arrContains(array, nil);

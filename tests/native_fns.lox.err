@@ -205,5 +205,35 @@
 0205    | OP_GET_GLOBAL      62 'numberToString'
 0207    | OP_CALL             1
 0209    | OP_PRINT
-0210   63 OP_NIL
-0211    | OP_RETURN
+0210   64 OP_GET_GLOBAL      63 'arrPush'
+0212    | OP_PRINT
+0213   65 OP_GET_GLOBAL      64 'typeof'
+0215    | OP_GET_GLOBAL      65 'arrPush'
+0217    | OP_CALL             1
+0219    | OP_PRINT
+0220   67 OP_GET_GLOBAL      66 'arrPop'
+0222    | OP_PRINT
+0223   68 OP_GET_GLOBAL      67 'typeof'
+0225    | OP_GET_GLOBAL      68 'arrPop'
+0227    | OP_CALL             1
+0229    | OP_PRINT
+0230   70 OP_GET_GLOBAL      69 'arrInsert'
+0232    | OP_PRINT
+0233   71 OP_GET_GLOBAL      70 'typeof'
+0235    | OP_GET_GLOBAL      71 'arrInsert'
+0237    | OP_CALL             1
+0239    | OP_PRINT
+0240   73 OP_GET_GLOBAL      72 'arrRemove'
+0242    | OP_PRINT
+0243   74 OP_GET_GLOBAL      73 'typeof'
+0245    | OP_GET_GLOBAL      74 'arrRemove'
+0247    | OP_CALL             1
+0249    | OP_PRINT
+0250   76 OP_GET_GLOBAL      75 'arrCopy'
+0252    | OP_PRINT
+0253   77 OP_GET_GLOBAL      76 'typeof'
+0255    | OP_GET_GLOBAL      77 'arrCopy'
+0257    | OP_CALL             1
+0259    | OP_PRINT
+0260   78 OP_NIL
+0261    | OP_RETURN

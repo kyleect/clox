@@ -151,6 +151,12 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     return constantInstruction("OP_METHOD", chunk, offset);
   case OP_INVOKE:
     return invokeInstruction("OP_INVOKE", chunk, offset);
+  case OP_ARRAY:
+    return byteInstruction("OP_ARRAY", chunk, offset);
+  case OP_GET_INDEX:
+    return simpleInstruction("OP_GET_INDEX", offset);
+  case OP_SET_INDEX:
+    return simpleInstruction("OP_SET_INDEX", offset);
   default:
     fprintf(stderr, "Unknown opcode %d\n", instruction);
     return offset + 1;

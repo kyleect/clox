@@ -24,6 +24,7 @@ static void concatenate();
 static bool call(ObjClosure *function, int argCount);
 Value fileExists(char *filename);
 static void writeFile(const char *path, const char *text);
+void writeValueToArrayObj(ObjArray *array, Value value);
 
 VM vm;
 
@@ -170,13 +171,22 @@ static Value setEnvNative(int argCount, Value *args) {
 
 static Value lenNative(int argCount, Value *args) {
   assertArgCount(&vm, "len", 1, argCount);
-  assertArgIsString(&vm, "len", args, 0);
 
   Value name = args[0];
 
-  int length = AS_STRING(name)->length;
+  if (IS_STRING(name)) {
+    int length = AS_STRING(name)->length;
 
-  return NUMBER_VAL(length);
+    return NUMBER_VAL(length);
+  } else if (IS_ARRAY(name)) {
+    ObjArray *array = AS_ARRAY(name);
+    int length = array->count;
+    return NUMBER_VAL(length);
+  } else {
+    runtimeError(&vm,
+                 "function len expects argument 1 to be a string or array.");
+    exit(70);
+  }
 }
 
 static Value typeofNative(int argCount, Value *args) {
@@ -212,6 +222,161 @@ static Value instanceOfNative(int argCount, Value *args) {
   ObjClass *klass2 = AS_CLASS(klass);
 
   return BOOL_VAL(instance->klass == klass2);
+}
+
+static Value arrPushNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrPush", 2, argCount);
+  assertArgIsArray(&vm, "arrPush", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  Value value = args[1];
+
+  writeValueToArrayObj(array, value);
+
+  return NIL_VAL;
+}
+
+static Value arrPopNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrPop", 1, argCount);
+  assertArgIsArray(&vm, "arrPop", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+
+  if (array->count == 0) {
+    runtimeError(&vm, "Cannot pop empty array.");
+    exit(70);
+  }
+
+  Value value = array->values[array->count - 1];
+
+  array->count--;
+
+  return value;
+}
+
+static Value arrInsertNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrInsert", 3, argCount);
+  assertArgIsArray(&vm, "arrInsert", args, 0);
+  assertArgIsNumber(&vm, "arrInsert", args, 1);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  int index = (int)AS_NUMBER(args[1]);
+  Value value = args[2];
+
+  assertIsInArrayBounds(&vm, array, index);
+
+  writeValueToArrayObj(array, NIL_VAL);
+
+  for (int i = array->count - 1; i > index; i--) {
+    array->values[i] = array->values[i - 1];
+  }
+
+  array->values[index] = value;
+
+  return NIL_VAL;
+}
+
+static Value arrRemoveNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrRemove", 2, argCount);
+  assertArgIsArray(&vm, "arrRemove", args, 0);
+  assertArgIsNumber(&vm, "arrRemove", args, 1);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  int index = (int)AS_NUMBER(args[1]);
+
+  assertIsInArrayBounds(&vm, array, index);
+
+  Value removed = array->values[index];
+
+  for (int i = index; i < array->count - 1; i++) {
+    array->values[i] = array->values[i + 1];
+  }
+
+  array->count--;
+
+  return removed;
+}
+
+static Value arrClearNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrClear", 1, argCount);
+  assertArgIsArray(&vm, "arrClear", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+
+  array->count = 0;
+
+  return NIL_VAL;
+}
+
+static Value arrContainsNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrContains", 2, argCount);
+  assertArgIsArray(&vm, "arrContains", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  Value value = args[1];
+
+  for (int i = 0; i < array->count; i++) {
+    if (valuesEqual(array->values[i], value)) {
+      return BOOL_VAL(true);
+    }
+  }
+
+  return BOOL_VAL(false);
+}
+
+static Value arrCopyNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrayCopy", 1, argCount);
+  assertArgIsArray(&vm, "arrayCopy", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  ObjArray *result = newArray();
+
+  pushOnStack(OBJ_VAL(result)); // Protect from GC
+
+  for (int i = 0; i < array->count; i++) {
+    writeValueToArrayObj(result, array->values[i]);
+  }
+
+  popFromStack(); // Clean up after GC protection
+
+  return OBJ_VAL(result);
+}
+
+static Value arrIsEmptyNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrIsEmpty", 1, argCount);
+  assertArgIsArray(&vm, "arrIsEmpty", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+
+  bool isEmpty = array->count == 0;
+
+  return BOOL_VAL(isEmpty);
+}
+
+static Value arrEqualNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrEqual", 2, argCount);
+  assertArgIsArray(&vm, "arrEqual", args, 0);
+  assertArgIsArray(&vm, "arrEqual", args, 1);
+
+  ObjArray *array_a = AS_ARRAY(args[0]);
+  ObjArray *array_b = AS_ARRAY(args[1]);
+
+  if (array_a->count != array_b->count) {
+    return BOOL_VAL(false);
+  }
+
+  bool areEqual = true;
+
+  for (int i = 0; i < array_a->count; i++) {
+    bool i_equal = valuesEqual(array_a->values[i], array_b->values[i]);
+
+    if (!i_equal) {
+      areEqual = false;
+      break;
+    }
+  }
+
+  return BOOL_VAL(areEqual);
 }
 
 static Value stdinNative(int argCount, Value *args) {
@@ -485,6 +650,15 @@ void initVM(int argc, char *argv[]) {
   defineNative("instanceOf", instanceOfNative);
   defineNative("prompt", promptNative);
   defineNative("stdin", stdinNative);
+  defineNative("arrPush", arrPushNative);
+  defineNative("arrPop", arrPopNative);
+  defineNative("arrInsert", arrInsertNative);
+  defineNative("arrRemove", arrRemoveNative);
+  defineNative("arrClear", arrClearNative);
+  defineNative("arrContains", arrContainsNative);
+  defineNative("arrCopy", arrCopyNative);
+  defineNative("arrIsEmpty", arrIsEmptyNative);
+  defineNative("arrEqual", arrEqualNative);
 }
 
 void freeVM() {
@@ -504,6 +678,8 @@ Value popFromStack() {
   vm.stackTop--;
   return *vm.stackTop;
 }
+
+void popNFromStack(int count) { vm.stackTop -= count; }
 
 static Value peekStack(int distance) { return vm.stackTop[-1 - distance]; }
 
@@ -724,6 +900,18 @@ static void writeFile(const char *path, const char *text) {
 Value fileExists(char *filename) {
   struct stat buffer;
   return BOOL_VAL((stat(filename, &buffer) == 0));
+}
+
+void writeValueToArrayObj(ObjArray *array, Value value) {
+  if (array->capacity < array->count + 1) {
+    int oldCapacity = array->capacity;
+    array->capacity = GROW_CAPACITY(oldCapacity);
+
+    array->values =
+        GROW_ARRAY(Value, array->values, oldCapacity, array->capacity);
+  }
+
+  array->values[array->count++] = value;
 }
 
 static InterpretResult run() {
@@ -1097,6 +1285,63 @@ static InterpretResult run() {
         return INTERPRET_RUNTIME_ERROR;
       }
       frame = &vm.frames[vm.frameCount - 1];
+      break;
+    }
+    case OP_ARRAY: {
+      int count = READ_BYTE();
+
+      ObjArray *array = newArray();
+
+      for (int i = count - 1; i >= 0; i--) {
+        writeValueToArrayObj(array, peekStack(i));
+      }
+
+      popNFromStack(count);
+
+      pushOnStack(OBJ_VAL(array));
+
+      break;
+    }
+    case OP_GET_INDEX: {
+      Value index = popFromStack();
+      Value arrayVal = popFromStack();
+
+      if (!IS_ARRAY(arrayVal)) {
+        runtimeError(&vm, "Can only index arrays.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      if (!IS_NUMBER(index)) {
+        runtimeError(&vm, "Array index must be number.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      ObjArray *array = AS_ARRAY(arrayVal);
+
+      int i = AS_NUMBER(index);
+
+      if (i < 0 || i >= array->count) {
+        runtimeError(&vm, "Array index out of bounds.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      pushOnStack(array->values[i]);
+
+      break;
+    }
+    case OP_SET_INDEX: {
+      Value value = popFromStack();
+      Value index = popFromStack();
+      Value arrayValue = popFromStack();
+
+      ObjArray *array = AS_ARRAY(arrayValue);
+
+      int i = AS_NUMBER(index);
+
+      array->values[i] = value;
+
+      pushOnStack(value);
+
       break;
     }
     }

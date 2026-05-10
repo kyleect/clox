@@ -124,6 +124,15 @@ static void blackenObject(Obj *object) {
     markArray(&function->chunk.constants);
     break;
   }
+  case OBJ_ARRAY: {
+    ObjArray *array = (ObjArray *)object;
+
+    for (int i = 0; i < array->count; i++) {
+      markValue(array->values[i]);
+    }
+
+    break;
+  }
   case OBJ_NATIVE:
   case OBJ_STRING:
     break;
@@ -178,6 +187,12 @@ static void freeObject(Obj *object) {
   case OBJ_UPVALUE:
     FREE(ObjUpvalue, object);
     break;
+  case OBJ_ARRAY: {
+    ObjArray *array = (ObjArray *)object;
+    FREE_ARRAY(Value, array->values, array->capacity);
+    FREE(ObjArray, object);
+    break;
+  }
   }
 }
 

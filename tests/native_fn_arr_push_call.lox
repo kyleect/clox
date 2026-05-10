@@ -1,0 +1,5 @@
+var array = [];
+
+arrPush(array, 123);
+
+print array;

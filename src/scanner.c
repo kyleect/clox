@@ -70,6 +70,10 @@ Token scanToken(Scanner *scanner) {
     return makeToken(scanner, TOKEN_LEFT_BRACE);
   case '}':
     return makeToken(scanner, TOKEN_RIGHT_BRACE);
+  case '[':
+    return makeToken(scanner, TOKEN_LEFT_BRACKET);
+  case ']':
+    return makeToken(scanner, TOKEN_RIGHT_BRACKET);
   case ';':
     return makeToken(scanner, TOKEN_SEMICOLON);
   case ',':

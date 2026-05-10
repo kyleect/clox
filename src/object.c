@@ -98,6 +98,15 @@ ObjNative *newNative(NativeFn function) {
   return native;
 }
 
+ObjArray *newArray() {
+  ObjArray *array = ALLOCATE_OBJ(ObjArray, OBJ_ARRAY);
+  array->count = 0;
+  array->capacity = 0;
+  array->values = NULL;
+
+  return array;
+}
+
 static ObjString *allocateString(char *chars, int length, uint32_t hash) {
   ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
   string->length = length;
@@ -224,6 +233,22 @@ void objectToString(Value value, char *buffer, size_t size) {
              AS_BOUND_METHOD(value)->method->function->name->chars);
     break;
   }
+  case OBJ_ARRAY: {
+    ObjArray *array = AS_ARRAY(value);
+
+    printf("[");
+
+    for (int i = 0; i < array->count; i++) {
+      printValue(array->values[i]);
+
+      if (i < array->count - 1) {
+        printf(", ");
+      }
+    }
+
+    printf("]");
+    break;
+  }
   }
 }
 
@@ -289,6 +314,22 @@ void printObject(Value value) {
   case OBJ_UPVALUE:
     printf("upvalue");
     break;
+  case OBJ_ARRAY: {
+    ObjArray *array = AS_ARRAY(value);
+
+    printf("[");
+
+    for (int i = 0; i < array->count; i++) {
+      printValue(array->values[i]);
+
+      if (i < array->count - 1) {
+        printf(", ");
+      }
+    }
+
+    printf("]");
+    break;
+  }
   }
 }
 

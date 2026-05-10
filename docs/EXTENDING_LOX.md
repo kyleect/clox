@@ -15,6 +15,26 @@ These are the documented changes to the language/syntax from the original Lox la
   - Class fields are no longer dynamically defined. They must be declared before use.
   - New bytecode OP: `OP_FIELD`
 - Native function: `numberToString(number)`
+- Arrays
+  - New tokens: `TOKEN_LEFT_BRACKET`, `TOKEN_RIGHT_BRACKET`
+  - New bytecode OPs: `OP_ARRAY`, `OP_INDEX_GET`, `OP_INDEX_SET`
+  - New native functions:
+    - `arrPush(array, value)`
+    - `arrPop(array)`
+    - `arrInsert(array, index, value)`
+    - `arrRemove(array, index)`
+    - `arrClear(array)`
+    - `arrContains(array, value)`
+    - `arrCopy(array)`
+    - `arrIsEmpty(array)`
+    - `arrEqual(a, b)`
+    - [ ] `arrSlice(array, from, to)`
+    - [ ] `arrConcat(a, b)`
+    - [ ] `arrReverse(array)`
+    - [ ] `arrSort(array, fn)`
+    - [ ] `arrMap(array, fn)`
+    - [ ] `arrJoinToString(array, separator)`
+  - Update `len` native function to return array lengths as well
 
 ## 0.1.0
 
