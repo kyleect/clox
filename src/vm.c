@@ -353,6 +353,32 @@ static Value arrIsEmptyNative(int argCount, Value *args) {
   return BOOL_VAL(isEmpty);
 }
 
+static Value arrEqualNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrEqual", 2, argCount);
+  assertArgIsArray(&vm, "arrEqual", args, 0);
+  assertArgIsArray(&vm, "arrEqual", args, 1);
+
+  ObjArray *array_a = AS_ARRAY(args[0]);
+  ObjArray *array_b = AS_ARRAY(args[1]);
+
+  if (array_a->count != array_b->count) {
+    return BOOL_VAL(false);
+  }
+
+  bool areEqual = true;
+
+  for (int i = 0; i < array_a->count; i++) {
+    bool i_equal = valuesEqual(array_a->values[i], array_b->values[i]);
+
+    if (!i_equal) {
+      areEqual = false;
+      break;
+    }
+  }
+
+  return BOOL_VAL(areEqual);
+}
+
 static Value stdinNative(int argCount, Value *args) {
   if (argCount > 1) {
     assertArgCount(&vm, "stdin", 1, argCount);
@@ -632,6 +658,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("arrContains", arrContainsNative);
   defineNative("arrCopy", arrCopyNative);
   defineNative("arrIsEmpty", arrIsEmptyNative);
+  defineNative("arrEqual", arrEqualNative);
 }
 
 void freeVM() {
