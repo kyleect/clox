@@ -305,11 +305,12 @@ void printObjectToErr(Value value) {
 
     fprintf(stderr, "<fn %s>", AS_FUNCTION(value)->name->chars);
     break;
-  case OBJ_CLOSURE:
+  case OBJ_CLOSURE: {
     ObjClosure *closure = AS_CLOSURE(value);
 
     printFunctionToErr(closure->function);
     break;
+  }
   case OBJ_NATIVE:
     fprintf(stderr, "<fn native>");
     break;

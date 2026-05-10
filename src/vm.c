@@ -543,6 +543,10 @@ static bool callValue(Value callee, int argCount) {
       pushOnStack(result);
       return true;
     }
+    default: {
+      // Handled below
+      break;
+    }
     }
   }
   runtimeError(&vm, "Can only call functions and classes.");
