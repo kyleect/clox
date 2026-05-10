@@ -171,13 +171,22 @@ static Value setEnvNative(int argCount, Value *args) {
 
 static Value lenNative(int argCount, Value *args) {
   assertArgCount(&vm, "len", 1, argCount);
-  assertArgIsString(&vm, "len", args, 0);
 
   Value name = args[0];
 
-  int length = AS_STRING(name)->length;
+  if (IS_STRING(name)) {
+    int length = AS_STRING(name)->length;
 
-  return NUMBER_VAL(length);
+    return NUMBER_VAL(length);
+  } else if (IS_ARRAY(name)) {
+    ObjArray *array = AS_ARRAY(name);
+    int length = array->count;
+    return NUMBER_VAL(length);
+  } else {
+    runtimeError(&vm,
+                 "function len expects argument 1 to be a string or array.");
+    exit(70);
+  }
 }
 
 static Value typeofNative(int argCount, Value *args) {

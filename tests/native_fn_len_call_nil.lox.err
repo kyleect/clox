@@ -85,5 +85,5 @@
 0005    | OP_PRINT
 0006    2 OP_NIL
 0007    | OP_RETURN
-function len expects argument 1 to be a string.
+function len expects argument 1 to be a string or array.
 [line 1] in script
