@@ -825,6 +825,21 @@ static void unary(Scanner *scanner, bool canAssign) {
   }
 }
 
+static void arrayLiteral(Scanner *scanner, bool canAssign) {
+  int array_size = 0;
+
+  if (!check(TOKEN_LEFT_BRACKET)) {
+    do {
+      expression(scanner);
+      array_size++;
+    } while (match(scanner, TOKEN_COMMA));
+  }
+
+  consume(scanner, TOKEN_RIGHT_BRACKET, "Expect ']'");
+
+  emitBytes(OP_ARRAY, array_size);
+}
+
 static uint8_t makeConstant(Value value) {
   int constant = addConstantToChunk(currentChunk(), value);
 
@@ -942,6 +957,8 @@ ParseRule rules[] = {
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_LEFT_BRACKET] = {arrayLiteral, index, PREC_CALL},
+    [TOKEN_RIGHT_BRACKET] = {NULL, NULL, PREC_NONE},
     [TOKEN_COMMA] = {NULL, NULL, PREC_NONE},
     [TOKEN_DOT] = {NULL, dot, PREC_CALL},
     [TOKEN_MINUS] = {unary, binary, PREC_TERM},

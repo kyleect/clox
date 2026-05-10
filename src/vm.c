@@ -505,6 +505,8 @@ Value popFromStack() {
   return *vm.stackTop;
 }
 
+void popNFromStack(int count) { vm.stackTop -= count; }
+
 static Value peekStack(int distance) { return vm.stackTop[-1 - distance]; }
 
 static bool call(ObjClosure *closure, int argCount) {
@@ -724,6 +726,18 @@ static void writeFile(const char *path, const char *text) {
 Value fileExists(char *filename) {
   struct stat buffer;
   return BOOL_VAL((stat(filename, &buffer) == 0));
+}
+
+void writeValueToArrayObj(ObjArray *array, Value value) {
+  if (array->capacity < array->count + 1) {
+    int oldCapacity = array->capacity;
+    array->capacity = GROW_CAPACITY(oldCapacity);
+
+    array->values =
+        GROW_ARRAY(Value, array->values, oldCapacity, array->capacity);
+  }
+
+  array->values[array->count++] = value;
 }
 
 static InterpretResult run() {
@@ -1097,6 +1111,21 @@ static InterpretResult run() {
         return INTERPRET_RUNTIME_ERROR;
       }
       frame = &vm.frames[vm.frameCount - 1];
+      break;
+    }
+    case OP_ARRAY: {
+      int count = READ_BYTE();
+
+      ObjArray *array = newArray();
+
+      for (int i = count - 1; i >= 0; i--) {
+        writeValueToArrayObj(array, peekStack(i));
+      }
+
+      popNFromStack(count);
+
+      pushOnStack(OBJ_VAL(array));
+
       break;
     }
     }

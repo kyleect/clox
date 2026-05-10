@@ -98,6 +98,15 @@ ObjNative *newNative(NativeFn function) {
   return native;
 }
 
+ObjArray *newArray() {
+  ObjArray *array = ALLOCATE_OBJ(ObjArray, OBJ_ARRAY);
+  array->count = 0;
+  array->capacity = 0;
+  array->values = NULL;
+
+  return array;
+}
+
 static ObjString *allocateString(char *chars, int length, uint32_t hash) {
   ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
   string->length = length;

@@ -104,4 +104,7 @@ void pushOnStack(Value value);
 // @return The popped value
 Value popFromStack();
 
+// Pop n values from the VM's stack
+void popNFromStack(int count);
+
 #endif

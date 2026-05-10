@@ -15,6 +15,7 @@
 #define IS_FUNCTION(value) isObjType(value, OBJ_FUNCTION)
 #define IS_NATIVE(value) isObjType(value, OBJ_NATIVE)
 #define IS_CLOSURE(value) isObjType(value, OBJ_CLOSURE)
+#define IS_ARRAY(value) isObjType(value, OBJ_ARRAY)
 
 #define AS_CLASS(value) ((ObjClass *)AS_OBJ(value))
 #define AS_INSTANCE(value) ((ObjInstance *)AS_OBJ(value))
@@ -24,6 +25,7 @@
 #define AS_FUNCTION(value) ((ObjFunction *)AS_OBJ(value))
 #define AS_NATIVE(value) (((ObjNative *)AS_OBJ(value))->function)
 #define AS_CLOSURE(value) ((ObjClosure *)AS_OBJ(value))
+#define AS_ARRAY(value) ((ObjArray *)AS_OBJ(value))
 
 typedef enum {
   OBJ_CLASS,
@@ -34,6 +36,7 @@ typedef enum {
   OBJ_NATIVE,
   OBJ_STRING,
   OBJ_UPVALUE,
+  OBJ_ARRAY,
 } ObjType;
 
 struct Obj {
@@ -48,6 +51,13 @@ struct ObjString {
   char *chars;
   uint32_t hash;
 };
+
+typedef struct {
+  Obj obj;
+  int count;
+  int capacity;
+  Value *values;
+} ObjArray;
 
 typedef struct ObjUpvalue {
   Obj obj;
@@ -91,6 +101,8 @@ typedef struct {
   Value receiver;
   ObjClosure *method;
 } ObjBoundMethod;
+
+ObjArray *newArray();
 
 /**
  * Allocate a new class
