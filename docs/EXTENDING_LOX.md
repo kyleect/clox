@@ -23,9 +23,17 @@ These are the documented changes to the language/syntax from the original Lox la
     - `arrPop(array)`
     - `arrInsert(array, index, value)`
     - `arrRemove(array, index)`
-    - `arrClear()`
+    - `arrClear(array)`
     - `arrContains(array, value)`
     - `arrCopy(array)`
+    - [ ] `arrIsEmpty(array)`
+    - [ ] `arrEqual(a, b)`
+    - [ ] `arrSlice(array, from, to)`
+    - [ ] `arrConcat(a, b)`
+    - [ ] `arrReverse(array)`
+    - [ ] `arrSort(array, fn)`
+    - [ ] `arrMap(array, fn)`
+    - [ ] `arrJoinToString(array, separator)`
   - Update `len` native function to return array lengths as well
 
 ## 0.1.0
