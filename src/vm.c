@@ -342,6 +342,17 @@ static Value arrCopyNative(int argCount, Value *args) {
   return OBJ_VAL(result);
 }
 
+static Value arrIsEmptyNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrIsEmpty", 1, argCount);
+  assertArgIsArray(&vm, "arrIsEmpty", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+
+  bool isEmpty = array->count == 0;
+
+  return BOOL_VAL(isEmpty);
+}
+
 static Value stdinNative(int argCount, Value *args) {
   if (argCount > 1) {
     assertArgCount(&vm, "stdin", 1, argCount);
@@ -620,6 +631,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("arrClear", arrClearNative);
   defineNative("arrContains", arrContainsNative);
   defineNative("arrCopy", arrCopyNative);
+  defineNative("arrIsEmpty", arrIsEmptyNative);
 }
 
 void freeVM() {

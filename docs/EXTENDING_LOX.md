@@ -26,7 +26,7 @@ These are the documented changes to the language/syntax from the original Lox la
     - `arrClear(array)`
     - `arrContains(array, value)`
     - `arrCopy(array)`
-    - [ ] `arrIsEmpty(array)`
+    - `arrIsEmpty(array)`
     - [ ] `arrEqual(a, b)`
     - [ ] `arrSlice(array, from, to)`
     - [ ] `arrConcat(a, b)`
