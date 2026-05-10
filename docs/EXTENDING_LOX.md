@@ -20,6 +20,7 @@ These are the documented changes to the language/syntax from the original Lox la
   - New bytecode OPs: `OP_ARRAY`, `OP_INDEX_GET`, `OP_INDEX_SET`
   - New native functions:
     - `arrPush(array, value)`
+    - `arrPop(array)`
   - Update `len` native function to return array lengths as well
 
 ## 0.1.0

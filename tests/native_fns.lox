@@ -63,3 +63,6 @@ print typeof(numberToString);
 
 print arrPush;
 print typeof(arrPush);
+
+print arrPop;
+print typeof(arrPop);

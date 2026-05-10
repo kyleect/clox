@@ -211,5 +211,11 @@
 0215    | OP_GET_GLOBAL      65 'arrPush'
 0217    | OP_CALL             1
 0219    | OP_PRINT
-0220   66 OP_NIL
-0221    | OP_RETURN
+0220   67 OP_GET_GLOBAL      66 'arrPop'
+0222    | OP_PRINT
+0223   68 OP_GET_GLOBAL      67 'typeof'
+0225    | OP_GET_GLOBAL      68 'arrPop'
+0227    | OP_CALL             1
+0229    | OP_PRINT
+0230   69 OP_NIL
+0231    | OP_RETURN

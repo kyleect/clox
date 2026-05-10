@@ -37,6 +37,14 @@ void assertArgIsClass(VM *vm, const char *function, Value *args, int index) {
   }
 }
 
+void assertArgIsArray(VM *vm, const char *function, Value *args, int index) {
+  if (!IS_ARRAY(args[index])) {
+    runtimeError(vm, "function %s expects argument %d to be an array.",
+                 function, index + 1);
+    exit(70);
+  }
+}
+
 void assertArgIsNumber(VM *vm, const char *function, Value *args, int index) {
   if (!IS_NUMBER(args[index])) {
     runtimeError(vm, "function %s expects argument %d to be a number.",

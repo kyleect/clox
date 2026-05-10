@@ -226,11 +226,7 @@ static Value instanceOfNative(int argCount, Value *args) {
 
 static Value arrPushNative(int argCount, Value *args) {
   assertArgCount(&vm, "arrPush", 2, argCount);
-
-  if (!IS_ARRAY(args[0])) {
-    runtimeError(&vm, "function arrPush expects argument 1 to be an array.");
-    exit(70);
-  }
+  assertArgIsArray(&vm, "arrPush", args, 0);
 
   ObjArray *array = AS_ARRAY(args[0]);
   Value value = args[1];
@@ -238,6 +234,24 @@ static Value arrPushNative(int argCount, Value *args) {
   writeValueToArrayObj(array, value);
 
   return NIL_VAL;
+}
+
+static Value arrPopNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrPop", 1, argCount);
+  assertArgIsArray(&vm, "arrPop", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+
+  if (array->count == 0) {
+    runtimeError(&vm, "Cannot pop empty array.");
+    exit(70);
+  }
+
+  Value value = array->values[array->count - 1];
+
+  array->count--;
+
+  return value;
 }
 
 static Value stdinNative(int argCount, Value *args) {
@@ -512,6 +526,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("prompt", promptNative);
   defineNative("stdin", stdinNative);
   defineNative("arrPush", arrPushNative);
+  defineNative("arrPop", arrPopNative);
 }
 
 void freeVM() {
