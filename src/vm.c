@@ -366,6 +366,19 @@ static Value parseNumberNative(int argCount, Value *args) {
   return NUMBER_VAL(valueInt);
 }
 
+static Value numberToStringNative(int argCount, Value *args) {
+  assertArgCount(&vm, "numberToString", 1, argCount);
+  assertArgIsNumber(&vm, "numberToString", args, 0);
+
+  Value value = args[0];
+
+  char buffer[32];
+
+  int length = snprintf(buffer, sizeof(buffer), "%.15g", value.as.number);
+
+  return OBJ_VAL(copyString(buffer, length));
+}
+
 InterpretResult interpretFunction(ObjFunction *function) {
   TRACELN("vm.interpretFunction()");
 
@@ -460,6 +473,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("ceil", ceilNative);
   defineNative("readFileToString", readFileToStringNative);
   defineNative("writeStringToFile", writeStringToFileNative);
+  defineNative("numberToString", numberToStringNative);
   defineNative("fileExists", fileExistsNative);
   defineNative("getenv", getEnvNative);
   defineNative("setenv", setEnvNative);

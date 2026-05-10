@@ -199,5 +199,11 @@
 0195    | OP_GET_GLOBAL      59 'parseNumber'
 0197    | OP_CALL             1
 0199    | OP_PRINT
-0200    | OP_NIL
-0201    | OP_RETURN
+0200   61 OP_GET_GLOBAL      60 'numberToString'
+0202    | OP_PRINT
+0203   62 OP_GET_GLOBAL      61 'typeof'
+0205    | OP_GET_GLOBAL      62 'numberToString'
+0207    | OP_CALL             1
+0209    | OP_PRINT
+0210   63 OP_NIL
+0211    | OP_RETURN

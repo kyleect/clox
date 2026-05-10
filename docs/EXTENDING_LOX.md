@@ -14,6 +14,7 @@ These are the documented changes to the language/syntax from the original Lox la
 - Class field declarations
   - Class fields are no longer dynamically defined. They must be declared before use.
   - New bytecode OP: `OP_FIELD`
+- Native function: `numberToString(number)`
 
 ## 0.1.0
 
