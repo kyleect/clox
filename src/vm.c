@@ -308,6 +308,22 @@ static Value arrClearNative(int argCount, Value *args) {
   return NIL_VAL;
 }
 
+static Value arrContainsNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrContains", 2, argCount);
+  assertArgIsArray(&vm, "arrContains", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  Value value = args[1];
+
+  for (int i = 0; i < array->count; i++) {
+    if (valuesEqual(array->values[i], value)) {
+      return BOOL_VAL(true);
+    }
+  }
+
+  return BOOL_VAL(false);
+}
+
 static Value stdinNative(int argCount, Value *args) {
   if (argCount > 1) {
     assertArgCount(&vm, "stdin", 1, argCount);
@@ -584,6 +600,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("arrInsert", arrInsertNative);
   defineNative("arrRemove", arrRemoveNative);
   defineNative("arrClear", arrClearNative);
+  defineNative("arrContains", arrContainsNative);
 }
 
 void freeVM() {
