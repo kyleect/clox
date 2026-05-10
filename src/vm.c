@@ -744,8 +744,9 @@ static InterpretResult run() {
 
     fprintf(stderr, "\n");
 
-    disassembleInstruction(&f->closure->function->chunk,
-                           (int)(f->ip - f->closure->function->chunk.code));
+    disassembleInstruction(
+        &frame->closure->function->chunk,
+        (int)(frame->ip - frame->closure->function->chunk.code));
 #endif
 
     uint8_t instruction;

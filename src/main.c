@@ -70,7 +70,6 @@ static void repl() {
   fprintf(stderr, "========================================\n");
   fprintf(stderr, "REPL %30s clox\n\n", CLOX_VERSION);
   fprintf(stderr, "Enter code or type 'exit' to quit.\n\n");
-  // fprintf(stderr, "========================================\n\n");
   for (;;) {
     char *line = readline("> ");
 
