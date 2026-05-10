@@ -35,9 +35,12 @@ void freeChunk(Chunk *chunk) {
 }
 
 int addConstantToChunk(Chunk *chunk, Value value) {
-  push(value);
+  // The value is pushed on to the stack to protect it from garbage collection
+  // This would happen if constant table is out of room and needs to reallocate
+  pushOnStack(value);
   writeValueArray(&chunk->constants, value);
-  pop();
+  // Clean up the pushed value from the stack
+  popFromStack();
   int newIndex = chunk->constants.count - 1;
 
   return newIndex;

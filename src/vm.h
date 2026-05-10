@@ -98,10 +98,10 @@ InterpretResult interpret(const char *source);
 void runtimeError(VM *vm, const char *format, ...);
 
 // Push a value on to the VM's stack
-void push(Value value);
+void pushOnStack(Value value);
 
 // Pop a value from the VM's stack and returns it
 // @return The popped value
-Value pop();
+Value popFromStack();
 
 #endif
