@@ -324,6 +324,24 @@ static Value arrContainsNative(int argCount, Value *args) {
   return BOOL_VAL(false);
 }
 
+static Value arrCopyNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrayCopy", 1, argCount);
+  assertArgIsArray(&vm, "arrayCopy", args, 0);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  ObjArray *result = newArray();
+
+  pushOnStack(OBJ_VAL(result)); // Protect from GC
+
+  for (int i = 0; i < array->count; i++) {
+    writeValueToArrayObj(result, array->values[i]);
+  }
+
+  popFromStack(); // Clean up after GC protection
+
+  return OBJ_VAL(result);
+}
+
 static Value stdinNative(int argCount, Value *args) {
   if (argCount > 1) {
     assertArgCount(&vm, "stdin", 1, argCount);
@@ -601,6 +619,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("arrRemove", arrRemoveNative);
   defineNative("arrClear", arrClearNative);
   defineNative("arrContains", arrContainsNative);
+  defineNative("arrCopy", arrCopyNative);
 }
 
 void freeVM() {

@@ -72,3 +72,6 @@ print typeof(arrInsert);
 
 print arrRemove;
 print typeof(arrRemove);
+
+print arrCopy;
+print typeof(arrCopy);

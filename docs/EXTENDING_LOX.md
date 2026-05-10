@@ -25,6 +25,7 @@ These are the documented changes to the language/syntax from the original Lox la
     - `arrRemove(array, index)`
     - `arrClear()`
     - `arrContains(array, value)`
+    - `arrCopy(array)`
   - Update `len` native function to return array lengths as well
 
 ## 0.1.0
