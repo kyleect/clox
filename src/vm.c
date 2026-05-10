@@ -1128,6 +1128,33 @@ static InterpretResult run() {
 
       break;
     }
+    case OP_GET_INDEX: {
+      Value index = popFromStack();
+      Value arrayVal = popFromStack();
+
+      if (!IS_ARRAY(arrayVal)) {
+        runtimeError(&vm, "Can only index arrays.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      if (!IS_NUMBER(index)) {
+        runtimeError(&vm, "Array index must be number.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      ObjArray *array = AS_ARRAY(arrayVal);
+
+      int i = AS_NUMBER(index);
+
+      if (i < 0 || i >= array->count) {
+        runtimeError(&vm, "Array index out of bounds.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      pushOnStack(array->values[i]);
+
+      break;
+    }
     }
   }
 #undef READ_BYTE

@@ -47,6 +47,7 @@ static void emitReturn();
 static void endScope();
 static void classDeclaration(Scanner *scanner);
 static void namedVariable(Scanner *scanner, Token name, bool canAssign);
+static void indexValue(Scanner *scanner, bool canAssign);
 
 Parser parser;
 Chunk *compilingChunk;
@@ -840,6 +841,14 @@ static void arrayLiteral(Scanner *scanner, bool canAssign) {
   emitBytes(OP_ARRAY, array_size);
 }
 
+static void indexValue(Scanner *scanner, bool canAssign) {
+  expression(scanner);
+
+  consume(scanner, TOKEN_RIGHT_BRACKET, "Expect ']'");
+
+  emitByte(OP_GET_INDEX);
+}
+
 static uint8_t makeConstant(Value value) {
   int constant = addConstantToChunk(currentChunk(), value);
 
@@ -957,7 +966,7 @@ ParseRule rules[] = {
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LEFT_BRACKET] = {arrayLiteral, index, PREC_CALL},
+    [TOKEN_LEFT_BRACKET] = {arrayLiteral, indexValue, PREC_CALL},
     [TOKEN_RIGHT_BRACKET] = {NULL, NULL, PREC_NONE},
     [TOKEN_COMMA] = {NULL, NULL, PREC_NONE},
     [TOKEN_DOT] = {NULL, dot, PREC_CALL},
