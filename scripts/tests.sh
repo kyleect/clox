@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+shopt -s globstar
+
 BIN="${BIN:-./build/clox-test}"
 DIFF="diff -u"
 
@@ -108,8 +110,10 @@ run_exit_test() {
     fi
 }
 
-for file_in in ./tests/*.lox; do
-    base=$(basename "$file_in" .lox)
+for file_in in ./tests/**/*.lox; do
+    rel_path="${file_in#./tests/}"
+
+    base="${rel_path%.lox}"
 
     should_run "$base" || continue
 
@@ -123,7 +127,10 @@ for file_in in ./tests/*.lox; do
     input_file="./tests/$base.lox.in"
 
     actual_out="$TMP_DIR/$base.lox.out"
+    mkdir -p "$(dirname "$actual_out")"
+
     actual_err="$TMP_DIR/$base.lox.err"
+    mkdir -p "$(dirname "$actual_err")"
 
     extra_args=()
     [[ -f "$argv_file" ]] && read -r -a extra_args < "$argv_file"
