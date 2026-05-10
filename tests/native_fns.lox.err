@@ -205,5 +205,11 @@
 0205    | OP_GET_GLOBAL      62 'numberToString'
 0207    | OP_CALL             1
 0209    | OP_PRINT
-0210   63 OP_NIL
-0211    | OP_RETURN
+0210   64 OP_GET_GLOBAL      63 'arrPush'
+0212    | OP_PRINT
+0213   65 OP_GET_GLOBAL      64 'typeof'
+0215    | OP_GET_GLOBAL      65 'arrPush'
+0217    | OP_CALL             1
+0219    | OP_PRINT
+0220   66 OP_NIL
+0221    | OP_RETURN

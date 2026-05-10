@@ -24,6 +24,7 @@ static void concatenate();
 static bool call(ObjClosure *function, int argCount);
 Value fileExists(char *filename);
 static void writeFile(const char *path, const char *text);
+void writeValueToArrayObj(ObjArray *array, Value value);
 
 VM vm;
 
@@ -212,6 +213,22 @@ static Value instanceOfNative(int argCount, Value *args) {
   ObjClass *klass2 = AS_CLASS(klass);
 
   return BOOL_VAL(instance->klass == klass2);
+}
+
+static Value arrPushNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrPush", 2, argCount);
+
+  if (!IS_ARRAY(args[0])) {
+    runtimeError(&vm, "function arrPush expects argument 1 to be an array.");
+    exit(70);
+  }
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  Value value = args[1];
+
+  writeValueToArrayObj(array, value);
+
+  return NIL_VAL;
 }
 
 static Value stdinNative(int argCount, Value *args) {
@@ -485,6 +502,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("instanceOf", instanceOfNative);
   defineNative("prompt", promptNative);
   defineNative("stdin", stdinNative);
+  defineNative("arrPush", arrPushNative);
 }
 
 void freeVM() {
