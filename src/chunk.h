@@ -44,6 +44,7 @@ typedef enum {
   OP_INVOKE,
   OP_ARRAY,
   OP_GET_INDEX,
+  OP_SET_INDEX,
 } OpCode;
 
 typedef struct {

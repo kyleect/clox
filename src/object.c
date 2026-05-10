@@ -233,6 +233,22 @@ void objectToString(Value value, char *buffer, size_t size) {
              AS_BOUND_METHOD(value)->method->function->name->chars);
     break;
   }
+  case OBJ_ARRAY: {
+    ObjArray *array = AS_ARRAY(value);
+
+    printf("[");
+
+    for (int i = 0; i < array->count; i++) {
+      printValue(array->values[i]);
+
+      if (i < array->count - 1) {
+        printf(", ");
+      }
+    }
+
+    printf("]");
+    break;
+  }
   }
 }
 
@@ -298,6 +314,22 @@ void printObject(Value value) {
   case OBJ_UPVALUE:
     printf("upvalue");
     break;
+  case OBJ_ARRAY: {
+    ObjArray *array = AS_ARRAY(value);
+
+    printf("[");
+
+    for (int i = 0; i < array->count; i++) {
+      printValue(array->values[i]);
+
+      if (i < array->count - 1) {
+        printf(", ");
+      }
+    }
+
+    printf("]");
+    break;
+  }
   }
 }
 

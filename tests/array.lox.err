@@ -82,8 +82,7 @@
 0000    1 OP_CONSTANT         0 '1.000000'
 0002    | OP_CONSTANT         1 '2.000000'
 0004    | OP_CONSTANT         2 '3.000000'
-0006    | Unknown opcode 37
-0007    | OP_FALSE
+0006    | OP_ARRAY            3
 0008    | OP_POP
 0009    2 OP_NIL
 0010    | OP_RETURN

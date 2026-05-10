@@ -829,7 +829,7 @@ static void unary(Scanner *scanner, bool canAssign) {
 static void arrayLiteral(Scanner *scanner, bool canAssign) {
   int array_size = 0;
 
-  if (!check(TOKEN_LEFT_BRACKET)) {
+  if (!check(TOKEN_RIGHT_BRACKET)) {
     do {
       expression(scanner);
       array_size++;
@@ -846,7 +846,12 @@ static void indexValue(Scanner *scanner, bool canAssign) {
 
   consume(scanner, TOKEN_RIGHT_BRACKET, "Expect ']'");
 
-  emitByte(OP_GET_INDEX);
+  if (canAssign && match(scanner, TOKEN_EQUAL)) {
+    expression(scanner);
+    emitByte(OP_SET_INDEX);
+  } else {
+    emitByte(OP_GET_INDEX);
+  }
 }
 
 static uint8_t makeConstant(Value value) {

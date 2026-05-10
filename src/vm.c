@@ -1155,6 +1155,21 @@ static InterpretResult run() {
 
       break;
     }
+    case OP_SET_INDEX: {
+      Value value = popFromStack();
+      Value index = popFromStack();
+      Value arrayValue = popFromStack();
+
+      ObjArray *array = AS_ARRAY(arrayValue);
+
+      int i = AS_NUMBER(index);
+
+      array->values[i] = value;
+
+      pushOnStack(value);
+
+      break;
+    }
     }
   }
 #undef READ_BYTE
