@@ -23,6 +23,7 @@ These are the documented changes to the language/syntax from the original Lox la
     - `arrPop(array)`
     - `arrInsert(array, index, value)`
     - `arrRemove(array, index)`
+    - `arrClear()`
   - Update `len` native function to return array lengths as well
 
 ## 0.1.0
