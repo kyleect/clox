@@ -66,3 +66,6 @@ print typeof(arrPush);
 
 print arrPop;
 print typeof(arrPop);
+
+print arrInsert;
+print typeof(arrInsert);

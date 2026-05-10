@@ -254,6 +254,32 @@ static Value arrPopNative(int argCount, Value *args) {
   return value;
 }
 
+static Value arrInsertNative(int argCount, Value *args) {
+  assertArgCount(&vm, "arrInsert", 3, argCount);
+  assertArgIsArray(&vm, "arrInsert", args, 0);
+  assertArgIsNumber(&vm, "arrInsert", args, 1);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+  int index = (int)AS_NUMBER(args[1]);
+  Value value = args[2];
+
+  if (index < 0 || index > array->count) {
+    runtimeError(&vm, "insert index out of bounds.");
+
+    return NIL_VAL;
+  }
+
+  writeValueToArrayObj(array, NIL_VAL);
+
+  for (int i = array->count - 1; i > index; i--) {
+    array->values[i] = array->values[i - 1];
+  }
+
+  array->values[index] = value;
+
+  return NIL_VAL;
+}
+
 static Value stdinNative(int argCount, Value *args) {
   if (argCount > 1) {
     assertArgCount(&vm, "stdin", 1, argCount);
@@ -527,6 +553,7 @@ void initVM(int argc, char *argv[]) {
   defineNative("stdin", stdinNative);
   defineNative("arrPush", arrPushNative);
   defineNative("arrPop", arrPopNative);
+  defineNative("arrInsert", arrInsertNative);
 }
 
 void freeVM() {
