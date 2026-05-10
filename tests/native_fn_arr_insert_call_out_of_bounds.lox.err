@@ -102,3 +102,4 @@
 0037    7 OP_NIL
 0038    | OP_RETURN
 index 10 out of bounds. array length: 2
+[line 5] in script

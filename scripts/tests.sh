@@ -30,6 +30,7 @@ SUITES=0
 PASS=0
 FAIL=0
 SKIP=0
+UNEXPECTED_SEGFAULTS=0
 TOTAL=0
 
 should_run() {
@@ -159,12 +160,23 @@ for file_in in ./tests/*.lox; do
     run_test      "stderr" "$expected_err" "$actual_err"
     run_exit_test "exit code" "$expected_exit" "$exit_code"
 
+    if [[ $exit_code -eq 139 ]]; then
+        UNEXPECTED_SEGFAULTS=$((UNEXPECTED_SEGFAULTS + 1))
+        printf "\e[1;31mTEST SEGFAULTED\e[0m\n"
+    fi
+
     [[ $VERBOSE -eq 1 ]] && echo ""
 done
 
 echo
 echo "Total: $TOTAL | Passed: $PASS | Failed: $FAIL | Skipped: $SKIP | Suites: $SUITES"
 
-if [[ $FAIL -ne 0 ]]; then
+if [[ $UNEXPECTED_SEGFAULTS -ne 0 ]]; then
+    echo
+    printf "\e[1;31mFAILURE: ONE OR MORE TESTS SEGFAULTED!\e[0m\n"
+    echo
+fi
+
+if [[ $FAIL -ne 0 || $UNEXPECTED_SEGFAULTS -ne 0 ]]; then
     exit 1
 fi

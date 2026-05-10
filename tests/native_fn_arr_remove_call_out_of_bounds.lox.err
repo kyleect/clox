@@ -89,3 +89,4 @@
 0013    4 OP_NIL
 0014    | OP_RETURN
 index 1 out of bounds. array length: 0
+[line 3] in script

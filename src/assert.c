@@ -47,7 +47,7 @@ void assertArgIsArray(VM *vm, const char *function, Value *args, int index) {
 
 void assertIsInArrayBounds(VM *vm, ObjArray *array, int index) {
   if (index < 0 || index > array->count) {
-    runtimeError(&vm, "index %d out of bounds. array length: %d", index,
+    runtimeError(vm, "index %d out of bounds. array length: %d", index,
                  array->count);
     exit(70);
   }
