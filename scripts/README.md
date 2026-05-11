@@ -4,6 +4,14 @@
 
 Run `./scripts/build.sh` or `just build` to build to project in to `./build` folder.
 
+## Install
+
+Run `just install` or the OS specific script:
+
+- **linux:** `./scripts/install-linux.sh`
+- **macos:** `./scripts/install-macos.sh`
+- **windows:** `.\scripts\install-windows.cmd`
+
 ## Test
 
 Run `./scripts/test.sh` or `just test` to run the tests in `./test` folder.

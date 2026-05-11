@@ -28,6 +28,18 @@ build: generate_version_c
 clean:
     ./scripts/clean.sh
 
+[linux]
+install:
+    ./scripts/install-linux.sh
+
+[windows]
+install:
+    .\scripts\install-windows.cmd
+
+[macos]
+install:
+    ./scripts/install-macos.sh
+
 # Run the tests
 test *args: build
     ./scripts/tests.sh {{ args }}
