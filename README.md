@@ -6,6 +6,7 @@ Yet another clox implementation.
 
 ## Documentation
 
+- [CLI](./docs/CLI.md)
 - [Development](./docs/DEVELOPMENT.md)
 - [Goals](./docs/GOALSV1.md)
 - [Tests](./tests/README.md)
