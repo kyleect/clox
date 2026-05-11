@@ -14,15 +14,16 @@
 static void repl();
 static char *readFile(const char *path);
 static void runFile(const char *path);
+static void runCode(const char *source);
 
-const char *help_message = "Usage: clox [-h] [-v] [-r|-f [path]] \n";
+const char *help_message =
+    "Usage: clox [-h] [-v] [-r|-f [path]|-c [source]] \n";
 
-const char *short_options = "hvrf";
-static struct option long_options[] = {{"help", no_argument, 0, 'h'},
-                                       {"version", no_argument, 0, 'v'},
-                                       {"file", no_argument, 0, 'f'},
-                                       {"repl", no_argument, 0, 'r'},
-                                       {0, 0, 0, 0}};
+const char *short_options = "hvrfc";
+static struct option long_options[] = {
+    {"help", no_argument, 0, 'h'}, {"version", no_argument, 0, 'v'},
+    {"file", no_argument, 0, 'f'}, {"repl", no_argument, 0, 'r'},
+    {"code", no_argument, 0, 'c'}, {0, 0, 0, 0}};
 
 int main(int argc, char *argv[]) {
   int saved_argc = argc;
@@ -56,6 +57,14 @@ int main(int argc, char *argv[]) {
       initVM(saved_argc, saved_argv);
       runFile("stdlib/stdlib.lox");
       runFile(argv[optind]);
+      freeVM();
+      free(saved_argv);
+      return 0;
+    case 'c':
+      initVM(saved_argc, saved_argv);
+      runFile("stdlib/stdlib.lox");
+      char *source = argv[optind];
+      runCode(source);
       freeVM();
       free(saved_argv);
       return 0;
@@ -120,6 +129,17 @@ static void runFile(const char *path) {
   char *source = readFile(path);
   InterpretResult result = interpret(source);
   free(source);
+
+  if (result == INTERPRET_COMPILE_ERROR) {
+    exit(65);
+  }
+
+  if (result == INTERPRET_RUNTIME_ERROR)
+    exit(70);
+}
+
+static void runCode(const char *source) {
+  InterpretResult result = interpret(source);
 
   if (result == INTERPRET_COMPILE_ERROR) {
     exit(65);
