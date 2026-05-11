@@ -6,6 +6,8 @@
 #include "hashtable.h"
 #include "value.h"
 
+typedef struct VM VM;
+
 #define OBJ_TYPE(value) (AS_OBJ(value)->type)
 
 #define IS_CLASS(value) isObjType(value, OBJ_CLASS)
@@ -116,7 +118,7 @@ bool classFieldSlot(ObjClass *klass, ObjString *name, int *slot);
  */
 ObjClosure *newClosure(ObjFunction *function);
 
-typedef Value (*NativeFn)(int argCount, Value *args);
+typedef Value (*NativeFn)(struct VM *vm, int argCount, Value *args);
 
 typedef struct {
   Obj obj;
@@ -146,6 +148,7 @@ void objectToString(Value value, char *buffer, size_t size);
 void objectTypeToString(ObjType type, char *buffer, size_t size);
 void printObject(Value value);
 void printObjectToErr(Value value);
+void writeValueToArrayObj(ObjArray *array, Value value);
 
 static inline bool isObjType(Value value, ObjType type) {
   return IS_OBJ(value) && AS_OBJ(value)->type == type;

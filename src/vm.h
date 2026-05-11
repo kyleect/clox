@@ -18,7 +18,7 @@ typedef struct {
 /**
  * Bytecode Virtual Machine
  */
-typedef struct {
+struct VM {
   // A copy of `argc` passed to `main`
   int argc;
 
@@ -49,7 +49,7 @@ typedef struct {
   int grayCount;
   int grayCapacity;
   Obj **grayStack;
-} VM;
+};
 
 extern VM vm;
 

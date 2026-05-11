@@ -10,6 +10,7 @@
 - [`src/main.c`](../src/main.c) REPL, Run \*.lox files
 - [`src/compiler.c`](../src/compiler.c)
 - [`src/vm.c`](../src/vm.c)
+- [`src/native.c`](../src/native.c) Native function definitions
 - [`src/memory.c`](../src/memory.c)
 - [`VERSION.txt`](../VERSION.txt) Defines the version of the language. See [Incrementing Language Version](../scripts/README.md#increment-language-version) for changing this.
 - [`scripts/tests.sh`](../scripts/tests.sh) Runs the language [tests](../tests/) (E2E, snapshots)
@@ -35,9 +36,9 @@ See [scripts](../scripts/README.md)
 
 ### Create A Native Function
 
-- [ ] 1. Declare a new function in [vm.c](../src/vm.c)
-- [ ] 2. Register the native function with `defineNative("function_name", functionNameNative)` in `initVM`
-- [ ] 3. Add [tests](../tests/README.md) for the new function
+- [ ] 1. Declare a new function in [native.c](../src/native.c)
+- [ ] 2. Register the native function with `defineNative("function_name", functionNameNative)` in `defineAllNatives`
+- [ ] 3. Add [tests](../tests/README.md) for the new function in the [`tests/native_functions`](../tests/native_functions/) directory
 - [ ] 4. Add function to [EXTENDING_LOC.md](EXTENDING_LOX.md) under the "next" version
 - [ ] 5. Add function to [`clox.tmLanguage.json`](../vsc/syntaxes/clox.tmLanguage.json) under `"name": "entity.name.function.native.clox"`
   - [ ] Call

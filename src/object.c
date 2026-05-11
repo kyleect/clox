@@ -107,6 +107,18 @@ ObjArray *newArray() {
   return array;
 }
 
+void writeValueToArrayObj(ObjArray *array, Value value) {
+  if (array->capacity < array->count + 1) {
+    int oldCapacity = array->capacity;
+    array->capacity = GROW_CAPACITY(oldCapacity);
+
+    array->values =
+        GROW_ARRAY(Value, array->values, oldCapacity, array->capacity);
+  }
+
+  array->values[array->count++] = value;
+}
+
 static ObjString *allocateString(char *chars, int length, uint32_t hash) {
   ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
   string->length = length;
