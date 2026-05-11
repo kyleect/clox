@@ -7,11 +7,12 @@
 ## Important Files
 
 - [`justfile`](../justfile) Build, run tests, etc... See: [just.systems](https://just.systems/man/en/)
-- [`src/main.c`](../src/main.c) REPL, Run \*.lox files
-- [`src/compiler.c`](../src/compiler.c)
-- [`src/vm.c`](../src/vm.c)
+- [`src/main.c`](../src/main.c) CLI: REPL, Run \*.lox files
+- [`src/compiler.c`](../src/compiler.c) Compiler
+- [`src/chunk.c`](../src/compiler.c) Bytecode OP Codes
+- [`src/vm.c`](../src/vm.c) Virtual Machine
 - [`src/native.c`](../src/native.c) Native function definitions
-- [`src/memory.c`](../src/memory.c)
+- [`src/memory.c`](../src/memory.c) Memory/garbage collection
 - [`VERSION.txt`](../VERSION.txt) Defines the version of the language. See [Incrementing Language Version](../scripts/README.md#increment-language-version) for changing this.
 - [`scripts/tests.sh`](../scripts/tests.sh) Runs the language [tests](../tests/) (E2E, snapshots)
 - [`scripts/coverage.sh`](../scripts/coverage.sh) Generate coverage information
