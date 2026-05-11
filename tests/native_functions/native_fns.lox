@@ -75,3 +75,12 @@ print typeof(arrRemove);
 
 print arrCopy;
 print typeof(arrCopy);
+
+print arrIsEmpty;
+print typeof(arrIsEmpty);
+
+print arrEqual;
+print typeof(arrEqual);
+
+print arrSlice;
+print typeof(arrSlice);

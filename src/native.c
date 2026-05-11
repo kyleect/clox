@@ -427,6 +427,41 @@ static Value arrEqualNative(VM *vm, int argCount, Value *args) {
   return BOOL_VAL(areEqual);
 }
 
+static Value arrSliceNative(VM *vm, int argCount, Value *args) {
+  assertArgCount(vm, "arrSlice", 3, argCount);
+  assertArgIsArray(vm, "arrSlice", args, 0);
+  assertArgIsNumber(vm, "arrSlice", args, 1);
+  assertArgIsNumber(vm, "arrSlice", args, 2);
+
+  ObjArray *array = AS_ARRAY(args[0]);
+
+  double start = AS_NUMBER(args[1]);
+  assertPositiveNumber(vm, "arrSlice", start, 1);
+  assertIsInArrayBounds(vm, array, start);
+
+  double end = AS_NUMBER(args[2]);
+  assertPositiveNumber(vm, "arrSlice", end, 2);
+  assertIsInArrayBounds(vm, array, end);
+
+  if (start >= end) {
+    runtimeError(
+        vm, "function arrSlice expects argument 1 to be less than argument 2.");
+    exit(70);
+  }
+
+  ObjArray *result = newArray();
+
+  pushOnStack(OBJ_VAL(result));
+
+  for (int i = start; i < end; i++) {
+    writeValueToArrayObj(result, array->values[i]);
+  }
+
+  popFromStack();
+
+  return OBJ_VAL(result);
+}
+
 static Value stdinNative(VM *vm, int argCount, Value *args) {
   if (argCount > 1) {
     assertArgCount(vm, "stdin", 1, argCount);
@@ -623,4 +658,5 @@ void defineAllNatives(VM *vm) {
   defineNative(vm, "arrCopy", arrCopyNative);
   defineNative(vm, "arrIsEmpty", arrIsEmptyNative);
   defineNative(vm, "arrEqual", arrEqualNative);
+  defineNative(vm, "arrSlice", arrSliceNative);
 }

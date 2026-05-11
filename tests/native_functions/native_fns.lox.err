@@ -235,5 +235,23 @@
 0255    | OP_GET_GLOBAL      77 'arrCopy'
 0257    | OP_CALL             1
 0259    | OP_PRINT
-0260   78 OP_NIL
-0261    | OP_RETURN
+0260   79 OP_GET_GLOBAL      78 'arrIsEmpty'
+0262    | OP_PRINT
+0263   80 OP_GET_GLOBAL      79 'typeof'
+0265    | OP_GET_GLOBAL      80 'arrIsEmpty'
+0267    | OP_CALL             1
+0269    | OP_PRINT
+0270   82 OP_GET_GLOBAL      81 'arrEqual'
+0272    | OP_PRINT
+0273   83 OP_GET_GLOBAL      82 'typeof'
+0275    | OP_GET_GLOBAL      83 'arrEqual'
+0277    | OP_CALL             1
+0279    | OP_PRINT
+0280   85 OP_GET_GLOBAL      84 'arrSlice'
+0282    | OP_PRINT
+0283   86 OP_GET_GLOBAL      85 'typeof'
+0285    | OP_GET_GLOBAL      86 'arrSlice'
+0287    | OP_CALL             1
+0289    | OP_PRINT
+0290   87 OP_NIL
+0291    | OP_RETURN
