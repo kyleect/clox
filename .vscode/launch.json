@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/clox",
       "args": [
-        "${workspaceFolder}/tests/native_fn_exit_call_no_args_passed.lox"
+        "${workspaceFolder}/tests/native_functions/native_fn_exit_call_no_args_passed.lox"
       ],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
