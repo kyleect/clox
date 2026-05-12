@@ -30,7 +30,7 @@ These are the documented changes to the language/syntax from the original Lox la
     - `arrEqual(a, b)`
     - `arrSlice(array, start, end)`
     - `arrConcat(a, b)`
-    - [ ] `arrReverse(array)`
+    - `arrReverse(array)`
     - [ ] `arrSort(array, fn)`
     - [ ] `arrMap(array, fn)`
     - [ ] `arrJoinToString(array, separator)`

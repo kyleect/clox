@@ -259,5 +259,11 @@
 0295    | OP_GET_GLOBAL      89 'arrConcat'
 0297    | OP_CALL             1
 0299    | OP_PRINT
-0300   90 OP_NIL
-0301    | OP_RETURN
+0300   91 OP_GET_GLOBAL      90 'arrReverse'
+0302    | OP_PRINT
+0303   92 OP_GET_GLOBAL      91 'typeof'
+0305    | OP_GET_GLOBAL      92 'arrReverse'
+0307    | OP_CALL             1
+0309    | OP_PRINT
+0310   93 OP_NIL
+0311    | OP_RETURN

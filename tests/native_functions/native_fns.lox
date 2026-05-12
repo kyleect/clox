@@ -87,3 +87,6 @@ print typeof(arrSlice);
 
 print arrConcat;
 print typeof(arrConcat);
+
+print arrReverse;
+print typeof(arrReverse);

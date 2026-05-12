@@ -492,6 +492,25 @@ static Value arrConcatNative(VM *vm, int argCount, Value *args) {
   return OBJ_VAL(new_array);
 }
 
+static Value arrReverseNative(VM *vm, int argCount, Value *args) {
+  assertArgCount(vm, "arrReverse", 1, argCount);
+  assertArgIsArray(vm, "arrReverse", args, 0);
+
+  ObjArray *array_a = AS_ARRAY(args[0]);
+
+  ObjArray *new_array = newArray();
+
+  pushOnStack(OBJ_VAL(new_array)); // Protect from GC
+
+  for (int i = array_a->count - 1; i >= 0; i--) {
+    writeValueToArrayObj(new_array, array_a->values[i]);
+  }
+
+  popFromStack(); // Clean up after GC protection
+
+  return OBJ_VAL(new_array);
+}
+
 static Value stdinNative(VM *vm, int argCount, Value *args) {
   if (argCount > 1) {
     assertArgCount(vm, "stdin", 1, argCount);
@@ -690,4 +709,5 @@ void defineAllNatives(VM *vm) {
   defineNative(vm, "arrEqual", arrEqualNative);
   defineNative(vm, "arrSlice", arrSliceNative);
   defineNative(vm, "arrConcat", arrConcatNative);
+  defineNative(vm, "arrReverse", arrReverseNative);
 }
