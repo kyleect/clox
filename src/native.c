@@ -13,12 +13,14 @@
 #include "version.h"
 #include "vm.h"
 
-static ObjString *readFile(const char *path) {
-  FILE *file = fopen(path, "rb"); // "rb" = binary mode (safe for all files)
-  if (!file)
-    return NULL;
+static ObjString *readFile(VM *vm, const char *path) {
+  FILE *file = fopen(path, "rb");
 
-  // Go to end to get file size
+  if (!file) {
+    runtimeError(vm, "File does not exist: '%s'", path);
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
+
   if (fseek(file, 0, SEEK_END) != 0) {
     fclose(file);
     return NULL;
@@ -53,10 +55,13 @@ static ObjString *readFile(const char *path) {
   return takeString(buffer, size);
 }
 
-static void writeFile(const char *path, const char *text) {
-  FILE *file = fopen(path, "wb"); // "rb" = binary mode (safe for all files)
-  if (!file)
-    return;
+static void writeFile(VM *vm, const char *path, const char *text) {
+  FILE *file = fopen(path, "wb");
+
+  if (!file) {
+    runtimeError(vm, "File does not exist: '%s'", path);
+    exit(70); // INTERPRET_RUNTIME_ERROR
+  }
 
   fprintf(file, "%s", text);
 
@@ -158,7 +163,7 @@ static Value readFileToStringNative(VM *vm, int argCount, Value *args) {
   Value value = args[0];
 
   ObjString *path = AS_STRING(value);
-  ObjString *contents = readFile(path->chars);
+  ObjString *contents = readFile(vm, path->chars);
 
   return OBJ_VAL(contents);
 }
@@ -174,7 +179,7 @@ static Value writeStringToFileNative(VM *vm, int argCount, Value *args) {
   ObjString *path = AS_STRING(path_arg);
   char *text = AS_CSTRING(text_arg);
 
-  writeFile(path->chars, text);
+  writeFile(vm, path->chars, text);
 
   return NIL_VAL;
 }
