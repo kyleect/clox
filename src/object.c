@@ -297,6 +297,10 @@ void objectTypeToString(ObjType type, char *buffer, size_t size) {
     snprintf(buffer, size, "function");
     break;
   }
+  case OBJ_ARRAY: {
+    snprintf(buffer, size, "array");
+    break;
+  }
   }
 }
 
