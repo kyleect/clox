@@ -29,7 +29,7 @@ These are the documented changes to the language/syntax from the original Lox la
     - `arrIsEmpty(array)`
     - `arrEqual(a, b)`
     - `arrSlice(array, start, end)`
-    - [ ] `arrConcat(a, b)`
+    - `arrConcat(a, b)`
     - [ ] `arrReverse(array)`
     - [ ] `arrSort(array, fn)`
     - [ ] `arrMap(array, fn)`

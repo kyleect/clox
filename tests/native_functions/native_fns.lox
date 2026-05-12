@@ -84,3 +84,6 @@ print typeof(arrEqual);
 
 print arrSlice;
 print typeof(arrSlice);
+
+print arrConcat;
+print typeof(arrConcat);

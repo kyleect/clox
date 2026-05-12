@@ -253,5 +253,11 @@
 0285    | OP_GET_GLOBAL      86 'arrSlice'
 0287    | OP_CALL             1
 0289    | OP_PRINT
-0290   87 OP_NIL
-0291    | OP_RETURN
+0290   88 OP_GET_GLOBAL      87 'arrConcat'
+0292    | OP_PRINT
+0293   89 OP_GET_GLOBAL      88 'typeof'
+0295    | OP_GET_GLOBAL      89 'arrConcat'
+0297    | OP_CALL             1
+0299    | OP_PRINT
+0300   90 OP_NIL
+0301    | OP_RETURN
