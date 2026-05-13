@@ -44,6 +44,14 @@ Run `./scripts/coverage.sh` or `just coverage` to generate code coverage data.
 
 Outputs `lcov.info` at the root of the project.
 
+## Unit Tests
+
+Run `./sciprts/build-tests.sh && ./scripts/unit.sh` or `just unit` to run the unit tests.
+
+## Build Unit Tests
+
+Run `./scripts/build-tests.sh` or `just build-tests` to build the [unit tests](#unit-tests).
+
 ## Run Examples
 
 ```sh

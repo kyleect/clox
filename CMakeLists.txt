@@ -1,6 +1,8 @@
 # CMakeLists.txt
 cmake_minimum_required(VERSION 3.22)
 
+enable_testing()
+
 project(clox LANGUAGES C)
 
 # -----------------------------------------------------------------
@@ -37,6 +39,13 @@ set_source_files_properties(${VERSION_C} PROPERTIES GENERATED TRUE)
 file(GLOB SRC_FILES CONFIGURE_DEPENDS src/*.c)
 list(FILTER SRC_FILES EXCLUDE REGEX ".*/version\\.c$")
 
+# ---
+# Test Source Files
+# ---
+file(GLOB UNIT_TEST_SRCS unit/*.c)
+
+option(BUILD_TESTS "Build unit‑tests for project" OFF)
+
 # -----------------------------------------------------------------
 # Executables
 # -----------------------------------------------------------------
@@ -56,6 +65,36 @@ target_link_libraries(clox-test     PRIVATE readline m)
 add_dependencies(clox generate_version_c)
 add_dependencies(clox-test generate_version_c)
 
+if (BUILD_TESTS)
+
+# -----------------------------------------------------------------
+# Tests
+# -----------------------------------------------------------------
+
+add_executable(clox-version-unit-test unit/version.c ${VERSION_C})
+add_dependencies(clox-version-unit-test generate_version_c)
+add_test(
+    NAME   clox-version-unit-test
+    COMMAND clox-version-unit-test
+)
+
+add_executable(clox-token-token-test unit/token.c src/token.c ${VERSION_C})
+add_dependencies(clox-token-token-test generate_version_c)
+add_test(
+    NAME   clox-token-unit-test
+    COMMAND clox-token-unit-test
+)
+
+add_executable(clox-value-unit-test unit/value.c src/value.c src/object.c src/hashtable.c src/chunk.c src/memory.c src/vm.c src/assert.c src/scanner.c src/compiler.c src/token.c src/native.c ${VERSION_C})
+add_dependencies(clox-value-unit-test generate_version_c)
+target_link_libraries(clox-value-unit-test     PRIVATE readline m)
+add_test(
+    NAME   clox-value-unit-test
+    COMMAND clox-value-unit-test
+)
+
+endif()
+
 # -----------------------------------------------------------------
 # Coverage option
 # -----------------------------------------------------------------
@@ -70,4 +109,7 @@ if(ENABLE_COVERAGE)
 
     target_compile_options(clox-test PRIVATE ${COVERAGE_COMPILE_FLAGS})
     target_link_options(clox-test PRIVATE ${COVERAGE_LINK_FLAGS})
+
+    target_compile_options(clox-unit-test PRIVATE ${COVERAGE_COMPILE_FLAGS})
+    target_link_options(clox-unit-test    PRIVATE ${COVERAGE_LINK_FLAGS})
 endif()

@@ -24,6 +24,9 @@ cmake:
 build: generate_version_c
     ./scripts/build.sh
 
+build-tests: generate_version_c
+    ./scripts/build-tests.sh
+
 # Clean the build artifacts
 clean:
     ./scripts/clean.sh
@@ -43,6 +46,9 @@ install:
 # Run the tests
 test *args: build
     ./scripts/tests.sh {{ args }}
+
+unit: build-tests
+    ./scripts/unit.sh
 
 # Run the tests with coverage enabled
 coverage *args:
