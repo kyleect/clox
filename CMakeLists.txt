@@ -109,7 +109,4 @@ if(ENABLE_COVERAGE)
 
     target_compile_options(clox-test PRIVATE ${COVERAGE_COMPILE_FLAGS})
     target_link_options(clox-test PRIVATE ${COVERAGE_LINK_FLAGS})
-
-    target_compile_options(clox-unit-test PRIVATE ${COVERAGE_COMPILE_FLAGS})
-    target_link_options(clox-unit-test    PRIVATE ${COVERAGE_LINK_FLAGS})
 endif()
