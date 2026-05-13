@@ -2,7 +2,14 @@
 
 These are the documented changes to the language/syntax from the original Lox language.
 
-## Next: 0.2.0
+## Next: 0.3.0
+
+- Native Functions
+  - [ ] `arrSort(array, fn)`
+  - [ ] `arrMap(array, fn)`
+  - [ ] `arrJoinToString(array, separator)`
+
+## 0.2.0
 
 - Modulo operator: `%`
   - New token: `TOKEN_MODULO`
@@ -31,9 +38,6 @@ These are the documented changes to the language/syntax from the original Lox la
     - `arrSlice(array, start, end)`
     - `arrConcat(a, b)`
     - `arrReverse(array)`
-    - [ ] `arrSort(array, fn)`
-    - [ ] `arrMap(array, fn)`
-    - [ ] `arrJoinToString(array, separator)`
   - Update `len` native function to return array lengths as well
 
 ## 0.1.0
