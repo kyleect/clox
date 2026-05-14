@@ -281,8 +281,14 @@ static Token string(Scanner *scanner) {
   TRACELN("scanner.string()");
 
   while (peek(scanner) != '"' && !isAtEnd(scanner)) {
-    if (peek(scanner) == '\n')
+    if (peek(scanner) == '\n') {
       scanner->line++;
+    }
+
+    if (peek(scanner) == '\\' && peekNext(scanner) != '\0') {
+      advance(scanner);
+    }
+
     advance(scanner);
   }
 

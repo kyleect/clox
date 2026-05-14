@@ -1,0 +1,9 @@
+print "Hello\nWorld";
+
+print "Hello\r\nWorld";
+
+print "\tHello\n\tWorld";
+
+print "Hello \"World\"";
+
+print "\\Hello\\World\\";

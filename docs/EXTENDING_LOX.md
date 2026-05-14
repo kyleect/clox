@@ -4,6 +4,7 @@ These are the documented changes to the language/syntax from the original Lox la
 
 ## Next: 0.3.0
 
+- Support to escape characters in strings: `\n`, `\r`, `\t`, `\"`, `\\`
 - Native Functions
   - [ ] `arrSort(array, fn)`
   - [ ] `arrMap(array, fn)`

@@ -922,7 +922,48 @@ static void string(Scanner *scanner, bool canAssign) {
   const char *chars = parser.previous.start + 1;
   int length = parser.previous.length - 2;
 
-  emitConstant(OBJ_VAL(copyString(chars, length)));
+  char *buffer = ALLOCATE(char, length + 1);
+
+  int out = 0;
+
+  for (size_t i = 0; i < length; i++) {
+    if (chars[i] == '\\' && i + 1 < length) {
+      i++;
+
+      switch (chars[i]) {
+      case 'n':
+        buffer[out++] = '\n';
+        break;
+      case 'r':
+        buffer[out++] = '\r';
+        break;
+      case 't':
+        buffer[out++] = '\t';
+        break;
+      case '"':
+        buffer[out++] = '"';
+        break;
+      case '\\':
+        buffer[out++] = '\\';
+        break;
+      default: {
+        char errMsg[40];
+        snprintf(errMsg, sizeof(errMsg), "Invalid escape sequence: %c",
+                 chars[i]);
+        error(errMsg);
+        break;
+      }
+      }
+    } else {
+      buffer[out++] = chars[i];
+    }
+  }
+
+  buffer[out] = '\0';
+
+  ObjString *string = copyString(buffer, out);
+
+  emitConstant(OBJ_VAL(string));
 }
 
 static void namedVariable(Scanner *scanner, Token name, bool canAssign) {
