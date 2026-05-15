@@ -23,6 +23,7 @@ static Token identifier(Scanner *scanner);
 static Token number(Scanner *scanner);
 static Token string(Scanner *scanner);
 static void skipWhitespace(Scanner *scanner);
+static Token interpolatedString(Scanner *scanner);
 
 /**
  * Initialize the scanner's state
@@ -111,6 +112,11 @@ Token scanToken(Scanner *scanner) {
     return makeToken(scanner, TOKEN_MODULO);
   case '"':
     return string(scanner);
+  case '$':
+    if (match(scanner, '"')) {
+      return interpolatedString(scanner);
+    }
+    break;
   }
 
   return errorToken(scanner, "Unexpected character.");
@@ -275,6 +281,20 @@ static Token number(Scanner *scanner) {
   }
 
   return makeToken(scanner, TOKEN_NUMBER);
+}
+
+static Token interpolatedString(Scanner *scanner) {
+  while (peek(scanner) != '"' && !isAtEnd(scanner)) {
+    advance(scanner);
+  }
+
+  if (isAtEnd(scanner)) {
+    return errorToken(scanner, "Unterminated interpolated string.");
+  }
+
+  advance(scanner); // closing quote
+
+  return makeToken(scanner, TOKEN_INTERPOLATED_STRING);
 }
 
 static Token string(Scanner *scanner) {
