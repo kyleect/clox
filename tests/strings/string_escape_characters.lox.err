@@ -92,5 +92,5 @@ World'
 0011    | OP_PRINT
 0012    9 OP_CONSTANT         4 '\Hello\World\'
 0014    | OP_PRINT
-0015    | OP_NIL
+0015   10 OP_NIL
 0016    | OP_RETURN
