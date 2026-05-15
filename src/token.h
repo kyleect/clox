@@ -30,6 +30,7 @@ typedef enum {
   // Literals.
   TOKEN_IDENTIFIER,
   TOKEN_STRING,
+  TOKEN_INTERPOLATED_STRING,
   TOKEN_NUMBER,
   // Keywords.
   TOKEN_AND,
