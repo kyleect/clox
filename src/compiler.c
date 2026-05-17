@@ -43,7 +43,8 @@ static void emitLoop(int loopStart);
 static void forStatement(Scanner *scanner);
 static void funDeclaration(Scanner *scanner);
 static void returnStatement(Scanner *scanner);
-static void emitReturn();
+static void emitImplicitReturn();
+static void emitValueReturn();
 static void endScope();
 static void classDeclaration(Scanner *scanner);
 static void namedVariable(Scanner *scanner, Token name, bool canAssign);
@@ -159,6 +160,16 @@ static void statement(Scanner *scanner) {
  * Get the current chunk being compiled
  */
 static Chunk *currentChunk() { return &current->function->chunk; }
+
+static uint8_t previousOpCode() {
+  Chunk *chunk = currentChunk();
+
+  if (chunk->count == 0) {
+    return 0;
+  }
+
+  return chunk->code[chunk->count - 1];
+}
 
 static void errorAt(Token *token, const char *message) {
   if (parser.panicMode)
@@ -434,8 +445,16 @@ static void function(Scanner *scanner, FunctionType type) {
   }
 
   consume(scanner, TOKEN_RIGHT_PAREN, "Expect ')' after parameters.");
-  consume(scanner, TOKEN_LEFT_BRACE, "Expect '{' before function body.");
-  block(scanner);
+
+  if (match(scanner, TOKEN_EQUAL)) {
+    expression(scanner);
+    consume(scanner, TOKEN_SEMICOLON,
+            "Expect ';' after function body expression");
+    emitValueReturn();
+  } else {
+    consume(scanner, TOKEN_LEFT_BRACE, "Expect '{' before function body.");
+    block(scanner);
+  }
 
   TRACELN("  compiler.function() end");
 
@@ -626,7 +645,8 @@ static void returnStatement(Scanner *scanner) {
   }
 
   if (match(scanner, TOKEN_SEMICOLON)) {
-    emitReturn();
+    emitByte(OP_NIL);
+    emitValueReturn();
   } else {
     if (current->type == TYPE_INITIALIZER) {
       error("Can't return a value from an initializer.");
@@ -634,7 +654,7 @@ static void returnStatement(Scanner *scanner) {
 
     expression(scanner);
     consume(scanner, TOKEN_SEMICOLON, "Expect ';' after return value.");
-    emitByte(OP_RETURN);
+    emitValueReturn();
   }
 }
 
@@ -1056,8 +1076,8 @@ ParseRule rules[] = {
 
 static ParseRule *getRule(TokenType type) { return &rules[type]; }
 
-static void emitReturn() {
-  TRACELN("  compiler.emitReturn()");
+static void emitImplicitReturn() {
+  TRACELN("  compiler.emitImplicitReturn()");
 
   if (current->type == TYPE_INITIALIZER) {
     emitBytes(OP_GET_LOCAL, 0);
@@ -1068,10 +1088,25 @@ static void emitReturn() {
   emitByte(OP_RETURN);
 }
 
+static void emitValueReturn() {
+  TRACELN("  compiler.emitValueReturn()");
+
+  // Assumes return value is already on the stack.
+  if (current->type == TYPE_INITIALIZER) {
+    // Initializers always return 'this'.
+    emitByte(OP_POP);
+    emitBytes(OP_GET_LOCAL, 0);
+  }
+
+  emitByte(OP_RETURN);
+}
+
 static ObjFunction *endCompiler() {
   TRACELN("  compiler.endCompiler()");
 
-  emitReturn();
+  if (previousOpCode() != OP_RETURN) {
+    emitImplicitReturn();
+  }
 
   ObjFunction *function = current->function;
 

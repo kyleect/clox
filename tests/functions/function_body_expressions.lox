@@ -1,0 +1,5 @@
+var n = 10;
+
+fun sum(a) = a + n;
+
+print sum(50);
