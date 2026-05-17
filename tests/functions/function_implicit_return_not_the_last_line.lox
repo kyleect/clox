@@ -1,0 +1,6 @@
+fun sum(a, b) {
+    a + b
+    b + a
+}
+
+print sum(1, 2);

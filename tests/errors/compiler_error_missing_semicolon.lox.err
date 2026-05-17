@@ -64,4 +64,4 @@
 0026    | OP_DEFINE_GLOBAL   12 'is_empty'
 0028   14 OP_NIL
 0029    | OP_RETURN
-[line 1] Error at end: Expect ';' after expression.
+[line 1] Error at '1' (TOKEN_NUMBER): Expect ';' after expression.

@@ -64,5 +64,4 @@
 0026    | OP_DEFINE_GLOBAL   12 'is_empty'
 0028   14 OP_NIL
 0029    | OP_RETURN
-[line 6] Error at '=' (TOKEN_EQUAL): Invalid assignment target.
-[line 6] Error at '=' (TOKEN_EQUAL): Expect ';' after expression.
+[line 2] Error at 'b' (TOKEN_IDENTIFIER): Expect ';' after expression.

@@ -49,6 +49,7 @@ static void endScope();
 static void classDeclaration(Scanner *scanner);
 static void namedVariable(Scanner *scanner, Token name, bool canAssign);
 static void indexValue(Scanner *scanner, bool canAssign);
+static void error(const char *message);
 
 Parser parser;
 Chunk *compilingChunk;
@@ -152,7 +153,19 @@ static void statement(Scanner *scanner) {
     block(scanner);
     endScope();
   } else {
-    expressionStatement(scanner);
+    expression(scanner);
+
+    if (match(scanner, TOKEN_SEMICOLON)) {
+      emitByte(OP_POP);
+      return;
+    }
+
+    if (current->type != TYPE_SCRIPT && check(TOKEN_RIGHT_BRACE)) {
+      emitByte(OP_RETURN);
+      return;
+    }
+
+    error("Expect ';' after expression.");
   }
 }
 
